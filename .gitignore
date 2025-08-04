@@ -1,0 +1,7 @@
+*.md
+*.sql
+
+node_modules
+
+!README.md
+!init.sql
