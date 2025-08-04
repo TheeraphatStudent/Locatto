@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'components/Btn.dart';
 
 void main() {
   runApp(const MyApp());
@@ -109,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            const ButtonAction()
           ],
         ),
       ),
