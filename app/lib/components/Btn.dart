@@ -29,12 +29,12 @@ class ButtonAction extends StatefulWidget {
 class _ButtonActionState extends State<ButtonAction> {
   Map<ButtonType, ButtonStyle> get _defaultStyleMap => {
     ButtonType.active: ButtonStyle(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.red,
       foregroundColor: Colors.white,
     ),
     ButtonType.inactive: ButtonStyle(
-      backgroundColor: Colors.red,
-      foregroundColor: Colors.white,
+      backgroundColor: Colors.yellow,
+      foregroundColor: Colors.black,
     ),
     ButtonType.disabled: ButtonStyle(
       backgroundColor: Colors.grey,
@@ -45,9 +45,9 @@ class _ButtonActionState extends State<ButtonAction> {
   String get _buttonText {
     switch (widget.type) {
       case ButtonType.active:
-        return 'Active';
+        return 'ยืนยัน';
       case ButtonType.inactive:
-        return 'Inactive';
+        return 'ยกลิก';
       case ButtonType.disabled:
         return 'Disabled';
     }
