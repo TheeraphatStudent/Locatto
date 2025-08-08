@@ -1,4 +1,3 @@
-// lib/components/active_button.dart
 import 'package:flutter/material.dart';
 
 class ActiveButton extends StatelessWidget {
@@ -14,13 +13,13 @@ class ActiveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity, // กว้างเต็มความกว้างของ container แม่ (เหมือนปุ่ม login ส่วนใหญ่)
+      width: double.infinity, 
       height: 48,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue, // ปุ่มสีฟ้าแบบ login ทั่วไป
+          backgroundColor: const Color.fromARGB(255, 239, 79, 68), 
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // มุมโค้งเล็กน้อย
+            borderRadius: BorderRadius.circular(8), 
           ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
