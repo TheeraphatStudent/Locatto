@@ -2,6 +2,8 @@ import 'package:app/components/Btn.dart';
 import 'package:flutter/material.dart';
 import 'components/Header.dart';
 
+
+
 main() {
   runApp(new MyApp());
 }
@@ -22,6 +24,8 @@ class MyApp extends StatelessWidget {
               ButtonAction(type: ButtonType.disabled),
               ButtonAction(type: ButtonType.disabled),
               ButtonAction(type: ButtonType.disabled),
+
+              
             ],
           ),
         ),
