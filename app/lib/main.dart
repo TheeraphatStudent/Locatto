@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         body: const Center(
           child: Column(
             children: [
-              ButtonAction(type: ButtonType.active),
+             ButtonAction(type: ButtonType.active),
               ButtonAction(type: ButtonType.inactive),
               ButtonAction(type: ButtonType.disabled),
               ButtonAction(type: ButtonType.disabled),
