@@ -1,4 +1,3 @@
-// lib/components/disabled_button.dart
 import 'package:flutter/material.dart';
 
 class DisabledButton extends StatelessWidget {
@@ -16,13 +15,13 @@ class DisabledButton extends StatelessWidget {
       height: 48,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey, // สีเทาแสดงสถานะ disabled
+          backgroundColor: Colors.grey, 
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        onPressed: null, // null ทำให้ปุ่มกดไม่ได้
+        onPressed: null, 
         child: Text(
           label,
           style: const TextStyle(color: Colors.white),
