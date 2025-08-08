@@ -1,3 +1,4 @@
+// lib/components/active_button.dart
 import 'package:flutter/material.dart';
 
 class ActiveButton extends StatelessWidget {
@@ -17,7 +18,7 @@ class ActiveButton extends StatelessWidget {
       height: 48,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 239, 69, 80), // ปุ่มสีฟ้าแบบ login ทั่วไป
+          backgroundColor: Colors.blue, // ปุ่มสีฟ้าแบบ login ทั่วไป
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8), // มุมโค้งเล็กน้อย
           ),
