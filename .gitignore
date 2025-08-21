@@ -56,3 +56,5 @@ app.*.map.json
 # Environment
 *.env
 !*.env.sample
+
+*.cursor
