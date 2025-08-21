@@ -23,11 +23,6 @@ export const errorHandler = (
     error = { name: 'ValidationError', message, statusCode: 400 };
   }
 
-  if (err.name === 'MongoError' && err.message.includes('duplicate key')) {
-    const message = 'Duplicate field value entered';
-    error = { name: 'MongoError', message, statusCode: 400 };
-  }
-
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Server Error',

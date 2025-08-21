@@ -52,3 +52,7 @@ app.*.map.json
 # Exceptions
 !README.md
 !**/init/init.sql
+
+# Environment
+*.env
+!*.env.sample

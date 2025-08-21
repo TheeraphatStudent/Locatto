@@ -1,19 +1,19 @@
 services:
-  api:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USERNAME=root
-      - DB_PASSWORD=rootpassword
-      - DB_DATABASE=locatto
-      - JWT_SECRET=your-secret-key
-    depends_on:
-      mysql:
-        condition: service_healthy
+  # api:
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - DB_HOST=mysql
+  #     - DB_PORT=3306
+  #     - DB_USERNAME=root
+  #     - DB_PASSWORD=rootpassword
+  #     - DB_DATABASE=locatto
+  #     - JWT_SECRET=your-secret-key
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
 
   mysql:
     image: mysql:8.0
