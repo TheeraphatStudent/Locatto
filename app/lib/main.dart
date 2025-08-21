@@ -1,32 +1,28 @@
-import 'package:app/components/Btn.dart';
+import 'package:app/components/Button.dart';
+import 'package:app/components/Lottery.dart';
 import 'package:flutter/material.dart';
 import 'components/Header.dart';
 
-
-main() {
-  runApp(new MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
-        appBar: Header(),
-        body: const Center(
-          child: Column(
-            children: [
-             ButtonAction(type: ButtonType.active),
-              ButtonAction(type: ButtonType.inactive),
-              ButtonAction(type: ButtonType.disabled),
-              ButtonAction(type: ButtonType.disabled),
-              ButtonAction(type: ButtonType.disabled),
-
-              
-            ],
-          ),
+        appBar: const Header(),
+        body: ListView(
+          primary: false,
+          shrinkWrap: true,
+          children: const [
+            ButtonActions(
+              hasShadow: true,
+              key: Key("Continue Key"),
+              text: "ไปกันเลย",
+            ),
+          ],
         ),
       ),
     );

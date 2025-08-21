@@ -1,143 +1,43 @@
 import { Request, Response } from 'express';
-import { LotteryService } from '../services/LotteryService';
 import { validationResult } from 'express-validator';
+import { LotteryService } from '../services/LotteryService';
 
 export class LotteryController {
-  private lotteryService: LotteryService;
+  private readonly service = new LotteryService();
 
-  constructor() {
-    this.lotteryService = new LotteryService();
-  }
+  getAllLotteries = async (_req: Request, res: Response) => {
+    const items = await this.service.getAll();
+    res.json(items);
+  };
 
-  async getAllLotteries(req: Request, res: Response): Promise<void> {
-    try {
-      const lotteries = await this.lotteryService.getAllLotteries();
-      res.json({
-        success: true,
-        data: lotteries
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Error fetching lotteries',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-  }
+  getLotteryById = async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const item = await this.service.getById(id);
+    if (!item) return res.status(404).json({ success: false, message: 'Lottery not found' });
+    res.json(item);
+  };
 
-  async getLotteryById(req: Request, res: Response): Promise<void> {
-    try {
-      const id = parseInt(req.params.id);
-      const lottery = await this.lotteryService.getLotteryById(id);
-      
-      if (!lottery) {
-        res.status(404).json({
-          success: false,
-          message: 'Lottery not found'
-        });
-        return;
-      }
+  createLottery = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+    const created = await this.service.create(req.body);
+    res.status(201).json(created);
+  };
 
-      res.json({
-        success: true,
-        data: lottery
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Error fetching lottery',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-  }
+  updateLottery = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+    const id = Number(req.params.id);
+    const updated = await this.service.update(id, req.body);
+    if (!updated) return res.status(404).json({ success: false, message: 'Lottery not found' });
+    res.json(updated);
+  };
 
-  async createLottery(req: Request, res: Response): Promise<void> {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({
-          success: false,
-          message: 'Validation errors',
-          errors: errors.array()
-        });
-        return;
-      }
+  deleteLottery = async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    await this.service.remove(id);
+    res.status(204).send();
+  };
+}
 
-      const lottery = await this.lotteryService.createLottery(req.body);
-      res.status(201).json({
-        success: true,
-        data: lottery,
-        message: 'Lottery created successfully'
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Error creating lottery',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-  }
 
-  async updateLottery(req: Request, res: Response): Promise<void> {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({
-          success: false,
-          message: 'Validation errors',
-          errors: errors.array()
-        });
-        return;
-      }
-
-      const id = parseInt(req.params.id);
-      const lottery = await this.lotteryService.updateLottery(id, req.body);
-      
-      if (!lottery) {
-        res.status(404).json({
-          success: false,
-          message: 'Lottery not found'
-        });
-        return;
-      }
-
-      res.json({
-        success: true,
-        data: lottery,
-        message: 'Lottery updated successfully'
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Error updating lottery',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-  }
-
-  async deleteLottery(req: Request, res: Response): Promise<void> {
-    try {
-      const id = parseInt(req.params.id);
-      const deleted = await this.lotteryService.deleteLottery(id);
-      
-      if (!deleted) {
-        res.status(404).json({
-          success: false,
-          message: 'Lottery not found'
-        });
-        return;
-      }
-
-      res.json({
-        success: true,
-        message: 'Lottery deleted successfully'
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Error deleting lottery',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-  }
-} 

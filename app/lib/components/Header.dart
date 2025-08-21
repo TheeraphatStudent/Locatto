@@ -5,11 +5,14 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text('Lottocat'),
+    return Row(
+      children: [
+        Text("Hello world"),
+        Text("Hello world"),
+      ],
     );
   }
-  
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

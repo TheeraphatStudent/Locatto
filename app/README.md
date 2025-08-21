@@ -14,3 +14,25 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+---
+
+Before Running Project 
+
+```bash
+flutter clean
+flutter pub get
+flutter run
+```
+
+
+If stuck on gradle build
+
+```bash
+cd ./Locatto/androind
+```
+
+Run:
+```bash
+ ./gradlew clean
+```

@@ -3,44 +3,26 @@ import { AppDataSource } from '../config/database';
 import { Reward } from '../models/Reward';
 
 export class RewardService {
-  private rewardRepository: Repository<Reward>;
+  private readonly repo: Repository<Reward>;
 
   constructor() {
-    this.rewardRepository = AppDataSource.getRepository(Reward);
+    this.repo = AppDataSource.getRepository(Reward);
   }
 
-  async getAllRewards(): Promise<Reward[]> {
-    return await this.rewardRepository.find({
-      relations: ['lottery']
-    });
-  }
+  getAll = () => this.repo.find();
 
-  async getRewardById(id: number): Promise<Reward | null> {
-    return await this.rewardRepository.findOne({
-      where: { rid: id },
-      relations: ['lottery']
-    });
-  }
+  getById = (id: number) => this.repo.findOneBy({ rid: id });
 
-  async createReward(rewardData: Partial<Reward>): Promise<Reward> {
-    const reward = this.rewardRepository.create(rewardData);
-    return await this.rewardRepository.save(reward);
-  }
+  create = (data: Partial<Reward>) => this.repo.save(this.repo.create(data));
 
-  async updateReward(id: number, rewardData: Partial<Reward>): Promise<Reward | null> {
-    await this.rewardRepository.update(id, rewardData);
-    return await this.getRewardById(id);
-  }
+  update = async (id: number, data: Partial<Reward>) => {
+    await this.repo.update({ rid: id }, data);
+    return this.getById(id);
+  };
 
-  async deleteReward(id: number): Promise<boolean> {
-    const result = await this.rewardRepository.delete(id);
-    return result.affected !== 0;
-  }
+  remove = async (id: number) => {
+    await this.repo.delete({ rid: id });
+  };
+}
 
-  async getRewardsByLottery(lotteryId: number): Promise<Reward[]> {
-    return await this.rewardRepository.find({
-      where: { lid: lotteryId },
-      relations: ['lottery']
-    });
-  }
-} 
+
