@@ -1,31 +1,14 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-export interface CustomError extends Error {
-  statusCode?: number;
-}
-
-export const errorHandler = (
-  err: CustomError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  let error = { ...err };
-  error.message = err.message;
-
-  if (err.name === 'CastError') {
-    const message = 'Resource not found';
-    error = { name: 'CastError', message, statusCode: 404 };
-  }
-
-  if (err.name === 'ValidationError') {
-    const message = 'Validation Error';
-    error = { name: 'ValidationError', message, statusCode: 400 };
-  }
-
-  res.status(error.statusCode || 500).json({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
+  // eslint-disable-next-line no-console
+  console.error(err);
+  const statusCode = err?.statusCode ?? 500;
+  res.status(statusCode).json({
     success: false,
-    message: error.message || 'Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    message: err?.message ?? 'Internal server error',
   });
-}; 
+};
+
+

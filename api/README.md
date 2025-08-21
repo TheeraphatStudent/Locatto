@@ -562,23 +562,3 @@ The API uses MySQL with the following tables:
 1. Import the `Locatto_API_Postman_Collection.json` file into Postman
 2. Set the `base_url` variable to `http://localhost:3000`
 3. Start testing the endpoints
-
-## Security Considerations
-
-- The API currently lacks authentication and authorization
-- Passwords are hashed using bcryptjs
-- Rate limiting is implemented to prevent abuse
-- CORS is enabled for cross-origin requests
-- Helmet.js is used for security headers
-- Input validation is implemented using express-validator
-
-## Future Enhancements
-
-- Implement JWT-based authentication
-- Add role-based access control
-- Implement refresh tokens
-- Add API versioning
-- Implement comprehensive logging
-- Add API documentation with Swagger/OpenAPI
-- Implement caching strategies
-- Add unit and integration tests

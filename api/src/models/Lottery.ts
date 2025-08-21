@@ -5,23 +5,25 @@ import { Reward } from './Reward';
 @Entity('lotteries')
 export class Lottery {
   @PrimaryGeneratedColumn()
-  lid: number;
+  lid!: number;
 
-  @Column({ length: 20, unique: true })
-  lottery_number: string;
+  @Column('varchar', { length: 20, unique: true })
+  lottery_number!: string;
 
-  @Column({ length: 50 })
-  period: string;
+  @Column('varchar', { length: 50 })
+  period!: string;
 
   @CreateDateColumn()
-  created: Date;
+  created!: Date;
 
   @UpdateDateColumn()
-  updated: Date;
+  updated!: Date;
 
   @OneToMany(() => Purchase, purchase => purchase.lottery)
-  purchases: Purchase[];
+  purchases!: Purchase[];
 
   @OneToMany(() => Reward, reward => reward.lottery)
-  rewards: Reward[];
-} 
+  rewards!: Reward[];
+}
+
+
