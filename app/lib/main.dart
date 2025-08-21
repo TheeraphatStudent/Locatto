@@ -16,7 +16,13 @@ class MyApp extends StatelessWidget {
         body: ListView(
           primary: false,
           shrinkWrap: true,
-          children: const [ButtonActions()],
+          children: const [
+            ButtonActions(
+              hasShadow: true,
+              key: Key("Continue Key"),
+              text: "ไปกันเลย",
+            ),
+          ],
         ),
       ),
     );
