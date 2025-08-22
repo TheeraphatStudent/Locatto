@@ -1,6 +1,7 @@
 import 'package:app/components/Button.dart';
 import 'package:app/components/Footer.dart';
 import 'package:flutter/material.dart';
+import 'style/theme.dart';
 import 'components/Header.dart';
 
 void main() => runApp(const MyApp());
@@ -11,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: AppTheme.lightTheme,
       home: Scaffold(
         appBar: const Header(),
         body: Padding(

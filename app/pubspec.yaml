@@ -65,6 +65,7 @@ flutter:
     # - assets/images/logo_primary.png
     - assets/images/
     - assets/images/footer/
+    - assets/fonts/Kanit/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -91,3 +92,51 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: Kanit
+      fonts:
+        - asset: assets/fonts/Kanit/Kanit-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Kanit/Kanit-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Kanit/Kanit-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Kanit/Kanit-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Kanit/Kanit-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Kanit/Kanit-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Kanit/Kanit-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Kanit/Kanit-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Kanit/Kanit-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Kanit/Kanit-BlackItalic.ttf
+          weight: 900
+          style: italic
