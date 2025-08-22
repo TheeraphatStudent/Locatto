@@ -1,6 +1,7 @@
 import 'package:app/components/Button.dart';
-import 'package:app/components/Lottery.dart';
+import 'package:app/components/Footer.dart';
 import 'package:flutter/material.dart';
+import 'style/theme.dart';
 import 'components/Header.dart';
 
 void main() => runApp(const MyApp());
@@ -11,19 +12,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: AppTheme.lightTheme,
       home: Scaffold(
         appBar: const Header(),
-        body: ListView(
-          primary: false,
-          shrinkWrap: true,
-          children: const [
-            ButtonActions(
-              hasShadow: true,
-              key: Key("Continue Key"),
-              text: "ไปกันเลย",
-            ),
-          ],
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 36),
+          child: ListView(
+            primary: false,
+            shrinkWrap: true,
+            children: const [
+              ButtonActions(
+                hasShadow: true,
+                key: Key("Continue Key"),
+                text: "ไปกันเลย",
+              ),
+            ],
+          ),
         ),
+        bottomNavigationBar: Footer(),
       ),
     );
   }
