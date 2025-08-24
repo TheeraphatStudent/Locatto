@@ -1,3 +1,4 @@
+import 'package:app/utils/text_healper.dart';
 import 'package:flutter/material.dart';
 
 class Lottery extends StatelessWidget {
@@ -46,8 +47,8 @@ class Lottery extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 16,
-                      height: 14,
+                      width: 24,
+                      height: 24,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage("https://picsum.photos/16/14"),
@@ -80,7 +81,7 @@ class Lottery extends StatelessWidget {
                             text: 'บาท',
                             style: TextStyle(
                               color: Color(0xFF45171D),
-                              fontSize: 4,
+                              fontSize: 8,
                               fontFamily: 'Kanit',
                               fontWeight: FontWeight.w400,
                             ),
@@ -151,7 +152,7 @@ class Lottery extends StatelessWidget {
                                 '16 สิงหาคม 2565',
                                 style: TextStyle(
                                   color: Color(0xFF45171D),
-                                  fontSize: 4,
+                                  fontSize: 8,
                                   fontFamily: 'Kanit',
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -161,7 +162,7 @@ class Lottery extends StatelessWidget {
                                 'เงินล้านใกล้ฉัน',
                                 style: TextStyle(
                                   color: Color(0xFFFD5553),
-                                  fontSize: 6,
+                                  fontSize: 12,
                                   fontFamily: 'Kanit',
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -169,8 +170,8 @@ class Lottery extends StatelessWidget {
                             ],
                           ),
                           Container(
-                            width: 8,
-                            height: 8,
+                            width: 24,
+                            height: 24,
                             decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(1),
@@ -190,6 +191,7 @@ class Lottery extends StatelessWidget {
   }
 
   Widget _buildNumberColumn(String number) {
+    final int num = int.tryParse(number) ?? 0;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -204,7 +206,7 @@ class Lottery extends StatelessWidget {
           ),
         ),
         Text(
-          'One',
+          numberTexts[num] ?? '',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Color(0xFF45171D),
