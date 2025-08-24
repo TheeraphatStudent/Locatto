@@ -334,7 +334,7 @@ class AppTheme {
       ),
     ),
 
-    // Input Decoration Theme
+    // Input Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.surface,
