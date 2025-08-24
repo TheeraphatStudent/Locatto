@@ -1,388 +1,216 @@
 import 'package:flutter/material.dart';
 
 class Lottery extends StatelessWidget {
-  const Lottery({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: ShapeDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(0.00, 0.00),
-              end: Alignment(1.00, 1.00),
-              colors: [const Color(0xFFFFE2E2), const Color(0xFFFFFADD)],
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: ShapeDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(0.30, -0.95),
+          end: Alignment(-0.3, 0.95),
+          colors: [Color(0xFFFFE2E2), Color(0xFFFFFADD)],
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: Stack(
+        clipBehavior: Clip.hardEdge,
+        children: [
+          Positioned(
+            left: -20,
+            top: -15,
+            child: Opacity(
+              opacity: 0.15,
+              child: Transform.rotate(
+                angle: -0.3,
+                child: Container(
+                  width: 80,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage("https://picsum.photos/80/40"),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+          Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 8,
             children: [
               Container(
-                height: double.infinity,
+                width: 30,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      width: 20,
-                      height: 18,
+                      width: 16,
+                      height: 14,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage("https://placehold.co/20x18"),
+                          image: NetworkImage("https://picsum.photos/16/14"),
                           fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 24,
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '80',
-                              style: TextStyle(
-                                color: const Color(
-                                  0xFF45171D,
-                                ) /* Lottocat-Black */,
-                                fontSize: 8,
-                                fontFamily: 'Kanit',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' ',
-                              style: TextStyle(
-                                color: const Color(
-                                  0xFF45171D,
-                                ) /* Lottocat-Black */,
-                                fontSize: 10,
-                                fontFamily: 'Kanit',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'บาท',
-                              style: TextStyle(
-                                color: const Color(
-                                  0xFF45171D,
-                                ) /* Lottocat-Black */,
-                                fontSize: 6,
-                                fontFamily: 'Kanit',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                width: 76,
-                height: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 4,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      decoration: ShapeDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment(0.00, 0.50),
-                          end: Alignment(1.00, 0.50),
-                          colors: [
-                            const Color(0xFFFAE12F),
-                            const Color(0xFFFF4745),
-                          ],
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(4),
-                            bottomLeft: Radius.circular(4),
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                    SizedBox(height: 1),
+                    Text.rich(
+                      TextSpan(
                         children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '4',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.25,
-                                  ),
-                                ),
-                                Text(
-                                  'One',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 4,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
+                          TextSpan(
+                            text: '80',
+                            style: TextStyle(
+                              color: Color(0xFF45171D),
+                              fontSize: 6,
+                              fontFamily: 'Kanit',
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '7',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.25,
-                                  ),
-                                ),
-                                Text(
-                                  'One',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 4,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
+                          TextSpan(
+                            text: ' ',
+                            style: TextStyle(
+                              color: Color(0xFF45171D),
+                              fontSize: 6,
+                              fontFamily: 'Kanit',
                             ),
                           ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '1',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.25,
-                                  ),
-                                ),
-                                Text(
-                                  'One',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 4,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '9',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.25,
-                                  ),
-                                ),
-                                Text(
-                                  'One',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 4,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '5',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.25,
-                                  ),
-                                ),
-                                Text(
-                                  'One',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 4,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '5',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.25,
-                                  ),
-                                ),
-                                Text(
-                                  'One',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF45171D,
-                                    ) /* Lottocat-Black */,
-                                    fontSize: 4,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
+                          TextSpan(
+                            text: 'บาท',
+                            style: TextStyle(
+                              color: Color(0xFF45171D),
+                              fontSize: 4,
+                              fontFamily: 'Kanit',
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ],
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    Container(
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                  ],
+                ),
+              ),
+              SizedBox(width: 4),
+              Container(
+                width: 6,
+                height: 6,
+                decoration: ShapeDecoration(
+                  color: Color(0xFFFFEFEF),
+                  shape: OvalBorder(
+                    side: BorderSide(width: 0.5, color: Color(0xFFFFC1C0)),
+                  ),
+                ),
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 3,
+                          vertical: 2,
+                        ),
+                        decoration: ShapeDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment(1.00, 0.00),
+                            end: Alignment(-1, 0),
+                            colors: [Color(0xFFFAE12F), Color(0xFFFF4745)],
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(3),
+                              bottomLeft: Radius.circular(3),
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildNumberColumn('4'),
+                            _buildNumberColumn('7'),
+                            _buildNumberColumn('1'),
+                            _buildNumberColumn('9'),
+                            _buildNumberColumn('5'),
+                            _buildNumberColumn('5'),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 10,
                         children: [
                           Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 2,
                             children: [
                               Text(
                                 '16 สิงหาคม 2565',
-                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: const Color(
-                                    0xFF45171D,
-                                  ) /* Lottocat-Black */,
+                                  color: Color(0xFF45171D),
                                   fontSize: 4,
                                   fontFamily: 'Kanit',
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
+                              SizedBox(height: 1),
                               Text(
                                 'เงินล้านใกล้ฉัน',
-                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: const Color(
-                                    0xFFFD5553,
-                                  ) /* Lottocat-Primary */,
-                                  fontSize: 8,
+                                  color: Color(0xFFFD5553),
+                                  fontSize: 6,
                                   fontFamily: 'Kanit',
                                   fontWeight: FontWeight.w400,
-                                  height: 0.70,
                                 ),
                               ),
                             ],
                           ),
                           Container(
-                            width: 14,
-                            height: double.infinity,
-                            decoration: BoxDecoration(color: Colors.black),
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(1),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNumberColumn(String number) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          number,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF45171D),
+            fontSize: 12,
+            fontFamily: 'Kanit',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          'One',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF45171D),
+            fontSize: 6,
+            fontFamily: 'Kanit',
+            fontWeight: FontWeight.w300,
           ),
         ),
       ],
