@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
@@ -74,14 +76,18 @@ class _AvatarState extends State<Avatar> {
         withData: true,
       );
 
+      // log(result.toString());
+
       if (result != null && result.files.isNotEmpty) {
         PlatformFile file = result.files.first;
-        
+
+        // log("File: ${file.toString()}");
+
         setState(() {
           _imagePath = file.path;
           _webImageBytes = file.bytes;
         });
-        
+
         widget.onImageChanged?.call(file.path);
       }
     } catch (e) {
@@ -159,11 +165,7 @@ class _AvatarState extends State<Avatar> {
 
   Widget _buildDefaultAvatar() {
     return _buildContainer(
-      child: Icon(
-        widget.defaultIcon,
-        size: _iconSize,
-        color: widget.iconColor,
-      ),
+      child: Icon(widget.defaultIcon, size: _iconSize, color: widget.iconColor),
     );
   }
 
@@ -175,7 +177,7 @@ class _AvatarState extends State<Avatar> {
           clipBehavior: Clip.none,
           children: [
             _buildProfileImage(),
-            
+
             if (widget.state == AvatarState.edit)
               Positioned(
                 bottom: -2,
