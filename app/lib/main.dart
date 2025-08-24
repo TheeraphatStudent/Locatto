@@ -1,3 +1,4 @@
+import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Footer.dart';
 import 'package:app/components/Input.dart';
@@ -37,6 +38,9 @@ class MyApp extends StatelessWidget {
                   key: Key("Something-key"),
                   hintText: "It working!",
                   helperText: "Hello world",
+                ),
+                Avatar(
+                  // mode: AvatarMode.view,
                 ),
               ],
             ),
