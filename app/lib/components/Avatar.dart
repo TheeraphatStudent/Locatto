@@ -10,6 +10,11 @@ class Avatar extends StatefulWidget {
   final Function(String?)? onImageChanged;
   final AvatarState state;
   final double size;
+  final Color backgroundColor;
+  final Color iconColor;
+  final Color editButtonColor;
+  final IconData defaultIcon;
+  final IconData loadingIcon;
 
   const Avatar({
     super.key,
@@ -17,6 +22,11 @@ class Avatar extends StatefulWidget {
     this.onImageChanged,
     this.state = AvatarState.edit,
     this.size = 96,
+    this.backgroundColor = const Color(0xFFAE9DA0),
+    this.iconColor = const Color(0xFF6D4C5A),
+    this.editButtonColor = const Color(0xFFFF69B4),
+    this.defaultIcon = Icons.person,
+    this.loadingIcon = Icons.cloud_upload_outlined,
   });
 
   @override
@@ -27,6 +37,11 @@ class _AvatarState extends State<Avatar> {
   String? _imagePath;
   Uint8List? _webImageBytes;
   bool _isLoading = false;
+
+  double get _radius => widget.size / 2;
+  double get _iconSize => widget.size * 0.5;
+  double get _editButtonSize => widget.size * 0.29;
+  double get _editIconSize => _editButtonSize * 0.57;
 
   @override
   void initState() {
@@ -56,7 +71,7 @@ class _AvatarState extends State<Avatar> {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
         allowMultiple: false,
-        withData: true, // Web support
+        withData: true,
       );
 
       if (result != null && result.files.isNotEmpty) {
@@ -87,31 +102,34 @@ class _AvatarState extends State<Avatar> {
     }
   }
 
-  Widget _buildProfileImage() {
-    final radius = widget.size / 2;
-
-    if (_isLoading) {
-      return Container(
-        width: widget.size,
-        height: widget.size,
-        decoration: ShapeDecoration(
-          color: const Color(0xFFAE9DA0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radius),
-          ),
+  Widget _buildContainer({required Widget child}) {
+    return Container(
+      width: widget.size,
+      height: widget.size,
+      decoration: ShapeDecoration(
+        color: widget.backgroundColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_radius),
         ),
-        child: const Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildProfileImage() {
+    if (_isLoading) {
+      return _buildContainer(
+        child: Icon(
+          widget.loadingIcon,
+          size: _iconSize,
+          color: widget.iconColor,
         ),
       );
     }
 
     if (_webImageBytes != null) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(_radius),
         child: Image.memory(
           _webImageBytes!,
           width: widget.size,
@@ -123,7 +141,7 @@ class _AvatarState extends State<Avatar> {
 
     if (_imagePath != null && _imagePath!.isNotEmpty) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(_radius),
         child: Image.file(
           File(_imagePath!),
           width: widget.size,
@@ -140,59 +158,55 @@ class _AvatarState extends State<Avatar> {
   }
 
   Widget _buildDefaultAvatar() {
-    final radius = widget.size / 2;
-    final iconSize = widget.size * 0.5;
-
-    return Container(
-      width: widget.size,
-      height: widget.size,
-      decoration: ShapeDecoration(
-        color: const Color(0xFFAE9DA0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius),
-        ),
-      ),
+    return _buildContainer(
       child: Icon(
-        Icons.person,
-        size: iconSize,
-        color: const Color(0xFF6D4C5A),
+        widget.defaultIcon,
+        size: _iconSize,
+        color: widget.iconColor,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.size,
-      height: widget.size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          _buildProfileImage(),
-          
-          if (widget.state == AvatarState.edit)
-            Positioned(
-              bottom: -2,
-              right: -2,
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: const ShapeDecoration(
-                    color: Color(0xFFFF69B4),
-                    shape: CircleBorder(),
-                  ),
-                  child: const Icon(
-                    Icons.edit,
-                    size: 16,
-                    color: Colors.white,
+    return Column(
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            _buildProfileImage(),
+            
+            if (widget.state == AvatarState.edit)
+              Positioned(
+                bottom: -2,
+                right: -2,
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    width: _editButtonSize,
+                    height: _editButtonSize,
+                    decoration: ShapeDecoration(
+                      color: widget.editButtonColor,
+                      shape: const CircleBorder(),
+                      shadows: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      size: _editIconSize,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 }
