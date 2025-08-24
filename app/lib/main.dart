@@ -50,7 +50,23 @@ class MyApp extends StatelessWidget {
                   physics:
                       NeverScrollableScrollPhysics(), // Disable GridView scrolling
                   childAspectRatio: 2.0,
-                  children: <Widget>[Lottery(), Lottery()],
+                  // Gap
+                  crossAxisSpacing: 10, // Y
+                  mainAxisSpacing: 10, // X
+                  children: <Widget>[
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                  ],
                 ),
               ],
             ),

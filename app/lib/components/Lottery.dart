@@ -1,7 +1,16 @@
 import 'package:app/utils/text_healper.dart';
 import 'package:flutter/material.dart';
 
-class Lottery extends StatelessWidget {
+class Lottery extends StatefulWidget {
+  final String lotteryNumber;
+
+  const Lottery({super.key, required this.lotteryNumber});
+
+  @override
+  State<Lottery> createState() => _LotteryState();
+}
+
+class _LotteryState extends State<Lottery> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -131,14 +140,10 @@ class Lottery extends StatelessWidget {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildNumberColumn('4'),
-                            _buildNumberColumn('7'),
-                            _buildNumberColumn('1'),
-                            _buildNumberColumn('9'),
-                            _buildNumberColumn('5'),
-                            _buildNumberColumn('5'),
-                          ],
+                          children: widget.lotteryNumber
+                              .split('')
+                              .map((digit) => _buildNumberColumn(digit))
+                              .toList(),
                         ),
                       ),
                       SizedBox(height: 2),
@@ -210,7 +215,7 @@ class Lottery extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Color(0xFF45171D),
-            fontSize: 6,
+            fontSize: 4,
             fontFamily: 'Kanit',
             fontWeight: FontWeight.w300,
           ),
