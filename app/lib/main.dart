@@ -13,23 +13,29 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      home: Scaffold(
-        appBar: const Header(),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 36),
-          child: ListView(
-            primary: false,
-            shrinkWrap: true,
-            children: const [
-              ButtonActions(
-                hasShadow: true,
-                key: Key("Continue Key"),
-                text: "ไปกันเลย",
-              ),
-            ],
-          ),
+      home: Container(
+        decoration: const BoxDecoration(
+          gradient: AppColors.softGradientPrimary,
         ),
-        bottomNavigationBar: Footer(),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: const Header(),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 36),
+            child: ListView(
+              primary: false,
+              shrinkWrap: true,
+              children: const [
+                ButtonActions(
+                  hasShadow: true,
+                  key: Key("Continue Key"),
+                  text: "ไปกันเลย",
+                ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: const Footer(),
+        ),
       ),
     );
   }

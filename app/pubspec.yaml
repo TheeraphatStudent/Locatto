@@ -65,6 +65,8 @@ flutter:
     # - assets/images/logo_primary.png
     - assets/images/
     - assets/images/footer/
+    - assets/images/footer/active/
+    - assets/images/footer/inactive/
     - assets/fonts/Kanit/
 
   # An image asset can refer to one or more resolution-specific "variants", see
