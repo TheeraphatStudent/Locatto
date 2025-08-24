@@ -1,0 +1,574 @@
+{
+	"info": {
+		"_postman_id": "locatto-api-collection",
+		"name": "Locatto API",
+		"description": "RESTful API for Locatto lottery application. This API provides endpoints for managing customers, lotteries, purchases, and rewards.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "locatto-api"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"health"
+					]
+				},
+				"description": "Check if the API is running and healthy"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"success\": true,\n  \"message\": \"API is running\",\n  \"timestamp\": \"2024-01-01T00:00:00.000Z\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Get All Customers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"customers"
+							]
+						},
+						"description": "Retrieve all customers from the database"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/customers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"1"
+							]
+						},
+						"description": "Retrieve a specific customer by their ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"telno\": \"08123456789\",\n  \"username\": \"johndoe\",\n  \"password\": \"password123\",\n  \"credit\": 100.00,\n  \"img\": \"https://example.com/avatar.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"customers"
+							]
+						},
+						"description": "Create a new customer account"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Updated\",\n  \"telno\": \"08123456789\",\n  \"credit\": 150.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/customers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"1"
+							]
+						},
+						"description": "Update an existing customer's information"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/customers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"1"
+							]
+						},
+						"description": "Delete a customer account"
+					},
+					"response": []
+				}
+			],
+			"description": "Customer management endpoints for user accounts"
+		},
+		{
+			"name": "Lotteries",
+			"item": [
+				{
+					"name": "Get All Lotteries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/lotteries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"lotteries"
+							]
+						},
+						"description": "Retrieve all lottery entries"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lottery by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/lotteries/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"lotteries",
+								"1"
+							]
+						},
+						"description": "Retrieve a specific lottery by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lottery",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lottery_number\": \"12345678901234567890\",\n  \"period\": \"January 2024\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/lotteries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"lotteries"
+							]
+						},
+						"description": "Create a new lottery entry"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Lottery",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lottery_number\": \"98765432109876543210\",\n  \"period\": \"February 2024\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/lotteries/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"lotteries",
+								"1"
+							]
+						},
+						"description": "Update an existing lottery entry"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Lottery",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/lotteries/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"lotteries",
+								"1"
+							]
+						},
+						"description": "Delete a lottery entry"
+					},
+					"response": []
+				}
+			],
+			"description": "Lottery management endpoints for lottery entries"
+		},
+		{
+			"name": "Purchases",
+			"item": [
+				{
+					"name": "Get All Purchases",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/purchases",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchases"
+							]
+						},
+						"description": "Retrieve all purchase records"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Purchase by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/purchases/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchases",
+								"1"
+							]
+						},
+						"description": "Retrieve a specific purchase by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Purchase",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cid\": 1,\n  \"lid\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchases",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchases"
+							]
+						},
+						"description": "Create a new purchase record (customer buying a lottery)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Purchase",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cid\": 2,\n  \"lid\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchases/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchases",
+								"1"
+							]
+						},
+						"description": "Update an existing purchase record"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Purchase",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/purchases/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchases",
+								"1"
+							]
+						},
+						"description": "Delete a purchase record"
+					},
+					"response": []
+				}
+			],
+			"description": "Purchase management endpoints for lottery purchases"
+		},
+		{
+			"name": "Rewards",
+			"item": [
+				{
+					"name": "Get All Rewards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/rewards",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"rewards"
+							]
+						},
+						"description": "Retrieve all reward records"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reward by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/rewards/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"rewards",
+								"1"
+							]
+						},
+						"description": "Retrieve a specific reward by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reward",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lid\": 1,\n  \"tier\": \"First Prize\",\n  \"revenue\": 1000000.00,\n  \"winner\": \"John Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/rewards",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"rewards"
+							]
+						},
+						"description": "Create a new reward record"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Reward",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tier\": \"Second Prize\",\n  \"revenue\": 500000.00,\n  \"winner\": \"Jane Smith\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/rewards/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"rewards",
+								"1"
+							]
+						},
+						"description": "Update an existing reward record"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Reward",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/rewards/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"rewards",
+								"1"
+							]
+						},
+						"description": "Delete a reward record"
+					},
+					"response": []
+				}
+			],
+			"description": "Reward management endpoints for lottery prizes"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

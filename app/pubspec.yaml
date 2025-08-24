@@ -35,6 +35,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   http: ^1.4.0
+  google_fonts: ^6.3.0
+  flutter_svg: ^2.2.0
+  file_picker: ^10.3.2
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +49,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+  file_picker: ^10.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -59,9 +64,13 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    # - assets/images/logo_primary.png
+    - assets/images/
+    - assets/images/footer/
+    - assets/images/footer/active/
+    - assets/images/footer/inactive/
+    - assets/fonts/Kanit/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -88,3 +97,51 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: Kanit
+      fonts:
+        - asset: assets/fonts/Kanit/Kanit-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Kanit/Kanit-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Kanit/Kanit-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Kanit/Kanit-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Kanit/Kanit-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Kanit/Kanit-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Kanit/Kanit-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Kanit/Kanit-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Kanit/Kanit-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Kanit/Kanit-BlackItalic.ttf
+          weight: 900
+          style: italic

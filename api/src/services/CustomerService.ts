@@ -1,54 +1,28 @@
 import { Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { Customer } from '../models/Customer';
-import bcrypt from 'bcryptjs';
 
 export class CustomerService {
-  private customerRepository: Repository<Customer>;
+  private readonly repo: Repository<Customer>;
 
   constructor() {
-    this.customerRepository = AppDataSource.getRepository(Customer);
+    this.repo = AppDataSource.getRepository(Customer);
   }
 
-  async getAllCustomers(): Promise<Customer[]> {
-    return await this.customerRepository.find({
-      relations: ['purchases']
-    });
-  }
+  getAll = () => this.repo.find();
 
-  async getCustomerById(id: number): Promise<Customer | null> {
-    return await this.customerRepository.findOne({
-      where: { cid: id },
-      relations: ['purchases']
-    });
-  }
+  getById = (id: number) => this.repo.findOneBy({ cid: id });
 
-  async createCustomer(customerData: Partial<Customer>): Promise<Customer> {
-    if (customerData.password) {
-      customerData.password = await bcrypt.hash(customerData.password, 10);
-    }
-    
-    const customer = this.customerRepository.create(customerData);
-    return await this.customerRepository.save(customer);
-  }
+  create = (data: Partial<Customer>) => this.repo.save(this.repo.create(data));
 
-  async updateCustomer(id: number, customerData: Partial<Customer>): Promise<Customer | null> {
-    if (customerData.password) {
-      customerData.password = await bcrypt.hash(customerData.password, 10);
-    }
+  update = async (id: number, data: Partial<Customer>) => {
+    await this.repo.update({ cid: id }, data);
+    return this.getById(id);
+  };
 
-    await this.customerRepository.update(id, customerData);
-    return await this.getCustomerById(id);
-  }
+  remove = async (id: number) => {
+    await this.repo.delete({ cid: id });
+  };
+}
 
-  async deleteCustomer(id: number): Promise<boolean> {
-    const result = await this.customerRepository.delete(id);
-    return result.affected !== 0;
-  }
 
-  async getCustomerByUsername(username: string): Promise<Customer | null> {
-    return await this.customerRepository.findOne({
-      where: { username }
-    });
-  }
-} 
