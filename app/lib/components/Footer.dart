@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// Note: flutter_svg is no longer used in this widget.
+// import 'package:flutter_svg/flutter_svg.dart';
 
 class Footer extends StatefulWidget {
   const Footer({super.key});
@@ -9,33 +10,70 @@ class Footer extends StatefulWidget {
 }
 
 class _FooterState extends State<Footer> {
-  static const Color _indicatorBg = Color(0xFFFFF7F7);
-  static const double _iconCircleSize = 40;
-
   int _selectedIndex = 0;
 
-  Widget _navIcon(String asset, {required bool isSelected, double size = 22}) {
-    if (!isSelected) {
-      return Opacity(
-        opacity: 0.65,
-        child: SvgPicture.asset(asset, width: size, height: size),
-      );
-    }
+  Widget _buildInactiveIcon(String iconName) {
+    return Image.asset(
+      'assets/images/footer/inactive/$iconName.png',
+      width: 24,
+      height: 24,
+    );
+  }
 
+  Widget _buildActiveIcon(String iconName) {
     return Container(
-      width: _iconCircleSize,
-      height: _iconCircleSize,
-      decoration: const BoxDecoration(
-        color: _indicatorBg,
-        shape: BoxShape.circle,
+      padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      alignment: Alignment.center,
-      child: ColorFiltered(
-        colorFilter: const ColorFilter.mode(Color(0xFFFD5553), BlendMode.srcIn),
-        child: SvgPicture.asset(asset, width: size, height: size),
+      child: Image.asset(
+        'assets/images/footer/active/$iconName.png',
+        width: 28,
+        height: 28,
       ),
     );
   }
+
+  //  Widget _buildActiveIcon(String iconName) {
+  //   return Container(
+  //     padding: const EdgeInsets.all(12),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.1),
+  //           blurRadius: 8,
+  //           offset: const Offset(0, 2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Image.asset(
+  //       'assets/images/footer/active/$iconName.png',
+  //       width: 28,
+  //       height: 28,
+  //       errorBuilder: (context, error, stackTrace) {
+  //         return Container(
+  //           width: 28,
+  //           height: 28,
+  //           decoration: BoxDecoration(
+  //             color: const Color(0xFFFD5553),
+  //             borderRadius: BorderRadius.circular(4),
+  //           ),
+  //           child: const Icon(Icons.error_outline, size: 20, color: Colors.white),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -53,43 +91,29 @@ class _FooterState extends State<Footer> {
       }),
       destinations: <Widget>[
         NavigationDestination(
-          icon: _navIcon('assets/images/footer/home.svg', isSelected: false),
-          selectedIcon: _navIcon(
-            'assets/images/footer/home.svg',
-            isSelected: true,
-          ),
+          icon: _buildInactiveIcon('logo'),
+          selectedIcon: _buildActiveIcon('logo'),
           label: 'Home',
         ),
         NavigationDestination(
-          icon: _navIcon('assets/images/footer/lottery.svg', isSelected: false),
-          selectedIcon: _navIcon(
-            'assets/images/footer/lottery.svg',
-            isSelected: true,
-          ),
+          icon: _buildInactiveIcon('lottery'),
+          selectedIcon: _buildActiveIcon('lottery'),
           label: 'Lottery',
         ),
         NavigationDestination(
-          icon: _navIcon('assets/images/footer/cart.svg', isSelected: false),
-          selectedIcon: _navIcon(
-            'assets/images/footer/cart.svg',
-            isSelected: true,
-          ),
+          icon: _buildInactiveIcon('cart'),
+          selectedIcon: _buildActiveIcon('cart'),
           label: 'Cart',
         ),
         NavigationDestination(
-          icon: _navIcon('assets/images/footer/pocket.svg', isSelected: false),
-          selectedIcon: _navIcon(
-            'assets/images/footer/pocket.svg',
-            isSelected: true,
-          ),
+          // Assuming 'pocket.png' is for the 'Wallet' label
+          icon: _buildInactiveIcon('pocket'),
+          selectedIcon: _buildActiveIcon('pocket'),
           label: 'Wallet',
         ),
         NavigationDestination(
-          icon: _navIcon('assets/images/footer/profile.svg', isSelected: false),
-          selectedIcon: _navIcon(
-            'assets/images/footer/profile.svg',
-            isSelected: true,
-          ),
+          icon: _buildInactiveIcon('profile'),
+          selectedIcon: _buildActiveIcon('profile'),
           label: 'Profile',
         ),
       ],

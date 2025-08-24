@@ -1,3 +1,23 @@
 {
-  "cmake.sourceDirectory": "/home/th33raphat/Desktop/Code/Locatto/app/linux"
+  "cmake.sourceDirectory": "/home/th33raphat/Desktop/Code/Locatto/app/linux",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#fe8887",
+    "activityBar.background": "#fe8887",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#c0fec0",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#fe8887",
+    "statusBar.background": "#fe5654",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#fe2421",
+    "statusBarItem.remoteBackground": "#fe5654",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#fe5654",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#fe565499",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#FE5654"
 }
