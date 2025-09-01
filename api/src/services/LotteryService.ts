@@ -3,43 +3,26 @@ import { AppDataSource } from '../config/database';
 import { Lottery } from '../models/Lottery';
 
 export class LotteryService {
-  private lotteryRepository: Repository<Lottery>;
+  private readonly repo: Repository<Lottery>;
 
   constructor() {
-    this.lotteryRepository = AppDataSource.getRepository(Lottery);
+    this.repo = AppDataSource.getRepository(Lottery);
   }
 
-  async getAllLotteries(): Promise<Lottery[]> {
-    return await this.lotteryRepository.find({
-      relations: ['purchases', 'rewards']
-    });
-  }
+  getAll = () => this.repo.find();
 
-  async getLotteryById(id: number): Promise<Lottery | null> {
-    return await this.lotteryRepository.findOne({
-      where: { lid: id },
-      relations: ['purchases', 'rewards']
-    });
-  }
+  getById = (id: number) => this.repo.findOneBy({ lid: id });
 
-  async createLottery(lotteryData: Partial<Lottery>): Promise<Lottery> {
-    const lottery = this.lotteryRepository.create(lotteryData);
-    return await this.lotteryRepository.save(lottery);
-  }
+  create = (data: Partial<Lottery>) => this.repo.save(this.repo.create(data));
 
-  async updateLottery(id: number, lotteryData: Partial<Lottery>): Promise<Lottery | null> {
-    await this.lotteryRepository.update(id, lotteryData);
-    return await this.getLotteryById(id);
-  }
+  update = async (id: number, data: Partial<Lottery>) => {
+    await this.repo.update({ lid: id }, data);
+    return this.getById(id);
+  };
 
-  async deleteLottery(id: number): Promise<boolean> {
-    const result = await this.lotteryRepository.delete(id);
-    return result.affected !== 0;
-  }
+  remove = async (id: number) => {
+    await this.repo.delete({ lid: id });
+  };
+}
 
-  async getLotteryByNumber(lottery_number: string): Promise<Lottery | null> {
-    return await this.lotteryRepository.findOne({
-      where: { lottery_number }
-    });
-  }
-} 
+

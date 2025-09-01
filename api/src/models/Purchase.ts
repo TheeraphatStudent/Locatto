@@ -5,25 +5,27 @@ import { Lottery } from './Lottery';
 @Entity('purchases')
 export class Purchase {
   @PrimaryGeneratedColumn()
-  pid: number;
+  pid!: number;
 
   @Column()
-  cid: number;
+  cid!: number;
 
   @Column()
-  lid: number;
+  lid!: number;
 
   @CreateDateColumn()
-  created: Date;
+  created!: Date;
 
   @UpdateDateColumn()
-  updated: Date;
+  updated!: Date;
 
   @ManyToOne(() => Customer, customer => customer.purchases, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'cid' })
-  customer: Customer;
+  customer!: Customer;
 
   @ManyToOne(() => Lottery, lottery => lottery.purchases, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'lid' })
-  lottery: Lottery;
-} 
+  lottery!: Lottery;
+}
+
+

@@ -4,27 +4,29 @@ import { Lottery } from './Lottery';
 @Entity('rewards')
 export class Reward {
   @PrimaryGeneratedColumn()
-  rid: number;
+  rid!: number;
 
   @Column()
-  lid: number;
+  lid!: number;
 
   @Column({ length: 20 })
-  tier: string;
+  tier!: string;
 
   @Column('decimal', { precision: 12, scale: 2 })
-  revenue: number;
+  revenue!: number;
 
-  @Column({ length: 100, nullable: true })
-  winner: string;
+  @Column('varchar', { length: 100, nullable: true })
+  winner!: string | null;
 
   @CreateDateColumn()
-  created: Date;
+  created!: Date;
 
   @UpdateDateColumn()
-  updated: Date;
+  updated!: Date;
 
   @ManyToOne(() => Lottery, lottery => lottery.rewards, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'lid' })
-  lottery: Lottery;
-} 
+  lottery!: Lottery;
+}
+
+
