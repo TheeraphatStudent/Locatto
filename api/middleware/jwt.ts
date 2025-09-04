@@ -6,6 +6,7 @@ const IS_SIGN = process.env.IS_SIGN === 'true';
 
 interface AuthenticatedRequest extends Request {
   decodedPayload?: any;
+  uid?: any;
 }
 
 const handleRequestDecoding = (req: AuthenticatedRequest): void => {
@@ -23,14 +24,14 @@ const handleResponseEncoding = (res: Response): void => {
 };
 
 const isContain = (content: string) => {
-  const reject = ['tojwt', '/auth/login', '/auth/register', '/auth/repass'];
+  const reject = ['tojwt', '/auth/login', '/auth/register', '/auth/repass', '/upload'];
 
   return reject.some((item) => content.includes(item));
 } 
 
 export const jwtMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-  console.log("Request Path: ", req.path)
-  console.log(isContain(req.path))
+  // console.log("Request Path: ", req.path)
+  // console.log(isContain(req.path))
   
   if (isContain(req.path)) {
     next();
@@ -47,7 +48,10 @@ export const jwtMiddleware = (req: AuthenticatedRequest, res: Response, next: Ne
     const token = authHeader.split('Bearer ')[1];
 
     const decoded = IS_SIGN ? jwt.verify(token, JWT_SECRET) : jwt.decode(token);
-    req.decodedPayload = decoded;
+    if (decoded && typeof decoded === 'object') {
+      req.decodedPayload = decoded;
+      req.uid = (decoded as any).uid;
+    }
     req.body = { data: decoded };
 
     if (req.body && req.body.data) {

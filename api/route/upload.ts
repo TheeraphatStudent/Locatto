@@ -31,6 +31,10 @@ const upload = multer({
 });
 
 router.post("/", upload.single("file"), UploadController.upload);
+
 router.get("/:filename", UploadController.getFile);
+router.get("/list", UploadController.getFilesByUid);
+
+router.delete("/:filename", UploadController.deleteFile);
 
 export { router };

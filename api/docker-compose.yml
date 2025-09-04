@@ -28,6 +28,8 @@ services:
   #     - mysql
   #   ports:
   #     - "3000:3000"
+  #   volumes:
+  #     - ./uploads:/app/uploads
   #   networks:
   #     - lotcatto
 

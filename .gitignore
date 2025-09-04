@@ -60,3 +60,5 @@ app.*.map.json
 *.cursor
 
 /api/.env
+
+/api/uploads
