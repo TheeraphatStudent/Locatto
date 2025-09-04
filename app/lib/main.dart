@@ -1,7 +1,11 @@
+import 'dart:developer';
+
+import 'package:app/Pages/user/lottery.page.dart';
 import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Footer.dart';
 import 'package:app/components/Input.dart';
+import 'package:app/components/Lottery.dart';
 import 'package:flutter/material.dart';
 import 'style/theme.dart';
 import 'components/Header.dart';
@@ -30,19 +34,29 @@ class MyApp extends StatelessWidget {
             child: ListView(
               primary: false,
               shrinkWrap: true,
-              children: const <Widget>[
+              children: <Widget>[
                 ButtonActions(
                   hasShadow: true,
-                  key: Key("Continue Key"),
+                  key: const Key("Continue Key"),
                   text: "ไปกันเลย",
+                  onPressed: () {
+                    log("pressed callback work!");
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LotteryPage(),
+                      ),
+                    );
+                  },
                 ),
-                Input(
+                const Input(
                   labelText: "Something",
                   key: Key("Something-key"),
                   hintText: "It working!",
                   helperText: "Hello world",
                 ),
-                Avatar(
+                const Avatar(
                   // mode: AvatarMode.view,
                 ),
               ],
