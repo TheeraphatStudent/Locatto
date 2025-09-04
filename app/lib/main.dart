@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
       },
-      onUnknownRoute: (context) => const NotfoundPage(),
+      // onUnknownRoute: (context) => const NotfoundPage(),
     );
   }
 }
