@@ -1,46 +1,39 @@
 services:
-  # api:
-  #   build: .
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NODE_ENV=development
-  #     - DB_HOST=mysql
-  #     - DB_PORT=3306
-  #     - DB_USERNAME=root
-  #     - DB_PASSWORD=rootpassword
-  #     - DB_DATABASE=locatto
-  #     - JWT_SECRET=your-secret-key
-  #   depends_on:
-  #     mysql:
-  #       condition: service_healthy
-
   mysql:
-    image: mysql:8.0
+    image: mysql:5.7
+    container_name: mysql-container
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: locatto
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql:Z
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+    networks:
+      - lotcatto
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: rootpassword
-    ports:
-      - "8080:80"
+  api:
+    build:
+      context: .
+      dockerfile: dockerFile
+    restart: always
     depends_on:
       - mysql
+    ports:
+      - "3000:3000"
+    networks:
+      - lotcatto
 
 volumes:
-  mysql_data: 
+  mysql_data:
+
+networks:
+  lotcatto:
+    driver: bridge
