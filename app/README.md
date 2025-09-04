@@ -37,6 +37,10 @@ Run:
  ./gradlew clean
 ```
 
+## Routing
+
+- Navigator
+
 ## To build with launch with custom icon 
 
 must be config content on `app/flutter_launcher_icons.yaml` with icon from `app/assets/images/logo_primary.png`
