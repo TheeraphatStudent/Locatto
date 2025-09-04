@@ -59,6 +59,31 @@ class MyApp extends StatelessWidget {
                 const Avatar(
                   // mode: AvatarMode.view,
                 ),
+                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap:
+                      true, // Important: This makes GridView take only needed space
+                  physics:
+                      NeverScrollableScrollPhysics(), // Disable GridView scrolling
+                  childAspectRatio: 2.0,
+                  // Gap
+                  crossAxisSpacing: 10, // Y
+                  mainAxisSpacing: 10, // X
+                  children: <Widget>[
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                  ],
+                ),
               ],
             ),
           ),
