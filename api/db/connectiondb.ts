@@ -1,5 +1,6 @@
 import mysql from "mysql";
 import util from "util";
+import "dotenv/config";
 
 export const conn = mysql.createPool({
   connectionLimit: 10,
@@ -8,7 +9,7 @@ export const conn = mysql.createPool({
   // password: "tripbooking@csmsu",
   // database: "tripbooking",
 
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,

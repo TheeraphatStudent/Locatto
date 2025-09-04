@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import morgan from "morgan";
 import { jwtMiddleware } from "./middleware/jwt";
+import "dotenv/config";
 
 export const app = express();
 

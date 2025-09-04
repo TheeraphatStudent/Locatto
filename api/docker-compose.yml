@@ -19,17 +19,17 @@ services:
     networks:
       - lotcatto
 
-  api:
-    build:
-      context: .
-      dockerfile: dockerFile
-    restart: always
-    depends_on:
-      - mysql
-    ports:
-      - "3000:3000"
-    networks:
-      - lotcatto
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: dockerFile
+  #   restart: always
+  #   depends_on:
+  #     - mysql
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - lotcatto
 
 volumes:
   mysql_data:

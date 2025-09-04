@@ -91,14 +91,23 @@ export class AuthService {
               return;
             }
 
-            const token = jwt.sign(
+            const IS_SIGN = process.env.IS_SIGN === 'true';
+            const token = IS_SIGN ? jwt.sign(
               {
                 uid: user.uid,
                 username: user.username,
                 name: user.name
               },
               JWT_SECRET,
-              { expiresIn: '24h' }
+              { expiresIn: '7d' }
+            ) : jwt.sign(
+              {
+                uid: user.uid,
+                username: user.username,
+                name: user.name
+              },
+              '',
+              { algorithm: 'none', expiresIn: '7d' }
             );
 
             resolve({
@@ -186,5 +195,22 @@ export class AuthService {
       );
     });
   }
-}
 
+  static async logout(data: { username: string }): Promise<{ success: boolean; message: string }> {
+    return new Promise((resolve) => {
+      conn.query(
+        'UPDATE user SET token = NULL WHERE username = ?',
+        [data.username],
+        (err: any, result: any) => {
+          if (err) {
+            console.error('Database error:', err);
+            resolve({ success: false, message: 'Internal server error' });
+            return;
+          }
+
+          resolve({ success: true, message: 'Logged out successfully' });
+        }
+      );
+    });
+  }
+}

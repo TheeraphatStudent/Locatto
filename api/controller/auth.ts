@@ -1,6 +1,10 @@
 import express from 'express';
 import { AuthService } from '../service/auth.service';
 
+interface AuthenticatedRequest extends express.Request {
+  decodedPayload?: any;
+}
+
 export class AuthController {
   static async register(req: express.Request, res: express.Response): Promise<void> {
     try {
@@ -81,6 +85,24 @@ export class AuthController {
       }
     } catch (error) {
       console.error('Me error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async logout(req: AuthenticatedRequest, res: express.Response): Promise<void> {
+    try {
+      const username = req.decodedPayload.username;
+      const result = await AuthService.logout({username});
+
+      if (result.success) {
+        res.json({
+          message: result.message
+        });
+      } else {
+        res.status(500).json({ error: result.message });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
