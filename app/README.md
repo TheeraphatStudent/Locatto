@@ -36,3 +36,16 @@ Run:
 ```bash
  ./gradlew clean
 ```
+
+## To build with launch with custom icon 
+
+must be config content on `app/flutter_launcher_icons.yaml` with icon from `app/assets/images/logo_primary.png`
+
+
+if images was not found, shoud be config images path like `assets/images/footer/` on  `app/pubspec.yaml`
+
+
+Then Run:
+```bash
+flutter pub run flutter_launcher_icons:main
+```

@@ -2,6 +2,7 @@ import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Footer.dart';
 import 'package:app/components/Input.dart';
+import 'package:app/components/Lottery.dart';
 import 'package:flutter/material.dart';
 import 'style/theme.dart';
 import 'components/Header.dart';
@@ -30,20 +31,45 @@ class MyApp extends StatelessWidget {
             child: ListView(
               primary: false,
               shrinkWrap: true,
-              children: const <Widget>[
-                ButtonActions(
+              children: <Widget>[
+                const ButtonActions(
                   hasShadow: true,
                   key: Key("Continue Key"),
                   text: "ไปกันเลย",
                 ),
-                Input(
+                const Input(
                   labelText: "Something",
                   key: Key("Something-key"),
                   hintText: "It working!",
                   helperText: "Hello world",
                 ),
-                Avatar(
+                const Avatar(
                   // mode: AvatarMode.view,
+                ),
+                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap:
+                      true, // Important: This makes GridView take only needed space
+                  physics:
+                      NeverScrollableScrollPhysics(), // Disable GridView scrolling
+                  childAspectRatio: 2.0,
+                  // Gap
+                  crossAxisSpacing: 10, // Y
+                  mainAxisSpacing: 10, // X
+                  children: <Widget>[
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "123456"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                    Lottery(lotteryNumber: "478233"),
+                  ],
                 ),
               ],
             ),
