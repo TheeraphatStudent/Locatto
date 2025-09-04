@@ -53,3 +53,8 @@ Then Run:
 ```bash
 flutter pub run flutter_launcher_icons:main
 ```
+
+Running with enviroment:
+```bash
+flutter run --dart-define-from-file=.env/dev.json   
+```
