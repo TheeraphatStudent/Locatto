@@ -40,6 +40,7 @@ dependencies:
   file_picker: ^10.3.2
   qr: ^3.0.2
   dart_jsonwebtoken: ^3.2.0
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
   flutter_test:

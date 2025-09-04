@@ -5,15 +5,30 @@ import '../config.dart';
 
 class Transport {
   final AppConfig config = AppConfig();
+  bool isSign;
+
+  Transport({this.isSign = false});
 
   String encodePayload(Object body) {
     final jwt = jwt_lib.JWT(body);
-    return jwt.sign(jwt_lib.SecretKey(config.getJwtSecret()));
+    if (isSign) {
+      return jwt.sign(jwt_lib.SecretKey(config.getJwtSecret()));
+    }
+
+    return jwt.toString();
   }
 
   Map<String, dynamic> decodePayload(String token) {
-    final jwt = jwt_lib.JWT.verify(token, jwt_lib.SecretKey(config.getJwtSecret()));
-    return jwt.payload as Map<String, dynamic>;
+    if (isSign) {
+      final jwt = jwt_lib.JWT.verify(
+        token,
+        jwt_lib.SecretKey(config.getJwtSecret()),
+      );
+      return jwt.payload as Map<String, dynamic>;
+    } else {
+      final jwt = jwt_lib.JWT.decode(token);
+      return jwt.payload as Map<String, dynamic>;
+    }
   }
 
   Future<Map<String, dynamic>> requestTransport(
