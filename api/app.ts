@@ -3,6 +3,10 @@ import { router as index } from "./route/index";
 import { router as trip } from "./route/trip";
 import { router as upload } from "./route/upload";
 import { router as auth } from "./route/auth";
+import { router as lottery } from "./route/lottery";
+import { router as purchase } from "./route/purchase";
+import { router as reward } from "./route/reward";
+import { router as payment } from "./route/payment";
 
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -32,3 +36,7 @@ app.use("/", index);
 app.use("/trip", trip);
 app.use("/upload", upload);
 app.use("/auth", auth);
+app.use("/lottery", lottery);
+app.use("/purchase", purchase);
+app.use("/reward", reward);
+app.use("/payment", payment);

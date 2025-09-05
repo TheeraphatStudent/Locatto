@@ -6,8 +6,7 @@ SET time_zone = "+07:00";
 
 CREATE TABLE IF NOT EXISTS lottery (
     lid INT AUTO_INCREMENT PRIMARY KEY,
-    lottery_number VARCHAR(20) NOT NULL UNIQUE,
-    period VARCHAR(50) NOT NULL,
+    lottery_number VARCHAR(6) NOT NULL UNIQUE,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -44,11 +43,15 @@ CREATE TABLE IF NOT EXISTS reward (
     lid INT NOT NULL,
     tier VARCHAR(20) NOT NULL,
     revenue DECIMAL(12, 2) NOT NULL,
-    winner VARCHAR(100) NULL,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+INSERT INTO reward (lid, tier, revenue) VALUES (null, 'Tier 1', 0, NULL);
+INSERT INTO reward (lid, tier, revenue) VALUES (null, 'Tier 2', 0, NULL);
+INSERT INTO reward (lid, tier, revenue) VALUES (null, 'Tier 3', 0, NULL);
+INSERT INTO reward (lid, tier, revenue) VALUES (null, 'Last 3 digit of Tier 1', 0, NULL);
+INSERT INTO reward (lid, tier, revenue) VALUES (null, 'Last 2 digit (Random 2 digit)', 0, NULL);
 
 CREATE TABLE IF NOT EXISTS payment (
     payid INT AUTO_INCREMENT PRIMARY KEY,
@@ -65,5 +68,6 @@ ALTER TABLE reward ADD CONSTRAINT fk_reward_lottery FOREIGN KEY (lid) REFERENCES
 ALTER TABLE payment ADD CONSTRAINT fk_payment_user FOREIGN KEY (uid) REFERENCES user(uid) ON DELETE CASCADE;
 
 ALTER TABLE user ADD COLUMN token VARCHAR(255) IF NOT EXISTS;
+-- ALTER TABLE reward DROP COLUMN winner;
 
 COMMIT; 
