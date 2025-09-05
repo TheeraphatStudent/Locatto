@@ -1,4 +1,6 @@
 import { conn } from '../db/connectiondb';
+import { Tiers } from '../type/reward';
+import { generateDerivedTiers, formatTierResult } from '../utils/tier.manager';
 
 export interface LotteryData {
   lid?: number;
@@ -71,14 +73,14 @@ export class LotteryService {
     return new Promise(async (resolve) => {
       try {
         const lotteries = followed ? await this.getPurchasedLotteries() : await this.getAll();
-        
+
         if (lotteries.length < 3) {
           resolve({ success: false, message: 'Not enough lottery entries for random selection' });
           return;
         }
 
         const lotteryNumbers = [...new Set(lotteries.map(l => l.lottery_number))];
-        
+
         if (lotteryNumbers.length < 3) {
           resolve({ success: false, message: 'Not enough unique lottery numbers for random selection' });
           return;
@@ -104,7 +106,7 @@ export class LotteryService {
         const randomDigits = Math.floor(Math.random() * 90 + 10).toString();
         const tier5 = randomDigits;
 
-        const result = {
+        const winnerData = {
           tier1: tier1,
           tier2: tier2,
           tier3: tier3,
@@ -112,11 +114,47 @@ export class LotteryService {
           tier5: tier5
         };
 
-        resolve({ success: true, winners: result });
+        const derivedTiers = generateDerivedTiers(winnerData);
+
+        winnerData.tier4 = derivedTiers.tier4;
+        winnerData.tier5 = derivedTiers.tier5;
+
+        const updatePromises = [
+          this.updateRewardTier('T1', winnerData.tier1),
+          this.updateRewardTier('T2', winnerData.tier2),
+          this.updateRewardTier('T3', winnerData.tier3),
+          this.updateRewardTier('T1L3', winnerData.tier4),
+          this.updateRewardTier('R2', winnerData.tier5)
+        ];
+
+        try {
+          await Promise.all(updatePromises);
+          resolve({ success: true, winners: formatTierResult(winnerData) });
+        } catch (updateError) {
+          console.error('Error updating reward tiers:', updateError);
+          resolve({ success: false, message: 'Failed to update reward tiers' });
+        }
       } catch (error) {
         console.error('Error selecting random winners:', error);
         resolve({ success: false, message: 'Internal server error' });
       }
+    });
+  }
+
+  static async updateRewardTier(tierName: Tiers, winnerNumber: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      conn.query(
+        'UPDATE reward SET winner = ? WHERE tier = ?',
+        [winnerNumber, tierName],
+        (err: any, result: any) => {
+          if (err) {
+            console.error('Database error updating reward tier:', err);
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
     });
   }
 
