@@ -5,6 +5,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'lottocat_secret_key';
 const IS_SIGN = process.env.IS_SIGN === 'true';
 
 const handleRequestDecoding = (req: any): void => {
+  // console.log("Request Body: ", req.body)
+
   const decoded = IS_SIGN ? jwt.verify(req.body.data, JWT_SECRET) : jwt.decode(req.body.data);
 
   // console.log("Decoded: ", decoded)
@@ -22,8 +24,9 @@ const handleResponseEncoding = (res: Response): void => {
 
 const isContain = (content: string) => {
   const reject = [
-    'tojwt', 
+    '/tojwt', 
     '/auth/login', 
+    '/auth/logout', 
     '/auth/register', 
     '/auth/repass', 
     '/upload'
@@ -40,9 +43,10 @@ export const jwtMiddleware = (req: any, res: Response, next: NextFunction): void
   // Check if file 
   
   if (isContain(req.path)) {
-    if (!req.path.includes('/upload')) {
+    if ((!req.path.includes('/upload')) && (!req.path.includes('/tojwt'))) {
       handleRequestDecoding(req);
     }
+
     handleResponseEncoding(res);
     next();
     return;

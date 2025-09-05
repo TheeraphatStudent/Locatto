@@ -1,10 +1,6 @@
 import express from 'express';
 import { AuthService } from '../service/auth.service';
 
-interface AuthenticatedRequest extends express.Request {
-  decodedPayload?: any;
-}
-
 export class AuthController {
   static async register(req: express.Request, res: express.Response): Promise<void> {
     try {
@@ -89,9 +85,10 @@ export class AuthController {
     }
   }
 
-  static async logout(req: AuthenticatedRequest, res: express.Response): Promise<void> {
+  static async logout(req: express.Request, res: express.Response): Promise<void> {
     try {
-      const username = req.decodedPayload.username;
+      const { username } = req.body;
+
       const result = await AuthService.logout({username});
 
       if (result.success) {
