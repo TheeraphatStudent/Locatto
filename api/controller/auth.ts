@@ -1,5 +1,6 @@
 import express from 'express';
 import { AuthService } from '../service/auth.service';
+import * as jwt from 'jsonwebtoken';
 
 export class AuthController {
   static async register(req: express.Request, res: express.Response): Promise<void> {
@@ -46,7 +47,6 @@ export class AuthController {
   static async resetPassword(req: express.Request, res: express.Response): Promise<void> {
     try {
       const { username, password, repeatPassword } = req.body;
-
       if (password !== repeatPassword) {
         res.status(400).json({ error: 'Passwords do not match' });
         return;
@@ -87,9 +87,14 @@ export class AuthController {
 
   static async logout(req: express.Request, res: express.Response): Promise<void> {
     try {
-      const { username } = req.body;
+      // console.log("Logout Request Body: ", req.body)
 
-      const result = await AuthService.logout({username});
+      const { token } = req.body;
+
+      const decoded = jwt.decode(token);
+      const { uid } = decoded as any;
+
+      const result = await AuthService.logout({ uid, token });
 
       if (result.success) {
         res.json({

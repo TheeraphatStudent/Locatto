@@ -7,10 +7,9 @@ const IS_SIGN = process.env.IS_SIGN === 'true';
 const handleRequestDecoding = (req: any): void => {
   // console.log("Request Body: ", req.body)
 
-  const decoded = IS_SIGN ? jwt.verify(req.body.data, JWT_SECRET) : jwt.decode(req.body.data);
+  let decoded = jwt.decode(req.body.data);
 
   // console.log("Decoded: ", decoded)
-
   req.body = decoded;
 };
 
@@ -47,7 +46,10 @@ export const jwtMiddleware = (req: any, res: Response, next: NextFunction): void
       handleRequestDecoding(req);
     }
 
-    handleResponseEncoding(res);
+    if (!req.path.includes('/tojwt')) {
+      handleResponseEncoding(res);
+    }
+
     next();
     return;
   }

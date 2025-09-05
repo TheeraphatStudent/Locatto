@@ -102,18 +102,32 @@ export class AuthService {
               { algorithm: 'none', expiresIn: '7d' }
             );
 
-            resolve({
-              success: true,
-              message: 'Login successful',
-              token,
-              user: {
-                uid: user.uid,
-                name: user.name,
-                telno: user.telno,
-                email: user.email,
-                credit: user.credit
+            // console.log('Updating token for uid:', user.uid);
+            conn.query(
+              'UPDATE user SET token = ? WHERE uid = ?',
+              [token, user.uid],
+              (updateErr: any) => {
+                if (updateErr) {
+                  console.error('Database error:', updateErr);
+                  resolve({ success: false, message: 'Internal server error' });
+                  return;
+                }
+                console.log('Token updated successfully');
+
+                resolve({
+                  success: true,
+                  message: 'Login successful',
+                  token,
+                  user: {
+                    uid: user.uid,
+                    name: user.name,
+                    telno: user.telno,
+                    email: user.email,
+                    credit: user.credit
+                  }
+                });
               }
-            });
+            );
           } catch (error) {
             console.error('Login error:', error);
             resolve({ success: false, message: 'Internal server error' });
@@ -124,6 +138,8 @@ export class AuthService {
   }
 
   static async resetPassword(data: LoginRequest): Promise<{ success: boolean; message: string }> {
+    // console.log("Reset Password Data: ", data)
+
     return new Promise((resolve) => {
       conn.query(
         'SELECT uid FROM user WHERE username = ?',
@@ -188,15 +204,24 @@ export class AuthService {
     });
   }
 
-  static async logout(data: { username: string }): Promise<{ success: boolean; message: string }> {
+  static async logout(data: { uid: number, token: string }): Promise<{ success: boolean; message: string }> {
+    // console.log("Logout Data: ", data)
+
     return new Promise((resolve) => {
       conn.query(
-        'UPDATE user SET token = NULL WHERE username = ?',
-        [data.username],
+        'UPDATE user SET token = NULL WHERE uid = ? AND token = ?',
+        [data.uid, data.token],
         (err: any, result: any) => {
           if (err) {
             console.error('Database error:', err);
             resolve({ success: false, message: 'Internal server error' });
+            return;
+          }
+          // console.log('Logout query result:', result);
+          // console.log('Rows affected:', result.affectedRows);
+
+          if (result.affectedRows === 0) {
+            resolve({ success: false, message: 'User not found' });
             return;
           }
 
