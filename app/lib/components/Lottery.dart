@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 class Lottery extends StatefulWidget {
   final String lotteryNumber;
   final bool isSelected;
+
+  final String qrData;
   final Function(String)? onTap;
   final Function(String)? onLongPress;
 
@@ -15,6 +17,7 @@ class Lottery extends StatefulWidget {
     this.isSelected = false,
     this.onTap,
     this.onLongPress,
+    this.qrData = "Hello world",
   });
 
   @override
@@ -27,9 +30,19 @@ class _LotteryState extends State<Lottery> {
     return GestureDetector(
       onTap: () => widget.onTap?.call(widget.lotteryNumber),
       onLongPress: () {
-        widget.onLongPress?.call(widget.lotteryNumber);
-        _showQrPopup(context);
+        try {
+          widget.onLongPress?.call(widget.lotteryNumber);
+          _showPopup(context);
+        } catch (e) {
+          debugPrint('Error in long press: $e');
+        }
       },
+      // onLongPressDown: (details) {
+      //   _showPopup(context);
+      // },
+      // onTertiaryLongPress: () {
+      //   _showPopup(context);
+      // },
       child: Container(
         // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: ShapeDecoration(
@@ -53,6 +66,25 @@ class _LotteryState extends State<Lottery> {
           child: Stack(
             clipBehavior: Clip.hardEdge,
             children: [
+              Positioned(
+                top: 4,
+                left: 4,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFFFEFEF),
+                    shape: OvalBorder(
+                      side: BorderSide(
+                        width: 1.5,
+                        color: widget.isSelected
+                            ? const Color(0xFFFF4745)
+                            : const Color(0xFFFFC1C0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -82,19 +114,12 @@ class _LotteryState extends State<Lottery> {
                                 text: '80',
                                 style: TextStyle(
                                   color: Color(0xFF45171D),
-                                  fontSize: 6,
+                                  fontSize: 8,
                                   fontFamily: 'Kanit',
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              TextSpan(
-                                text: ' ',
-                                style: TextStyle(
-                                  color: Color(0xFF45171D),
-                                  fontSize: 6,
-                                  fontFamily: 'Kanit',
-                                ),
-                              ),
+                              WidgetSpan(child: SizedBox(width: 4)),
                               TextSpan(
                                 text: 'บาท',
                                 style: TextStyle(
@@ -111,7 +136,7 @@ class _LotteryState extends State<Lottery> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 4),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -166,7 +191,7 @@ class _LotteryState extends State<Lottery> {
                                   ),
                                 ],
                               ),
-                              QrWidget(data: "Hello world", size: 24),
+                              QrWidget(data: widget.qrData, size: 24),
                             ],
                           ),
                         ],
@@ -202,7 +227,7 @@ class _LotteryState extends State<Lottery> {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Color(0xFF45171D),
-            fontSize: 4,
+            fontSize: 6,
             fontFamily: 'Kanit',
             fontWeight: FontWeight.w300,
           ),
@@ -211,79 +236,98 @@ class _LotteryState extends State<Lottery> {
     );
   }
 
-  void _showQrPopup(BuildContext context) {
+  void _showPopup(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFFFE2E2), Color(0xFFFFFADD)],
+      barrierDismissible: true,
+      useSafeArea: true,
+      builder: (BuildContext context) => _LotteryDialog(
+        lotteryNumber: widget.lotteryNumber,
+        qrData: widget.qrData,
+      ),
+    );
+  }
+}
+
+class _LotteryDialog extends StatelessWidget {
+  final String lotteryNumber;
+  final String qrData;
+
+  const _LotteryDialog({required this.lotteryNumber, required this.qrData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 320),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFE2E2), Color(0xFFFFFADD)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'QR Code',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF45171D),
+                fontFamily: 'Kanit',
+              ),
             ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'QR Code',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF45171D),
-                  fontFamily: 'Kanit',
-                ),
+            const SizedBox(height: 20),
+            // Cache QR widget to avoid regeneration
+            RepaintBoundary(child: QrWidget(data: qrData)),
+            const SizedBox(height: 20),
+            Text(
+              'หมายเลข: $lotteryNumber',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF45171D),
+                fontFamily: 'Kanit',
               ),
-              const SizedBox(height: 20),
-              QrWidget(data: "Hello world"),
-              const SizedBox(height: 20),
-              Text(
-                'หมายเลข: ${widget.lotteryNumber}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF45171D),
-                  fontFamily: 'Kanit',
-                ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'ราคา: 80 บาท',
+              style: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF666666),
+                fontFamily: 'Kanit',
               ),
-              const SizedBox(height: 8),
-              Text(
-                'ราคา: 80 บาท',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: const Color(0xFF666666),
-                  fontFamily: 'Kanit',
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF4745),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF4745),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'ปิด',
-                    style: TextStyle(
-                      fontFamily: 'Kanit',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                ),
+                child: const Text(
+                  'ปิด',
+                  style: TextStyle(
+                    fontFamily: 'Kanit',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

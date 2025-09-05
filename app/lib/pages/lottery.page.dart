@@ -1,3 +1,4 @@
+import 'package:app/components/Input.dart';
 import 'package:app/components/MainLayout.dart';
 import 'package:flutter/material.dart';
 
@@ -6,6 +7,8 @@ class LotteryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(body: const Center(child: Text("Lottery Page")));
+    return MainLayout(
+      body: Column(children: [Input(labelText: "Hello world")]),
+    );
   }
 }

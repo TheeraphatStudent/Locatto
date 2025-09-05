@@ -19,8 +19,9 @@ class _FooterState extends State<Footer> {
   }
 
   void _updateSelectedIndexFromRoute() {
-    final String currentRoute = ModalRoute.of(context)?.settings.name ?? '/home';
-    
+    final String currentRoute =
+        ModalRoute.of(context)?.settings.name ?? '/home';
+
     switch (currentRoute) {
       case '/home':
         _selectedIndex = 0;
@@ -40,7 +41,7 @@ class _FooterState extends State<Footer> {
       default:
         _selectedIndex = 0;
     }
-    
+
     if (mounted) {
       setState(() {});
     }
@@ -48,7 +49,7 @@ class _FooterState extends State<Footer> {
 
   void _onDestinationSelected(int index) {
     if (_selectedIndex == index) return;
-    
+
     String routeName;
     switch (index) {
       case 0:
@@ -69,11 +70,11 @@ class _FooterState extends State<Footer> {
       default:
         routeName = '/home';
     }
-    
+
     setState(() {
       _selectedIndex = index;
     });
-    
+
     Navigator.pushNamed(context, routeName);
   }
 
@@ -88,7 +89,7 @@ class _FooterState extends State<Footer> {
   Widget _buildActiveIcon(String iconName) {
     return Container(
       padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [

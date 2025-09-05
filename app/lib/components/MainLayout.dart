@@ -18,13 +18,14 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: AppColors.softGradientPrimary,
-      ),
+      decoration: const BoxDecoration(gradient: AppColors.softGradientPrimary),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: showHeader ? const Header() : null,
-        body: body,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: body,
+        ),
         bottomNavigationBar: showFooter ? const Footer() : null,
       ),
     );
