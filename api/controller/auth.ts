@@ -67,9 +67,13 @@ export class AuthController {
 
   static async me(req: Request, res: Response): Promise<void> {
     try {
-      const { username } = req.body;
+      if (!req.user) {
+        res.status(401).json({ error: 'User not authenticated' });
+        return;
+      }
 
-      const result = await AuthService.me({ username });
+      const user = req.user as any;
+      const result = await AuthService.me({ uid: user.uid });
 
       if (result.success) {
         res.json({

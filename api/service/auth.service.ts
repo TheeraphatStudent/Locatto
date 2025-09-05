@@ -182,11 +182,11 @@ export class AuthService {
     });
   }
 
-  static async me(data: { username: string }): Promise<{ success: boolean; message: string; user?: any }> {
+  static async me(data: { uid: number }): Promise<{ success: boolean; message: string; user?: any }> {
     return new Promise((resolve) => {
       conn.query(
-        'SELECT uid, name, telno, email, password, credit FROM user WHERE username = ?',
-        [data.username],
+        'SELECT name, telno, email, credit, role FROM user WHERE uid = ?',
+        [data.uid],
         (err: any, result: any[]) => {
           if (err) {
             console.error('Database error:', err);

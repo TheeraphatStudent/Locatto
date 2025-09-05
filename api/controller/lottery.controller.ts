@@ -5,6 +5,9 @@ import { isRoleExst } from '../utils/auth.helper';
 export class LotteryController {
   static async create(req: Request, res: Response): Promise<void> {
     try {
+      // console.log("Request Body: ", req.body)
+      // console.log("Request User: ", req.user)
+
       const { n } = req.body;
 
       if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
