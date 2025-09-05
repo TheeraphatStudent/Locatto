@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { AuthService } from '../service/auth.service';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lottocat_secret_key';
 const IS_SIGN = process.env.IS_SIGN === 'true';
@@ -41,7 +42,7 @@ const isContain = (content: string) => {
   return reject.some((item) => content.includes(item));
 } 
 
-export const jwtMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   // console.log("Request Body: ", req.body)
   // console.log("Request Data: ", req.data)
   // console.log("File: ", req)
@@ -73,11 +74,24 @@ export const jwtMiddleware = (req: Request, res: Response, next: NextFunction): 
 
     console.log("Token decoded: ", tokenDecoded)
 
-    if (tokenDecoded) {
-      req.user = tokenDecoded;
-    }
+    if (tokenDecoded && typeof tokenDecoded === 'object' && 'uid' in tokenDecoded) {
 
-    // console.log("Update request: ", req)
+      const userCheck = await AuthService.validateUserToken({
+        uid: tokenDecoded.uid as number,
+        token: token
+      });
+
+      if (!userCheck.success) {
+        console.log('Token validation failed: ', userCheck.message);
+        res.status(401).json({ error: userCheck.message });
+        return;
+      }
+
+      req.user = {
+        ...tokenDecoded,
+        ...userCheck.user
+      };
+    }
 
     handleRequestDecoding(req);
     handleResponseEncoding(res);

@@ -205,6 +205,33 @@ export class AuthService {
     });
   }
 
+  static async validateUserToken(data: { uid: number; token: string }): Promise<{ success: boolean; message: string; user?: any }> {
+    return new Promise((resolve) => {
+      conn.query(
+        'SELECT uid, name, telno, email, credit, role FROM user WHERE uid = ? AND token = ?',
+        [data.uid, data.token],
+        (err: any, result: any[]) => {
+          if (err) {
+            console.error('Database error:', err);
+            resolve({ success: false, message: 'Internal server error' });
+            return;
+          }
+
+          if (result.length === 0) {
+            resolve({ success: false, message: 'User not found or token mismatch' });
+            return;
+          }
+
+          resolve({
+            success: true,
+            message: 'User and token validated',
+            user: result[0]
+          });
+        }
+      );
+    });
+  }
+
   static async logout(data: { uid: number, token: string }): Promise<{ success: boolean; message: string }> {
     // console.log("Logout Data: ", data)
 
