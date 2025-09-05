@@ -1,3 +1,4 @@
+import 'package:app/components/MainLayout.dart';
 import 'package:flutter/material.dart';
 
 class LotteryPage extends StatelessWidget {
@@ -5,10 +6,6 @@ class LotteryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Lottery Page"),
-      ),
-    );
+    return MainLayout(body: const Center(child: Text("Lottery Page")));
   }
 }

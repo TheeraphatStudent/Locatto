@@ -12,6 +12,71 @@ class Footer extends StatefulWidget {
 class _FooterState extends State<Footer> {
   int _selectedIndex = 0;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateSelectedIndexFromRoute();
+  }
+
+  void _updateSelectedIndexFromRoute() {
+    final String currentRoute = ModalRoute.of(context)?.settings.name ?? '/home';
+    
+    switch (currentRoute) {
+      case '/home':
+        _selectedIndex = 0;
+        break;
+      case '/lottery':
+        _selectedIndex = 1;
+        break;
+      case '/cart':
+        _selectedIndex = 2;
+        break;
+      case '/purchase':
+        _selectedIndex = 3;
+        break;
+      case '/profile':
+        _selectedIndex = 4;
+        break;
+      default:
+        _selectedIndex = 0;
+    }
+    
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _onDestinationSelected(int index) {
+    if (_selectedIndex == index) return;
+    
+    String routeName;
+    switch (index) {
+      case 0:
+        routeName = '/home';
+        break;
+      case 1:
+        routeName = '/lottery';
+        break;
+      case 2:
+        routeName = '/cart';
+        break;
+      case 3:
+        routeName = '/purchase';
+        break;
+      case 4:
+        routeName = '/profile';
+        break;
+      default:
+        routeName = '/home';
+    }
+    
+    setState(() {
+      _selectedIndex = index;
+    });
+    
+    Navigator.pushNamed(context, routeName);
+  }
+
   Widget _buildInactiveIcon(String iconName) {
     return Image.asset(
       'assets/images/footer/inactive/$iconName.png',
@@ -86,9 +151,7 @@ class _FooterState extends State<Footer> {
       labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
       indicatorColor: Colors.transparent,
       selectedIndex: _selectedIndex,
-      onDestinationSelected: (int index) => setState(() {
-        _selectedIndex = index;
-      }),
+      onDestinationSelected: _onDestinationSelected,
       destinations: <Widget>[
         NavigationDestination(
           icon: _buildInactiveIcon('logo'),

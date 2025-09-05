@@ -1,6 +1,7 @@
 // import 'dart:developer';
 
 import 'package:app/pages/cart.page.dart';
+import 'package:app/pages/debug.page.dart';
 import 'package:app/pages/home.page.dart';
 import 'package:app/pages/login.page.dart';
 import 'package:app/pages/lottery.page.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/purchase': (context) => const PurchasePage(),
         '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
+        '/debug': (context) => const DebugPage(),
       },
       // onUnknownRoute: (context) => const NotfoundPage(),
     );

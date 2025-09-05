@@ -35,32 +35,41 @@ class HomePage extends StatelessWidget {
               helperText: "Hello world",
             ),
             const Avatar(
-                // mode: AvatarMode.view,
-                ),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap:
-                  true, // Important: This makes GridView take only needed space
-              physics:
-                  const NeverScrollableScrollPhysics(), // Disable GridView scrolling
-              childAspectRatio: 2.0,
-              // Gap
-              crossAxisSpacing: 10, // Y
-              mainAxisSpacing: 10, // X
-              children: <Widget>[
-                Lottery(lotteryNumber: "123456"),
-                Lottery(lotteryNumber: "123456"),
-                Lottery(lotteryNumber: "123456"),
-                Lottery(lotteryNumber: "123456"),
-                Lottery(lotteryNumber: "478233"),
-                Lottery(lotteryNumber: "478233"),
-                Lottery(lotteryNumber: "478233"),
-                Lottery(lotteryNumber: "478233"),
-                Lottery(lotteryNumber: "478233"),
-                Lottery(lotteryNumber: "478233"),
-                Lottery(lotteryNumber: "478233"),
-                Lottery(lotteryNumber: "478233"),
-              ],
+              // mode: AvatarMode.view,
+            ),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap:
+                    true, // Important: This makes GridView take only needed space
+                physics:
+                    const NeverScrollableScrollPhysics(), // Disable GridView scrolling
+                childAspectRatio: 2.0,
+                // Gap
+                crossAxisSpacing: 10, // Y
+                mainAxisSpacing: 10, // X
+                children: <Lottery>[
+                  Lottery(
+                    lotteryNumber: "123456",
+                    isSelected: true,
+                    onTap: (lotteryNumber) {
+                      log("pressed callback work!");
+                      log(lotteryNumber);
+                    },
+                  ),
+                  // Lottery(lotteryNumber: "123456"),
+                  // Lottery(lotteryNumber: "123456"),
+                  // Lottery(lotteryNumber: "123456"),
+                  // Lottery(lotteryNumber: "478233"),
+                  // Lottery(lotteryNumber: "478233"),
+                  // Lottery(lotteryNumber: "478233"),
+                  // Lottery(lotteryNumber: "478233"),
+                  // Lottery(lotteryNumber: "478233"),
+                  // Lottery(lotteryNumber: "478233"),
+                  // Lottery(lotteryNumber: "478233"),
+                  // Lottery(lotteryNumber: "478233"),
+                ],
+              ),
             ),
           ],
         ),

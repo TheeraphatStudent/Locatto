@@ -1,10 +1,21 @@
+import 'package:app/style/theme.dart';
+import 'package:app/utils/qr_helper.dart';
 import 'package:app/utils/text_healper.dart';
 import 'package:flutter/material.dart';
 
 class Lottery extends StatefulWidget {
   final String lotteryNumber;
+  final bool isSelected;
+  final Function(String)? onTap;
+  final Function(String)? onLongPress;
 
-  const Lottery({super.key, required this.lotteryNumber});
+  const Lottery({
+    super.key,
+    required this.lotteryNumber,
+    this.isSelected = false,
+    this.onTap,
+    this.onLongPress,
+  });
 
   @override
   State<Lottery> createState() => _LotteryState();
@@ -13,148 +24,79 @@ class Lottery extends StatefulWidget {
 class _LotteryState extends State<Lottery> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: ShapeDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(0.30, -0.95),
-          end: Alignment(-0.3, 0.95),
-          colors: [Color(0xFFFFE2E2), Color(0xFFFFFADD)],
+    return GestureDetector(
+      onTap: () => widget.onTap?.call(widget.lotteryNumber),
+      onLongPress: () {
+        widget.onLongPress?.call(widget.lotteryNumber);
+        _showQrPopup(context);
+      },
+      child: Container(
+        // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: ShapeDecoration(
+          gradient: AppColors.softGradientPrimary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Stack(
-        clipBehavior: Clip.hardEdge,
-        children: [
-          Positioned(
-            left: -20,
-            top: -15,
-            child: Opacity(
-              opacity: 0.15,
-              child: Transform.rotate(
-                angle: -0.3,
-                child: Container(
-                  width: 80,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage("https://picsum.photos/80/40"),
-                      fit: BoxFit.cover,
-                    ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: widget.isSelected
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFF4745), width: 2),
+                )
+              : BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color.fromARGB(0, 255, 255, 255),
+                    width: 2,
                   ),
                 ),
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Stack(
+            clipBehavior: Clip.hardEdge,
             children: [
-              Container(
-                width: 30,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage("https://picsum.photos/16/14"),
-                          fit: BoxFit.contain,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 30,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                "assets/images/logo_primary.png",
+                              ),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 1),
-                    Text.rich(
-                      TextSpan(
-                        children: [
+                        SizedBox(height: 1),
+                        Text.rich(
                           TextSpan(
-                            text: '80',
-                            style: TextStyle(
-                              color: Color(0xFF45171D),
-                              fontSize: 6,
-                              fontFamily: 'Kanit',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' ',
-                            style: TextStyle(
-                              color: Color(0xFF45171D),
-                              fontSize: 6,
-                              fontFamily: 'Kanit',
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'บาท',
-                            style: TextStyle(
-                              color: Color(0xFF45171D),
-                              fontSize: 8,
-                              fontFamily: 'Kanit',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 4),
-              Container(
-                width: 6,
-                height: 6,
-                decoration: ShapeDecoration(
-                  color: Color(0xFFFFEFEF),
-                  shape: OvalBorder(
-                    side: BorderSide(width: 0.5, color: Color(0xFFFFC1C0)),
-                  ),
-                ),
-              ),
-              SizedBox(width: 4),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 3,
-                          vertical: 2,
-                        ),
-                        decoration: ShapeDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment(1.00, 0.00),
-                            end: Alignment(-1, 0),
-                            colors: [Color(0xFFFAE12F), Color(0xFFFF4745)],
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(3),
-                              bottomLeft: Radius.circular(3),
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: widget.lotteryNumber
-                              .split('')
-                              .map((digit) => _buildNumberColumn(digit))
-                              .toList(),
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '16 สิงหาคม 2565',
+                              TextSpan(
+                                text: '80',
+                                style: TextStyle(
+                                  color: Color(0xFF45171D),
+                                  fontSize: 6,
+                                  fontFamily: 'Kanit',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' ',
+                                style: TextStyle(
+                                  color: Color(0xFF45171D),
+                                  fontSize: 6,
+                                  fontFamily: 'Kanit',
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'บาท',
                                 style: TextStyle(
                                   color: Color(0xFF45171D),
                                   fontSize: 8,
@@ -162,35 +104,80 @@ class _LotteryState extends State<Lottery> {
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              SizedBox(height: 1),
-                              Text(
-                                'เงินล้านใกล้ฉัน',
-                                style: TextStyle(
-                                  color: Color(0xFFFD5553),
-                                  fontSize: 12,
-                                  fontFamily: 'Kanit',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
                             ],
                           ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(1),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 3,
+                              vertical: 2,
                             ),
+                            decoration: ShapeDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerRight,
+                                end: Alignment.centerLeft,
+                                colors: [
+                                  AppColors.secondaryLight,
+                                  AppColors.primaryLight,
+                                ],
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(3),
+                                  bottomLeft: Radius.circular(3),
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: widget.lotteryNumber
+                                  .split('')
+                                  .map((digit) => _buildNumberColumn(digit))
+                                  .toList(),
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 1),
+                                  Text(
+                                    'เงินล้านใกล้ฉัน',
+                                    style: TextStyle(
+                                      color: Color(0xFFFD5553),
+                                      fontSize: 12,
+                                      fontFamily: 'Kanit',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              QrWidget(data: "Hello world", size: 24),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -221,6 +208,84 @@ class _LotteryState extends State<Lottery> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showQrPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFFFE2E2), Color(0xFFFFFADD)],
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'QR Code',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF45171D),
+                  fontFamily: 'Kanit',
+                ),
+              ),
+              const SizedBox(height: 20),
+              QrWidget(data: "Hello world"),
+              const SizedBox(height: 20),
+              Text(
+                'หมายเลข: ${widget.lotteryNumber}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF45171D),
+                  fontFamily: 'Kanit',
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'ราคา: 80 บาท',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: const Color(0xFF666666),
+                  fontFamily: 'Kanit',
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF4745),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'ปิด',
+                    style: TextStyle(
+                      fontFamily: 'Kanit',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
