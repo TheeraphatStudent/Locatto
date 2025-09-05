@@ -19,10 +19,10 @@ export interface RegisterRequest {
   telno: string;
   cardId: string;
   email: string;
-  img: string;
+  img?: string;
   username: string;
   password: string;
-  credit: string;
+  credit: number;
 }
 
 export interface RegisterResponse {

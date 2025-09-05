@@ -1,20 +1,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { conn } from '../db/connectiondb';
+import { LoginRequest, RegisterRequest } from '../type/auth';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lottocat_secret_key';
 
 export class AuthService {
-  static async register(userData: {
-    fullname: string;
-    telno: string;
-    cardId: string;
-    email: string;
-    img: string;
-    username: string;
-    password: string;
-    credit?: number;
-  }): Promise<{ success: boolean; message: string; userId?: number }> {
+  static async register(userData: RegisterRequest): Promise<{ success: boolean; message: string; userId?: number }> {
     return new Promise((resolve) => {
       conn.query(
         'SELECT uid FROM user WHERE username = ? OR email = ?',
@@ -60,7 +52,7 @@ export class AuthService {
     });
   }
 
-  static async login(credentials: { username: string; password: string }): Promise<{
+  static async login(credentials: LoginRequest): Promise<{
     success: boolean;
     message: string;
     token?: string;
@@ -68,7 +60,7 @@ export class AuthService {
   }> {
     return new Promise((resolve) => {
       conn.query(
-        'SELECT uid, name, telno, email, password, credit FROM user WHERE username = ?',
+        'SELECT uid, name, telno, email, password, credit, role FROM user WHERE username = ?',
         [credentials.username],
         async (err: any, result: any[]) => {
           if (err) {
@@ -95,7 +87,7 @@ export class AuthService {
             const token = IS_SIGN ? jwt.sign(
               {
                 uid: user.uid,
-                username: user.username,
+                role: user.role,
                 name: user.name
               },
               JWT_SECRET,
@@ -103,25 +95,40 @@ export class AuthService {
             ) : jwt.sign(
               {
                 uid: user.uid,
-                username: user.username,
+                role: user.role,
                 name: user.name
               },
               '',
               { algorithm: 'none', expiresIn: '7d' }
             );
 
-            resolve({
-              success: true,
-              message: 'Login successful',
-              token,
-              user: {
-                uid: user.uid,
-                name: user.name,
-                telno: user.telno,
-                email: user.email,
-                credit: user.credit
+            // console.log('Updating token for uid:', user.uid);
+            conn.query(
+              'UPDATE user SET token = ? WHERE uid = ?',
+              [token, user.uid],
+              (updateErr: any) => {
+                if (updateErr) {
+                  console.error('Database error:', updateErr);
+                  resolve({ success: false, message: 'Internal server error' });
+                  return;
+                }
+                console.log('Token updated successfully');
+
+                resolve({
+                  success: true,
+                  message: 'Login successful',
+                  token,
+                  user: {
+                    uid: user.uid,
+                    name: user.name,
+                    telno: user.telno,
+                    email: user.email,
+                    credit: user.credit,
+                    role: user.role
+                  }
+                });
               }
-            });
+            );
           } catch (error) {
             console.error('Login error:', error);
             resolve({ success: false, message: 'Internal server error' });
@@ -131,7 +138,9 @@ export class AuthService {
     });
   }
 
-  static async resetPassword(data: { username: string; password: string }): Promise<{ success: boolean; message: string }> {
+  static async resetPassword(data: LoginRequest): Promise<{ success: boolean; message: string }> {
+    // console.log("Reset Password Data: ", data)
+
     return new Promise((resolve) => {
       conn.query(
         'SELECT uid FROM user WHERE username = ?',
@@ -173,11 +182,11 @@ export class AuthService {
     });
   }
 
-  static async me(data: { username: string }): Promise<{ success: boolean; message: string; user?: any }> {
+  static async me(data: { uid: number }): Promise<{ success: boolean; message: string; user?: any }> {
     return new Promise((resolve) => {
       conn.query(
-        'SELECT uid, name, telno, email, password, credit FROM user WHERE username = ?',
-        [data.username],
+        'SELECT name, telno, email, credit, role FROM user WHERE uid = ?',
+        [data.uid],
         (err: any, result: any[]) => {
           if (err) {
             console.error('Database error:', err);
@@ -196,15 +205,51 @@ export class AuthService {
     });
   }
 
-  static async logout(data: { username: string }): Promise<{ success: boolean; message: string }> {
+  static async validateUserToken(data: { uid: number; token: string }): Promise<{ success: boolean; message: string; user?: any }> {
     return new Promise((resolve) => {
       conn.query(
-        'UPDATE user SET token = NULL WHERE username = ?',
-        [data.username],
+        'SELECT uid, name, telno, email, credit, role FROM user WHERE uid = ? AND token = ?',
+        [data.uid, data.token],
+        (err: any, result: any[]) => {
+          if (err) {
+            console.error('Database error:', err);
+            resolve({ success: false, message: 'Internal server error' });
+            return;
+          }
+
+          if (result.length === 0) {
+            resolve({ success: false, message: 'User not found or token mismatch' });
+            return;
+          }
+
+          resolve({
+            success: true,
+            message: 'User and token validated',
+            user: result[0]
+          });
+        }
+      );
+    });
+  }
+
+  static async logout(data: { uid: number, token: string }): Promise<{ success: boolean; message: string }> {
+    // console.log("Logout Data: ", data)
+
+    return new Promise((resolve) => {
+      conn.query(
+        'UPDATE user SET token = "" WHERE uid = ? AND token = ?',
+        [data.uid, data.token],
         (err: any, result: any) => {
           if (err) {
             console.error('Database error:', err);
             resolve({ success: false, message: 'Internal server error' });
+            return;
+          }
+          // console.log('Logout query result:', result);
+          // console.log('Rows affected:', result.affectedRows);
+
+          if (result.affectedRows === 0) {
+            resolve({ success: false, message: 'User not found' });
             return;
           }
 

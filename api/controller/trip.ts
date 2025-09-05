@@ -1,8 +1,8 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { TripService } from '../service/trip.service';
 
 export class TripController {
-  static async getAll(req: express.Request, res: express.Response): Promise<void> {
+  static async getAll(req: Request, res: Response): Promise<void> {
     try {
       if (req.query.id) {
         const id = +req.query.id;
@@ -18,7 +18,7 @@ export class TripController {
     }
   }
 
-  static async getById(req: express.Request, res: express.Response): Promise<void> {
+  static async getById(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const trips = await TripService.getById(id);
@@ -29,7 +29,7 @@ export class TripController {
     }
   }
 
-  static async search(req: express.Request, res: express.Response): Promise<void> {
+  static async search(req: Request, res: Response): Promise<void> {
     try {
       const id = req.query.id as string;
       const name = req.query.name as string;
@@ -41,7 +41,7 @@ export class TripController {
     }
   }
 
-  static async create(req: express.Request, res: express.Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
       const trip = req.body;
       const result = await TripService.create(trip);
@@ -52,7 +52,7 @@ export class TripController {
     }
   }
 
-  static async update(req: express.Request, res: express.Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const trip = req.body;
@@ -68,7 +68,7 @@ export class TripController {
     }
   }
 
-  static async delete(req: express.Request, res: express.Response): Promise<void> {
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const result = await TripService.delete(id);

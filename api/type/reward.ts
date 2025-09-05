@@ -1,0 +1,1 @@
+export type Tiers = 'T1' | 'T2' | 'T3' | 'T1L3' | 'R2';

@@ -6,8 +6,7 @@ SET time_zone = "+07:00";
 
 CREATE TABLE IF NOT EXISTS lottery (
     lid INT AUTO_INCREMENT PRIMARY KEY,
-    lottery_number VARCHAR(20) NOT NULL UNIQUE,
-    period VARCHAR(50) NOT NULL,
+    lottery_number VARCHAR(6) NOT NULL UNIQUE,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -21,7 +20,8 @@ CREATE TABLE IF NOT EXISTS user (
     card_id VARCHAR(13) NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    token VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL DEFAULT '',
+    role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
     credit DECIMAL(10, 2) NOT NULL DEFAULT 0,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -39,27 +39,70 @@ CREATE TABLE IF NOT EXISTS purchase (
 
 CREATE TABLE IF NOT EXISTS reward (
     rid INT AUTO_INCREMENT PRIMARY KEY,
-    lid INT NOT NULL,
+    -- lid INT NULL,
     tier VARCHAR(20) NOT NULL,
     revenue DECIMAL(12, 2) NOT NULL,
-    winner VARCHAR(100) NULL,
+    winner VARCHAR(6) NULL,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T1', 0, NULL);
+INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T2', 0, NULL);
+INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T3', 0, NULL);
+
+-- L: Last, R: Random
+INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T1L3', 0, NULL);
+INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'R2', 0, NULL);
 
 CREATE TABLE IF NOT EXISTS payment (
     payid INT AUTO_INCREMENT PRIMARY KEY,
     uid INT NOT NULL,
-    tier VARCHAR(20) NOT NULL,
+    -- lottocat, kbank, thaiqr
+    provider VARCHAR(20) NOT NULL,
+    -- tier VARCHAR(20) NOT NULL,
     revenue DECIMAL(12, 2) NOT NULL,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+-- Winner: who user was win lottery and get reward
+CREATE TABLE IF NOT EXISTS winner (
+    wid INT AUTO_INCREMENT PRIMARY KEY,
+    uid INT NOT NULL,
+    rid INT NOT NULL,
+    payid INT NOT NULL,
+    -- reward * number of lotter was purchase by user
+    amount INT NOT NULL,
+    created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS cart (
+    cid INT AUTO_INCREMENT PRIMARY KEY,
+    uid INT NOT NULL,
+    lid INT NOT NULL,
+    lot_amount INT NOT NULL,
+    created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)
 
 ALTER TABLE purchase ADD CONSTRAINT fk_purchase_user FOREIGN KEY (uid) REFERENCES user(uid) ON DELETE CASCADE;
 ALTER TABLE purchase ADD CONSTRAINT fk_purchase_lottery FOREIGN KEY (lid) REFERENCES lottery(lid) ON DELETE CASCADE;
 ALTER TABLE reward ADD CONSTRAINT fk_reward_lottery FOREIGN KEY (lid) REFERENCES lottery(lid) ON DELETE CASCADE;
 ALTER TABLE payment ADD CONSTRAINT fk_payment_user FOREIGN KEY (uid) REFERENCES user(uid) ON DELETE CASCADE;
+-- ALTER TABLE payment ADD CONSTRAINT fk_payment_lottery FOREIGN KEY (lid) REFERENCES lottery(lid) ON DELETE CASCADE;
+
+ALTER TABLE winner ADD CONSTRAINT fk_winner_user FOREIGN KEY (uid) REFERENCES user(uid) ON DELETE CASCADE;
+ALTER TABLE winner ADD CONSTRAINT fk_winner_reward FOREIGN KEY (rid) REFERENCES reward(rid) ON DELETE CASCADE;
+ALTER TABLE winner ADD CONSTRAINT fk_winner_payment FOREIGN KEY (payid) REFERENCES payment(payid) ON DELETE CASCADE;
+
+
+ALTER TABLE cart ADD CONSTRAINT fk_cart_user FOREIGN KEY (uid) REFERENCES user(uid) ON DELETE CASCADE;
+ALTER TABLE cart ADD CONSTRAINT fk_cart_lottery FOREIGN KEY (lid) REFERENCES lottery(lid) ON DELETE CASCADE;
+
+-- ALTER TABLE user ADD COLUMN token VARCHAR(255) IF NOT EXISTS;
+-- ALTER TABLE user ADD COLUMN role ENUM('user', 'admin') IF NOT EXISTS;
+-- ALTER TABLE reward DROP COLUMN winner;
 
 COMMIT; 

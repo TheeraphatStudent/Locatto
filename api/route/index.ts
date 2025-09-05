@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.get('/', IndexController.getIndex);
 router.post('/tojwt', IndexController.toJwt);
+router.post('/resys', IndexController.resys);
 
 export { router };
