@@ -34,9 +34,9 @@ export class RewardService {
   static async getAll(): Promise<any[]> {
     return new Promise((resolve, reject) => {
       conn.query(
-        `SELECT r.*, l.lottery_number, l.period 
-         FROM reward r 
-         LEFT JOIN lottery l ON r.lid = l.lid 
+        `SELECT r.*, l.lottery_number
+         FROM reward r
+         LEFT JOIN lottery l ON r.lid = l.lid
          ORDER BY r.created DESC`,
         (err: any, result: any[]) => {
           if (err) {
@@ -53,9 +53,9 @@ export class RewardService {
   static async getById(rid: number): Promise<any> {
     return new Promise((resolve, reject) => {
       conn.query(
-        `SELECT r.*, l.lottery_number, l.period 
-         FROM reward r 
-         LEFT JOIN lottery l ON r.lid = l.lid 
+        `SELECT r.*, l.lottery_number
+         FROM reward r
+         LEFT JOIN lottery l ON r.lid = l.lid
          WHERE r.rid = ?`,
         [rid],
         (err: any, result: any[]) => {
@@ -73,10 +73,10 @@ export class RewardService {
   static async getByLotteryId(lid: number): Promise<any[]> {
     return new Promise((resolve, reject) => {
       conn.query(
-        `SELECT r.*, l.lottery_number, l.period 
-         FROM reward r 
-         LEFT JOIN lottery l ON r.lid = l.lid 
-         WHERE r.lid = ? 
+        `SELECT r.*, l.lottery_number
+         FROM reward r
+         LEFT JOIN lottery l ON r.lid = l.lid
+         WHERE r.lid = ?
          ORDER BY r.created DESC`,
         [lid],
         (err: any, result: any[]) => {
@@ -141,24 +141,53 @@ export class RewardService {
     });
   }
 
-  static async delete(rid: number): Promise<{ success: boolean; message: string }> {
-    return new Promise((resolve) => {
+  static async updateOrCreate(data: { tier: string; revenue: number }): Promise<{ success: boolean; message: string; reward?: any }> {
+    return new Promise(async (resolve) => {
+      try {
+        const existingReward = await this.getByTier(data.tier);
+
+        if (existingReward) {
+          const updateResult = await this.update(existingReward.rid, {
+            revenue: data.revenue
+          });
+
+          if (updateResult.success) {
+            const updatedReward = await this.getById(existingReward.rid);
+            resolve({
+              success: true,
+              message: `Reward tier ${data.tier} updated successfully`,
+              reward: updatedReward
+            });
+          } else {
+            resolve(updateResult);
+          }
+        } else {
+          const createResult = await this.create({
+            lid: null,
+            tier: data.tier,
+            revenue: data.revenue
+          });
+          resolve(createResult);
+        }
+      } catch (error) {
+        console.error('UpdateOrCreate reward error:', error);
+        resolve({ success: false, message: 'Internal server error' });
+      }
+    });
+  }
+
+  static async getByTier(tier: string): Promise<any> {
+    return new Promise((resolve, reject) => {
       conn.query(
-        'DELETE FROM reward WHERE rid = ?',
-        [rid],
-        (err: any, result: any) => {
+        'SELECT * FROM reward WHERE tier = ?',
+        [tier],
+        (err: any, result: any[]) => {
           if (err) {
             console.error('Database error:', err);
-            resolve({ success: false, message: 'Internal server error' });
+            reject(err);
             return;
           }
-
-          if (result.affectedRows === 0) {
-            resolve({ success: false, message: 'Reward not found' });
-            return;
-          }
-
-          resolve({ success: true, message: 'Reward deleted successfully' });
+          resolve(result[0] || null);
         }
       );
     });

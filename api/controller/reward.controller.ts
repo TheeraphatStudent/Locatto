@@ -1,5 +1,8 @@
+import express from 'express';
 import { Request, Response } from 'express';
 import { RewardService, RewardData } from '../service/reward.service';
+import { isRoleExst } from '../utils/auth.helper';
+import { Tiers } from '../type/reward';
 
 export class RewardController {
   static async create(req: Request, res: Response): Promise<void> {
@@ -91,70 +94,77 @@ export class RewardController {
   }
 
   static async delete(req: Request, res: Response): Promise<void> {
-    try {
-      const id = +req.params.id;
-      const result = await RewardService.delete(id);
+    // try {
+    //   const id = +req.params.id;
+    //   const result = await RewardService.delete(id);
 
-      if (result.success) {
-        res.json({ message: result.message });
-      } else {
-        res.status(404).json({ error: result.message });
-      }
-    } catch (error) {
-      console.error('Delete reward error:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    //   if (result.success) {
+    //     res.json({ message: result.message });
+    //   } else {
+    //     res.status(404).json({ error: result.message });
+    //   }
+    // } catch (error) {
+    //   console.error('Delete reward error:', error);
+    //   res.status(500).json({ error: 'Internal server error' });
+    // }
   }
 
   static async manageRewards(req: Request, res: Response): Promise<void> {
     try {
-      // Check if user is admin
-      if (!req.user || (req.user as any).role !== 'admin') {
+      if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
         res.status(403).json({ error: 'Admin access required' });
         return;
       }
 
-      const { tier1, tier2, tier3, tier4, tier5 } = req.body;
+      const tierData = req.body;
 
-      if (tier1 === undefined || tier2 === undefined || tier3 === undefined || 
-          tier4 === undefined || tier5 === undefined) {
-        res.status(400).json({ error: 'All tier fields (tier1, tier2, tier3, tier4, tier5) are required' });
+      delete tierData.iat;
+      delete tierData.exp;
+
+      if (!tierData || Object.keys(tierData).length === 0) {
+        res.status(400).json({ error: 'No tier data provided' });
         return;
       }
 
-      const tiers = [
-        { name: 'Tier 1', value: tier1 },
-        { name: 'Tier 2', value: tier2 },
-        { name: 'Tier 3', value: tier3 },
-        { name: 'Last 3 digit of Tier 1', value: tier4 },
-        { name: 'Last 2 digit (Random 2 digit)', value: tier5 }
-      ];
+      const tierMapping: { [key: string]: string } = {
+        '1': 'T1',
+        '2': 'T2',
+        '3': 'T3',
+        '4': 'T1L3',
+        '5': 'R2'
+      };
+
+      const mappedTierData: { [key: string]: any } = {};
+
+      for (const [key, value] of Object.entries(tierData)) {
+        const tierName = tierMapping[key] || key;
+        mappedTierData[tierName] = value;
+      }
 
       const results = [];
 
-      for (const tier of tiers) {
-        const revenue = tier.value === '' ? 0 : parseFloat(tier.value);
-        
+      for (const [tierKey, revenueValue] of Object.entries(mappedTierData)) {
+        const revenue = revenueValue === '' ? 0 : parseFloat(revenueValue as string);
+
         if (isNaN(revenue)) {
-          res.status(400).json({ error: `Invalid revenue value for ${tier.name}: ${tier.value}` });
+          res.status(400).json({ error: `Invalid revenue value for ${tierKey}: ${revenueValue}` });
           return;
         }
 
-        const result = await RewardService.create({
-          lid: null,
-          tier: tier.name,
+        const result = await RewardService.updateOrCreate({
+          tier: tierKey,
           revenue: revenue
         });
 
         if (!result.success) {
-          res.status(500).json({ error: `Failed to create ${tier.name}: ${result.message}` });
+          res.status(500).json({ error: `Failed to manage ${tierKey}: ${result.message}` });
           return;
         }
 
         results.push(result.reward);
       }
 
-      res.status(201).json({
+      res.status(200).json({
         message: 'All reward tiers managed successfully',
         rewards: results
       });

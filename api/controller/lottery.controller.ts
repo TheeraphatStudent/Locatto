@@ -122,7 +122,7 @@ export class LotteryController {
       if (result.success) {
         res.json({
           message: 'Random winners selected successfully (followed)',
-          winners: result.winners
+          // winners: result.winners
         });
       } else {
         res.status(400).json({ error: result.message });
@@ -145,7 +145,7 @@ export class LotteryController {
       if (result.success) {
         res.json({
           message: 'Random winners selected successfully (unfollowed)',
-          winners: result.winners
+          // winners: result.winners
         });
       } else {
         res.status(400).json({ error: result.message });
