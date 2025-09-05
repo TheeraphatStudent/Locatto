@@ -3,51 +3,26 @@ import { AppDataSource } from '../config/database';
 import { Purchase } from '../models/Purchase';
 
 export class PurchaseService {
-  private purchaseRepository: Repository<Purchase>;
+  private readonly repo: Repository<Purchase>;
 
   constructor() {
-    this.purchaseRepository = AppDataSource.getRepository(Purchase);
+    this.repo = AppDataSource.getRepository(Purchase);
   }
 
-  async getAllPurchases(): Promise<Purchase[]> {
-    return await this.purchaseRepository.find({
-      relations: ['customer', 'lottery']
-    });
-  }
+  getAll = () => this.repo.find();
 
-  async getPurchaseById(id: number): Promise<Purchase | null> {
-    return await this.purchaseRepository.findOne({
-      where: { pid: id },
-      relations: ['customer', 'lottery']
-    });
-  }
+  getById = (id: number) => this.repo.findOneBy({ pid: id });
 
-  async createPurchase(purchaseData: Partial<Purchase>): Promise<Purchase> {
-    const purchase = this.purchaseRepository.create(purchaseData);
-    return await this.purchaseRepository.save(purchase);
-  }
+  create = (data: Partial<Purchase>) => this.repo.save(this.repo.create(data));
 
-  async updatePurchase(id: number, purchaseData: Partial<Purchase>): Promise<Purchase | null> {
-    await this.purchaseRepository.update(id, purchaseData);
-    return await this.getPurchaseById(id);
-  }
+  update = async (id: number, data: Partial<Purchase>) => {
+    await this.repo.update({ pid: id }, data);
+    return this.getById(id);
+  };
 
-  async deletePurchase(id: number): Promise<boolean> {
-    const result = await this.purchaseRepository.delete(id);
-    return result.affected !== 0;
-  }
+  remove = async (id: number) => {
+    await this.repo.delete({ pid: id });
+  };
+}
 
-  async getPurchasesByCustomer(customerId: number): Promise<Purchase[]> {
-    return await this.purchaseRepository.find({
-      where: { cid: customerId },
-      relations: ['customer', 'lottery']
-    });
-  }
 
-  async getPurchasesByLottery(lotteryId: number): Promise<Purchase[]> {
-    return await this.purchaseRepository.find({
-      where: { lid: lotteryId },
-      relations: ['customer', 'lottery']
-    });
-  }
-} 

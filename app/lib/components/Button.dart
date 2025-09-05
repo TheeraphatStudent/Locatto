@@ -1,0 +1,189 @@
+import 'package:flutter/cupertino.dart' show StatelessWidget;
+import 'package:flutter/material.dart';
+
+enum ButtonVariant { primary, light, outline }
+
+class ButtonActions extends StatefulWidget {
+  const ButtonActions({
+    super.key,
+    this.text = '',
+    this.hasShadow = true,
+    this.variant = ButtonVariant.light,
+    this.theme,
+    this.onPressed,
+  });
+
+  final String text;
+  final bool hasShadow;
+  final ButtonVariant variant;
+  final Color? theme;
+  final VoidCallback? onPressed;
+
+  @override
+  State<ButtonActions> createState() => _ButtonActionsState();
+}
+
+class _ButtonActionsState extends State<ButtonActions>
+    with SingleTickerProviderStateMixin {
+  bool _isHovered = false;
+  bool _isPressed = false;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.8).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    setState(() => _isPressed = true);
+    _animationController.forward();
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    setState(() => _isPressed = false);
+    _animationController.reverse();
+  }
+
+  void _handleTapCancel() {
+    setState(() => _isPressed = false);
+    _animationController.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Color accent = widget.theme ?? const Color(0xFFFD5553);
+
+    final Color backgroundColor;
+    final Color foregroundColor;
+    final OutlinedBorder shape;
+
+    final List<BoxShadow> boxShadows = widget.hasShadow
+        ? [
+            BoxShadow(
+              color: accent.withOpacity(_isHovered ? 0.35 : 0.25),
+              blurRadius: _isHovered ? 12 : 8,
+              offset: Offset(0, _isHovered ? 6 : 4),
+              spreadRadius: _isHovered ? 1 : 0,
+            ),
+          ]
+        : const [];
+
+    switch (widget.variant) {
+      case ButtonVariant.primary:
+        backgroundColor = _isHovered
+            ? Color.lerp(accent, Colors.white, 0.1)!
+            : accent;
+        foregroundColor = Colors.white;
+        shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
+        break;
+      case ButtonVariant.light:
+        backgroundColor = _isHovered
+            ? Color.lerp(const Color(0xFFFFF7F7), accent, 0.05)!
+            : const Color(0xFFFFF7F7);
+        foregroundColor = accent;
+        shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
+        break;
+      case ButtonVariant.outline:
+        backgroundColor = _isHovered
+            ? accent.withOpacity(0.05)
+            : Colors.transparent;
+        foregroundColor = accent;
+        shape = RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: _isHovered ? accent : accent.withOpacity(0.8),
+            width: _isHovered ? 2.5 : 2,
+          ),
+        );
+        break;
+    }
+
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Opacity(
+            opacity: _opacityAnimation.value,
+            child: MouseRegion(
+              onEnter: (_) => setState(() => _isHovered = true),
+              onExit: (_) => setState(() => _isHovered = false),
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTapDown: _handleTapDown,
+                onTapUp: _handleTapUp,
+                onTapCancel: _handleTapCancel,
+                onTap: widget.onPressed,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 48,
+                    vertical: 12,
+                  ),
+                  decoration: ShapeDecoration(
+                    color: backgroundColor,
+                    shape: shape,
+                    shadows: boxShadows,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: TextStyle(
+                          color: foregroundColor,
+                          fontSize: 15,
+                          fontFamily: 'Kanit',
+                          fontWeight: FontWeight.w700,
+                        ),
+                        child: Text(widget.text),
+                      ),
+                      const SizedBox(width: 10),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        transform: Matrix4.translationValues(
+                          _isHovered ? 2 : 0,
+                          0,
+                          0,
+                        ),
+                        child: Icon(
+                          Icons.arrow_right,
+                          size: 24,
+                          color: foregroundColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

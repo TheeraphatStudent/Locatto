@@ -10,7 +10,8 @@ const customerValidation = [
   body('telno').isLength({ min: 10, max: 15 }).withMessage('Phone number must be between 10-15 characters'),
   body('username').isLength({ min: 3, max: 50 }).withMessage('Username must be between 3-50 characters'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('credit').optional().isNumeric().withMessage('Credit must be a number')
+  body('credit').optional().isNumeric().withMessage('Credit must be a number'),
+  body('img').optional().isString().isLength({ max: 255 }).withMessage('Image URL must be less than 255 characters'),
 ];
 
 const customerUpdateValidation = [
@@ -18,13 +19,16 @@ const customerUpdateValidation = [
   body('telno').optional().isLength({ min: 10, max: 15 }).withMessage('Phone number must be between 10-15 characters'),
   body('username').optional().isLength({ min: 3, max: 50 }).withMessage('Username must be between 3-50 characters'),
   body('password').optional().isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('credit').optional().isNumeric().withMessage('Credit must be a number')
+  body('credit').optional().isNumeric().withMessage('Credit must be a number'),
+  body('img').optional().isString().isLength({ max: 255 }).withMessage('Image URL must be less than 255 characters'),
 ];
 
-router.get('/', customerController.getAllCustomers.bind(customerController));
-router.get('/:id', customerController.getCustomerById.bind(customerController));
-router.post('/', customerValidation, customerController.createCustomer.bind(customerController));
-router.put('/:id', customerUpdateValidation, customerController.updateCustomer.bind(customerController));
-router.delete('/:id', customerController.deleteCustomer.bind(customerController));
+router.get('/', customerController.getAllCustomers);
+router.get('/:id', customerController.getCustomerById);
+router.post('/', customerValidation, customerController.createCustomer);
+router.put('/:id', customerUpdateValidation, customerController.updateCustomer);
+router.delete('/:id', customerController.deleteCustomer);
 
-export default router; 
+export default router;
+
+

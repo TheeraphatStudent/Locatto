@@ -18,8 +18,8 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: {
-    error: 'Too many requests from this IP, please try again later.'
-  }
+    error: 'Too many requests from this IP, please try again later.',
+  },
 });
 
 app.use(helmet());
@@ -29,11 +29,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({
     success: true,
     message: 'API is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -42,14 +42,12 @@ app.use('/api/lotteries', lotteryRoutes);
 app.use('/api/purchases', purchaseRoutes);
 app.use('/api/rewards', rewardRoutes);
 
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found'
-  });
+app.use('*', (_req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
 });
 
 app.use(errorHandler);
 
-export { app, AppDataSource }; 
- 
+export { app, AppDataSource };
+
+
