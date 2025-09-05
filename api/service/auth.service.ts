@@ -60,7 +60,7 @@ export class AuthService {
   }> {
     return new Promise((resolve) => {
       conn.query(
-        'SELECT uid, name, telno, email, password, credit FROM user WHERE username = ?',
+        'SELECT uid, name, telno, email, password, credit, role FROM user WHERE username = ?',
         [credentials.username],
         async (err: any, result: any[]) => {
           if (err) {
@@ -87,7 +87,7 @@ export class AuthService {
             const token = IS_SIGN ? jwt.sign(
               {
                 uid: user.uid,
-                username: user.username,
+                role: user.role,
                 name: user.name
               },
               JWT_SECRET,
@@ -95,7 +95,7 @@ export class AuthService {
             ) : jwt.sign(
               {
                 uid: user.uid,
-                username: user.username,
+                role: user.role,
                 name: user.name
               },
               '',
@@ -123,7 +123,8 @@ export class AuthService {
                     name: user.name,
                     telno: user.telno,
                     email: user.email,
-                    credit: user.credit
+                    credit: user.credit,
+                    role: user.role
                   }
                 });
               }
@@ -209,7 +210,7 @@ export class AuthService {
 
     return new Promise((resolve) => {
       conn.query(
-        'UPDATE user SET token = NULL WHERE uid = ? AND token = ?',
+        'UPDATE user SET token = "" WHERE uid = ? AND token = ?',
         [data.uid, data.token],
         (err: any, result: any) => {
           if (err) {

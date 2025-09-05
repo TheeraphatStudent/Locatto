@@ -1,9 +1,9 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { UploadService } from '../service/upload.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface AuthenticatedRequest extends express.Request {
+interface AuthenticatedRequest extends Request {
   uid?: any;
 }
 
@@ -19,7 +19,7 @@ export class UploadController {
     return { uid, filename: fname, time, type };
   }
 
-  static async upload(req: AuthenticatedRequest, res: express.Response): Promise<void> {
+  static async upload(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       // console.log(req)
 
@@ -52,7 +52,7 @@ export class UploadController {
     }
   }
 
-  static async getFile(req: express.Request, res: express.Response): Promise<void> {
+  static async getFile(req: Request, res: Response): Promise<void> {
     try {
       const uid = req.params.uid;
       const uploadsDir = path.join(__dirname, '../uploads');
@@ -70,7 +70,7 @@ export class UploadController {
     }
   }
 
-  static async getFileInfo(req: express.Request, res: express.Response): Promise<void> {
+  static async getFileInfo(req: Request, res: Response): Promise<void> {
     try {
       const filename = req.body as string;
       const parsed = UploadController.parseFilename(filename);
@@ -81,7 +81,7 @@ export class UploadController {
     }
   }
 
-  static async deleteFile(req: express.Request, res: express.Response): Promise<void> {
+  static async deleteFile(req: Request, res: Response): Promise<void> {
     try {
       const uid = req.params.uid;
       const uploadsDir = path.join(__dirname, '../uploads');
@@ -104,7 +104,7 @@ export class UploadController {
     }
   }
 
-  static async getAllFiles(req: express.Request, res: express.Response): Promise<void> {
+  static async getAllFiles(req: Request, res: Response): Promise<void> {
     try {
       const uploadsDir = path.join(__dirname, '../uploads');
       const files = fs.readdirSync(uploadsDir);

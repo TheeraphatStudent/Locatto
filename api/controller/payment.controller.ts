@@ -1,8 +1,8 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { PaymentService, PaymentData } from '../service/payment.service';
 
 export class PaymentController {
-  static async create(req: express.Request, res: express.Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
       const { uid, tier, revenue } = req.body;
 
@@ -27,7 +27,7 @@ export class PaymentController {
     }
   }
 
-  static async getAll(req: express.Request, res: express.Response): Promise<void> {
+  static async getAll(req: Request, res: Response): Promise<void> {
     try {
       if (req.query.id) {
         const id = +req.query.id;
@@ -51,7 +51,7 @@ export class PaymentController {
     }
   }
 
-  static async getById(req: express.Request, res: express.Response): Promise<void> {
+  static async getById(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const payment = await PaymentService.getById(id);
@@ -67,7 +67,7 @@ export class PaymentController {
     }
   }
 
-  static async update(req: express.Request, res: express.Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const updateData: Partial<PaymentData> = {};
@@ -89,7 +89,7 @@ export class PaymentController {
     }
   }
 
-  static async delete(req: express.Request, res: express.Response): Promise<void> {
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const result = await PaymentService.delete(id);

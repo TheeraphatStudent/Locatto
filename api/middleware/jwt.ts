@@ -6,11 +6,14 @@ const IS_SIGN = process.env.IS_SIGN === 'true';
 
 const handleRequestDecoding = (req: any): void => {
   try {
-    console.log("Request Body: ", req.body)
+    console.group("Request");
+    console.log("Body: ", req.body)
 
     let decoded = jwt.decode(req.body.data);
 
-    // console.log("Decoded: ", decoded)
+    console.log("Decoded: ", decoded)
+    console.groupEnd();
+
     req.body = decoded;
   } catch (error) {
     req.body = {};
@@ -31,14 +34,14 @@ const isContain = (content: string) => {
     '/auth/login', 
     '/auth/logout', 
     '/auth/register', 
-    '/auth/repass', 
+    // '/auth/repass', 
     '/upload'
   ];
 
   return reject.some((item) => content.includes(item));
 } 
 
-export const jwtMiddleware = (req: any, res: Response, next: NextFunction): void => {
+export const jwtMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   // console.log("Request Body: ", req.body)
   // console.log("Request Data: ", req.data)
   // console.log("File: ", req)
@@ -73,6 +76,8 @@ export const jwtMiddleware = (req: any, res: Response, next: NextFunction): void
     if (tokenDecoded) {
       req.user = tokenDecoded;
     }
+
+    // console.log("Update request: ", req)
 
     handleRequestDecoding(req);
     handleResponseEncoding(res);

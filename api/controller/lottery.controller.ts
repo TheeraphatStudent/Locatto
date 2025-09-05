@@ -1,22 +1,29 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { LotteryService, LotteryData } from '../service/lottery.service';
+import { isRoleExst } from '../utils/auth.helper';
 
 export class LotteryController {
-  static async create(req: express.Request, res: express.Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
-      const { lottery_number, period } = req.body;
+      const { n } = req.body;
 
-      if (!lottery_number || !period) {
-        res.status(400).json({ error: 'lottery_number and period are required' });
+      if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
+        res.status(403).json({ error: 'Admin access required' });
         return;
       }
 
-      const result = await LotteryService.create({ lottery_number, period });
+      if (!n || typeof n !== 'number') {
+        res.status(400).json({ error: 'n parameter is required and must be a number' });
+        return;
+      }
+
+      const result = await LotteryService.generateBulkLotteries(n);
 
       if (result.success) {
         res.status(201).json({
           message: result.message,
-          lottery: result.lottery
+          lotteries: result.lotteries,
+          generated: result.generated
         });
       } else {
         res.status(400).json({ error: result.message });
@@ -27,7 +34,7 @@ export class LotteryController {
     }
   }
 
-  static async getAll(req: express.Request, res: express.Response): Promise<void> {
+  static async getAll(req: Request, res: Response): Promise<void> {
     try {
       if (req.query.id) {
         const id = +req.query.id;
@@ -47,7 +54,7 @@ export class LotteryController {
     }
   }
 
-  static async getById(req: express.Request, res: express.Response): Promise<void> {
+  static async getById(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const lottery = await LotteryService.getById(id);
@@ -63,7 +70,7 @@ export class LotteryController {
     }
   }
 
-  static async update(req: express.Request, res: express.Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const updateData: Partial<LotteryData> = {};
@@ -84,7 +91,7 @@ export class LotteryController {
     }
   }
 
-  static async delete(req: express.Request, res: express.Response): Promise<void> {
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const result = await LotteryService.delete(id);
@@ -100,8 +107,13 @@ export class LotteryController {
     }
   }
 
-  static async selectRandomWinnersFollowed(req: express.Request, res: express.Response): Promise<void> {
+  static async selectRandomWinnersFollowed(req: Request, res: Response): Promise<void> {
     try {
+      if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
+        res.status(403).json({ error: 'Admin access required' });
+        return;
+      }
+
       const result = await LotteryService.selectRandomWinners(true);
 
       if (result.success) {
@@ -118,8 +130,13 @@ export class LotteryController {
     }
   }
 
-  static async selectRandomWinnersUnfollowed(req: express.Request, res: express.Response): Promise<void> {
+  static async selectRandomWinnersUnfollowed(req: Request, res: Response): Promise<void> {
     try {
+      if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
+        res.status(403).json({ error: 'Admin access required' });
+        return;
+      }
+
       const result = await LotteryService.selectRandomWinners(false);
 
       if (result.success) {

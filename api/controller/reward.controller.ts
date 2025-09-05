@@ -1,8 +1,8 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { RewardService, RewardData } from '../service/reward.service';
 
 export class RewardController {
-  static async create(req: express.Request, res: express.Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
       const { lid, tier, revenue, winner } = req.body;
 
@@ -27,7 +27,7 @@ export class RewardController {
     }
   }
 
-  static async getAll(req: express.Request, res: express.Response): Promise<void> {
+  static async getAll(req: Request, res: Response): Promise<void> {
     try {
       if (req.query.id) {
         const id = +req.query.id;
@@ -51,7 +51,7 @@ export class RewardController {
     }
   }
 
-  static async getById(req: express.Request, res: express.Response): Promise<void> {
+  static async getById(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const reward = await RewardService.getById(id);
@@ -67,7 +67,7 @@ export class RewardController {
     }
   }
 
-  static async update(req: express.Request, res: express.Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const updateData: Partial<RewardData> = {};
@@ -90,7 +90,7 @@ export class RewardController {
     }
   }
 
-  static async delete(req: express.Request, res: express.Response): Promise<void> {
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const result = await RewardService.delete(id);
@@ -106,8 +106,14 @@ export class RewardController {
     }
   }
 
-  static async manageRewards(req: express.Request, res: express.Response): Promise<void> {
+  static async manageRewards(req: Request, res: Response): Promise<void> {
     try {
+      // Check if user is admin
+      if (!req.user || (req.user as any).role !== 'admin') {
+        res.status(403).json({ error: 'Admin access required' });
+        return;
+      }
+
       const { tier1, tier2, tier3, tier4, tier5 } = req.body;
 
       if (tier1 === undefined || tier2 === undefined || tier3 === undefined || 

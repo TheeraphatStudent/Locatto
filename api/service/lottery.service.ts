@@ -179,6 +179,61 @@ export class LotteryService {
     });
   }
 
+  static async generateBulkLotteries(n: number): Promise<{ success: boolean; message: string; lotteries?: any[]; generated?: number }> {
+    return new Promise(async (resolve) => {
+      try {
+        if (n <= 0) {
+          resolve({ success: false, message: 'Number must be more then 1 number' });
+          return;
+        }
+
+        const generatedNumbers = new Set<string>();
+        
+        while (generatedNumbers.size < n) {
+          const randomNum = Math.floor(Math.random() * 1000000);
+          const lotteryNumber = randomNum.toString().padStart(6, '0');
+          
+          if (!generatedNumbers.has(lotteryNumber)) {
+            generatedNumbers.add(lotteryNumber);
+          }
+      
+          if (generatedNumbers.size >= 999999) {
+            break;
+          }
+        }
+
+        const lotteryNumbers = Array.from(generatedNumbers);
+        const values = lotteryNumbers.map(num => [num]);
+        const placeholders = lotteryNumbers.map(() => '(?)').join(', ');
+        
+        conn.query(
+          `INSERT INTO lottery (lottery_number) VALUES ${placeholders}`,
+          values,
+          (err: any, result: any) => {
+            if (err) {
+              console.error('Database error:', err);
+              resolve({ success: false, message: 'Internal server error' });
+              return;
+            }
+
+            resolve({
+              success: true,
+              message: `Successfully generated ${lotteryNumbers.length} unique lottery numbers`,
+              lotteries: lotteryNumbers.map((num, index) => ({
+                lid: result.insertId + index,
+                lottery_number: num
+              })),
+              generated: lotteryNumbers.length
+            });
+          }
+        );
+      } catch (error) {
+        console.error('Error generating bulk lotteries:', error);
+        resolve({ success: false, message: 'Internal server error' });
+      }
+    });
+  }
+
   static async delete(lid: number): Promise<{ success: boolean; message: string }> {
     return new Promise((resolve) => {
       conn.query(

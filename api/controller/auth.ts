@@ -1,9 +1,9 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from '../service/auth.service';
 import * as jwt from 'jsonwebtoken';
 
 export class AuthController {
-  static async register(req: express.Request, res: express.Response): Promise<void> {
+  static async register(req: Request, res: Response): Promise<void> {
     try {
       const { fullname, telno, cardId, email, img, username, password, credit } = req.body;
 
@@ -23,7 +23,7 @@ export class AuthController {
     }
   }
 
-  static async login(req: express.Request, res: express.Response): Promise<void> {
+  static async login(req: Request, res: Response): Promise<void> {
     try {
       const { username, password } = req.body;
 
@@ -44,7 +44,7 @@ export class AuthController {
     }
   }
 
-  static async resetPassword(req: express.Request, res: express.Response): Promise<void> {
+  static async resetPassword(req: Request, res: Response): Promise<void> {
     try {
       const { username, password, repeatPassword } = req.body;
       if (password !== repeatPassword) {
@@ -65,7 +65,7 @@ export class AuthController {
     }
   }
 
-  static async me(req: express.Request, res: express.Response): Promise<void> {
+  static async me(req: Request, res: Response): Promise<void> {
     try {
       const { username } = req.body;
 
@@ -85,7 +85,7 @@ export class AuthController {
     }
   }
 
-  static async logout(req: express.Request, res: express.Response): Promise<void> {
+  static async logout(req: Request, res: Response): Promise<void> {
     try {
       // console.log("Logout Request Body: ", req.body)
 

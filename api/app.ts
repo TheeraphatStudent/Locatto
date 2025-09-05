@@ -15,6 +15,14 @@ import { jwtMiddleware } from "./middleware/jwt";
 
 import "dotenv/config";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
+
 export const app = express();
 
 app.use(morgan('combined'));

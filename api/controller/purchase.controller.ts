@@ -1,8 +1,8 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { PurchaseService, PurchaseData } from '../service/purchase.service';
 
 export class PurchaseController {
-  static async create(req: express.Request, res: express.Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
       const { uid, lid, lot_amount, payid } = req.body;
 
@@ -27,7 +27,7 @@ export class PurchaseController {
     }
   }
 
-  static async getAll(req: express.Request, res: express.Response): Promise<void> {
+  static async getAll(req: Request, res: Response): Promise<void> {
     try {
       if (req.query.id) {
         const id = +req.query.id;
@@ -51,7 +51,7 @@ export class PurchaseController {
     }
   }
 
-  static async getById(req: express.Request, res: express.Response): Promise<void> {
+  static async getById(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const purchase = await PurchaseService.getById(id);
@@ -67,7 +67,7 @@ export class PurchaseController {
     }
   }
 
-  static async update(req: express.Request, res: express.Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const updateData: Partial<PurchaseData> = {};
@@ -90,7 +90,7 @@ export class PurchaseController {
     }
   }
 
-  static async delete(req: express.Request, res: express.Response): Promise<void> {
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
       const result = await PurchaseService.delete(id);
