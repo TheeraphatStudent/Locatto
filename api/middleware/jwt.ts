@@ -5,12 +5,16 @@ const JWT_SECRET = process.env.JWT_SECRET || 'lottocat_secret_key';
 const IS_SIGN = process.env.IS_SIGN === 'true';
 
 const handleRequestDecoding = (req: any): void => {
-  // console.log("Request Body: ", req.body)
+  try {
+    console.log("Request Body: ", req.body)
 
-  let decoded = jwt.decode(req.body.data);
+    let decoded = jwt.decode(req.body.data);
 
-  // console.log("Decoded: ", decoded)
-  req.body = decoded;
+    // console.log("Decoded: ", decoded)
+    req.body = decoded;
+  } catch (error) {
+    req.body = {};
+  }
 };
 
 const handleResponseEncoding = (res: Response): void => {
@@ -64,7 +68,11 @@ export const jwtMiddleware = (req: any, res: Response, next: NextFunction): void
     const token = authHeader.split('Bearer ')[1];
     const tokenDecoded = IS_SIGN ? jwt.verify(token, JWT_SECRET) : jwt.decode(token);
 
-    console.log(tokenDecoded)
+    console.log("Token decoded: ", tokenDecoded)
+
+    if (tokenDecoded) {
+      req.user = tokenDecoded;
+    }
 
     handleRequestDecoding(req);
     handleResponseEncoding(res);
