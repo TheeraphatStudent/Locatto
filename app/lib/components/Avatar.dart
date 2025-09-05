@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'dart:typed_data';
+import '../service/upload.dart';
 
 enum AvatarState { view, edit }
 
@@ -39,6 +40,7 @@ class _AvatarState extends State<Avatar> {
   String? _imagePath;
   Uint8List? _webImageBytes;
   bool _isLoading = false;
+  UploadService uploadService = UploadService();
 
   double get _radius => widget.size / 2;
   double get _iconSize => widget.size * 0.5;
@@ -89,6 +91,27 @@ class _AvatarState extends State<Avatar> {
         });
 
         widget.onImageChanged?.call(file.path);
+
+        try {
+          await uploadService.uploadFile(file.path, file.bytes, file.name);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('อัปโหลดรูปภาพสำเร็จ'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('เกิดข้อผิดพลาดในการอัปโหลด: ${e.toString()}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
       }
     } catch (e) {
       if (mounted) {

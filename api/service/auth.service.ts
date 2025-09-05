@@ -1,20 +1,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { conn } from '../db/connectiondb';
+import { LoginRequest, RegisterRequest } from '../type/auth';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lottocat_secret_key';
 
 export class AuthService {
-  static async register(userData: {
-    fullname: string;
-    telno: string;
-    cardId: string;
-    email: string;
-    img: string;
-    username: string;
-    password: string;
-    credit?: number;
-  }): Promise<{ success: boolean; message: string; userId?: number }> {
+  static async register(userData: RegisterRequest): Promise<{ success: boolean; message: string; userId?: number }> {
     return new Promise((resolve) => {
       conn.query(
         'SELECT uid FROM user WHERE username = ? OR email = ?',
@@ -60,7 +52,7 @@ export class AuthService {
     });
   }
 
-  static async login(credentials: { username: string; password: string }): Promise<{
+  static async login(credentials: LoginRequest): Promise<{
     success: boolean;
     message: string;
     token?: string;
@@ -131,7 +123,7 @@ export class AuthService {
     });
   }
 
-  static async resetPassword(data: { username: string; password: string }): Promise<{ success: boolean; message: string }> {
+  static async resetPassword(data: LoginRequest): Promise<{ success: boolean; message: string }> {
     return new Promise((resolve) => {
       conn.query(
         'SELECT uid FROM user WHERE username = ?',

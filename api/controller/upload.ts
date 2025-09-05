@@ -8,6 +8,17 @@ interface AuthenticatedRequest extends express.Request {
 }
 
 export class UploadController {
+  static parseFilename(filename: string) {
+
+    const parts = filename.split('&');
+    const uid = parts[0].split('_')[1];
+    const fname = parts[1].split('_')[1];
+    const time = parts[2].split('_')[1];
+    const type = filename.split('.').pop();
+
+    return { uid, filename: fname, time, type };
+  }
+
   static async upload(req: AuthenticatedRequest, res: express.Response): Promise<void> {
     try {
       // console.log(req)
@@ -18,7 +29,7 @@ export class UploadController {
         return;
       }
 
-      const uid = self.crypto.randomUUID();
+      const uid = crypto.randomUUID();
       const originalName = file.originalname;
       const parsed = path.parse(originalName);
       const timestamp = Date.now();
@@ -43,26 +54,40 @@ export class UploadController {
 
   static async getFile(req: express.Request, res: express.Response): Promise<void> {
     try {
-      const filename = req.params.filename;
-      const download = req.query.download as string;
-      const fileInfo = UploadService.getFile(filename, download);
-      if (download === 'true') {
-        res.download(fileInfo.path);
-      } else {
-        res.sendFile(fileInfo.path);
+      const uid = req.params.uid;
+      const uploadsDir = path.join(__dirname, '../uploads');
+      const files = fs.readdirSync(uploadsDir);
+      const filename = files.find(f => f.startsWith(`uid_${uid}`));
+      if (!filename) {
+        res.status(404).json({ error: 'File not found' });
+        return;
       }
+      const filePath = path.join(uploadsDir, filename);
+      res.sendFile(filePath);
     } catch (error) {
       console.error('Get file error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async getFileInfo(req: express.Request, res: express.Response): Promise<void> {
+    try {
+      const filename = req.body as string;
+      const parsed = UploadController.parseFilename(filename);
+      res.json(parsed);
+    } catch (error) {
+      console.error('Get file info error:', error);
       res.status(404).json({ error: 'File not found' });
     }
   }
 
   static async deleteFile(req: express.Request, res: express.Response): Promise<void> {
     try {
-      const filename = req.params.filename;
+      const filename = req.body as string;
+      const parsed = UploadController.parseFilename(filename);
       const result = UploadService.deleteFile(filename);
       if (result) {
-        res.json({ message: 'File deleted successfully' });
+        res.json({ message: 'File deleted successfully', ...parsed });
       } else {
         res.status(404).json({ error: 'File not found' });
       }
@@ -72,13 +97,14 @@ export class UploadController {
     }
   }
 
-  static async getFilesByUid(req: AuthenticatedRequest, res: express.Response): Promise<void> {
+  static async getAllFiles(req: express.Request, res: express.Response): Promise<void> {
     try {
-      const uid = req.uid;
-      const files = UploadService.getFilesByUid(uid);
-      res.json({ files });
+      const uploadsDir = path.join(__dirname, '../uploads');
+      const files = fs.readdirSync(uploadsDir);
+      const parsedFiles = files.map(file => UploadController.parseFilename(file));
+      res.json({ files: parsedFiles });
     } catch (error) {
-      console.error('Get files by uid error:', error);
+      console.error('Get all files error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

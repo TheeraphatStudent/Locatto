@@ -4,14 +4,11 @@ import { Request, Response, NextFunction } from 'express';
 const JWT_SECRET = process.env.JWT_SECRET || 'lottocat_secret_key';
 const IS_SIGN = process.env.IS_SIGN === 'true';
 
-interface AuthenticatedRequest extends Request {
-  decodedPayload?: any;
-  uid?: any;
-}
-
-const handleRequestDecoding = (req: AuthenticatedRequest): void => {
+const handleRequestDecoding = (req: any): void => {
   const decoded = IS_SIGN ? jwt.verify(req.body.data, JWT_SECRET) : jwt.decode(req.body.data);
-  req.decodedPayload = decoded;
+
+  // console.log("Decoded: ", decoded)
+
   req.body = decoded;
 };
 
@@ -24,16 +21,29 @@ const handleResponseEncoding = (res: Response): void => {
 };
 
 const isContain = (content: string) => {
-  const reject = ['tojwt', '/auth/login', '/auth/register', '/auth/repass', '/upload'];
+  const reject = [
+    'tojwt', 
+    '/auth/login', 
+    '/auth/register', 
+    '/auth/repass', 
+    '/upload'
+  ];
 
   return reject.some((item) => content.includes(item));
 } 
 
-export const jwtMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-  // console.log("Request Path: ", req.path)
-  // console.log(isContain(req.path))
+export const jwtMiddleware = (req: any, res: Response, next: NextFunction): void => {
+  // console.log("Request Body: ", req.body)
+  // console.log("Request Data: ", req.data)
+  // console.log("File: ", req)
+
+  // Check if file 
   
   if (isContain(req.path)) {
+    if (!req.path.includes('/upload')) {
+      handleRequestDecoding(req);
+    }
+    handleResponseEncoding(res);
     next();
     return;
   }
@@ -46,26 +56,13 @@ export const jwtMiddleware = (req: AuthenticatedRequest, res: Response, next: Ne
 
   try {
     const token = authHeader.split('Bearer ')[1];
+    const tokenDecoded = IS_SIGN ? jwt.verify(token, JWT_SECRET) : jwt.decode(token);
 
-    const decoded = IS_SIGN ? jwt.verify(token, JWT_SECRET) : jwt.decode(token);
-    if (decoded && typeof decoded === 'object') {
-      req.decodedPayload = decoded;
-      req.uid = (decoded as any).uid;
-    }
-    req.body = { data: decoded };
+    console.log(tokenDecoded)
 
-    if (req.body && req.body.data) {
-    try {
-      handleRequestDecoding(req);
-      handleResponseEncoding(res);
-      next();
-    } catch (error) {
-      console.error('JWT middleware error:', error);
-      res.status(401).json({ error: 'Invalid token' });
-    }
-  } else {
+    handleRequestDecoding(req);
+    handleResponseEncoding(res);
     next();
-  }
   } catch (error) {
     console.error('JWT middleware error:', error);
     res.status(401).json({ error: 'Invalid token' });

@@ -6,7 +6,7 @@ class Register {
     String img;
     String username;
     String password;
-    String credit;
+    int credit;
 
     Register({
         required this.fullname,
