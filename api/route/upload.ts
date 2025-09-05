@@ -33,9 +33,9 @@ const upload = multer({
 router.post("/", upload.single("file"), UploadController.upload);
 
 router.post("/get", UploadController.getFileInfo);
-router.post("/delete", UploadController.deleteFile);
 router.get("/list", UploadController.getAllFiles);
 
 router.get("/:uid", UploadController.getFile);
+router.delete("/:uid", UploadController.deleteFile);
 
 export { router };

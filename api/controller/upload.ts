@@ -83,10 +83,17 @@ export class UploadController {
 
   static async deleteFile(req: express.Request, res: express.Response): Promise<void> {
     try {
-      const filename = req.body as string;
-      const parsed = UploadController.parseFilename(filename);
+      const uid = req.params.uid;
+      const uploadsDir = path.join(__dirname, '../uploads');
+      const files = fs.readdirSync(uploadsDir);
+      const filename = files.find(f => f.startsWith(`uid_${uid}`));
+      if (!filename) {
+        res.status(404).json({ error: 'File not found' });
+        return;
+      }
       const result = UploadService.deleteFile(filename);
       if (result) {
+        const parsed = UploadController.parseFilename(filename);
         res.json({ message: 'File deleted successfully', ...parsed });
       } else {
         res.status(404).json({ error: 'File not found' });
