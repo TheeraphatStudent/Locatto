@@ -16,6 +16,7 @@ import 'package:app/pages/purchase.page.dart';
 import 'package:app/pages/register.page.dart';
 import 'package:flutter/material.dart';
 import 'style/theme.dart';
+import 'package:app/pages/test.dart';
 // import 'package:app/components/ActiveButton.dart';
 // import 'package:app/components/DisabledButton.dart';
 // import 'package:app/components/์Select_Number_Button.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      initialRoute: '/home',
+      initialRoute: '/test',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
         '/debug': (context) => const DebugPage(),
+        '/test': (context) => const TestPage(),
       },
       // onUnknownRoute: (context) => const NotfoundPage(),
     );
