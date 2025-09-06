@@ -42,6 +42,9 @@ class MyApp extends StatelessWidget {
         '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
         '/debug': (context) => const DebugPage(),
+        '/onboarding': (context) => const OnboardingPage(),
+        '/forgotpass': (context) => const ForgotPassPage(),
+        '/test': (context) => const TestPage(),
       },
       // onUnknownRoute: (context) => const NotfoundPage(),
     );
