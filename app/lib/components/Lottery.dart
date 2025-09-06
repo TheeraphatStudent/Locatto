@@ -3,6 +3,8 @@ import 'package:app/utils/qr_helper.dart';
 import 'package:app/utils/text_healper.dart';
 import 'package:flutter/material.dart';
 
+// Test kubbb 
+
 class Lottery extends StatefulWidget {
   final String lotteryNumber;
   final bool isSelected;
