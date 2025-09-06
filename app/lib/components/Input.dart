@@ -1,40 +1,65 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:app/style/theme.dart';
 
 enum InputVariant {
-  active,    // With search icon and focused state
-  inactive,  // Normal state without icon
-  withAction // With action button and badge
+  active, // With search icon and focused state
+  inactive, // Normal state without icon
 }
+
+enum ActionBadgePosition { left, right }
 
 class Input extends StatefulWidget {
   final TextEditingController? controller;
-  final String labelText;
+  final String? labelText;
   final String? hintText;
   final bool obscureText;
   final String? Function(String?)? validator;
   final String? helperText;
+
   final InputVariant variant;
+  final Color? suffixColor;
+  final IconData? suffixIcon;
   final VoidCallback? onActionPressed;
+
   final String? badgeValue;
   final Widget? customIcon;
   final IconData? materialIcon;
   final bool showGradientBorder;
 
+  final bool showActionsBadge;
+  final int actionsBadgeCount;
+  final IconData? actionsBadgeIcon;
+  final VoidCallback? onActionsBadgePressed;
+  final ActionBadgePosition actionBadgePosition;
+  final ValueChanged<String>? onChanged;
+
   const Input({
     super.key,
     this.controller,
-    required this.labelText,
+    this.labelText,
     this.hintText,
     this.obscureText = false,
     this.validator,
     this.helperText,
+
     this.variant = InputVariant.inactive,
+    this.suffixColor = AppColors.primary,
+    this.suffixIcon = Icons.shopping_cart,
+
     this.onActionPressed,
     this.badgeValue,
     this.customIcon,
     this.materialIcon,
     this.showGradientBorder = false,
+
+    this.showActionsBadge = false,
+    this.actionsBadgeCount = 0,
+    this.actionsBadgeIcon = Icons.shopping_cart,
+    this.onActionsBadgePressed,
+    this.actionBadgePosition = ActionBadgePosition.right,
+    this.onChanged,
   });
 
   @override
@@ -67,83 +92,9 @@ class _InputState extends State<Input> {
       case InputVariant.active:
         return Container(
           padding: const EdgeInsets.all(8),
-          child: Icon(
-            Icons.search,
-            color: AppColors.primary,
-            size: 20,
-          ),
+          child: Icon(widget.suffixIcon, color: widget.suffixColor, size: 20),
         );
-      
-      case InputVariant.withAction:
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF45171D), Color(0xFFFE5654)],
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: widget.onActionPressed,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.customIcon != null) widget.customIcon!,
-                        if (widget.customIcon != null && widget.materialIcon != null) 
-                          const SizedBox(width: 4),
-                        if (widget.materialIcon != null)
-                          Icon(
-                            widget.materialIcon,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Badge
-            if (widget.badgeValue != null && widget.badgeValue!.isNotEmpty)
-              Positioned(
-                top: -4,
-                right: -4,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE91E63),
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 20,
-                    minHeight: 20,
-                  ),
-                  child: Text(
-                    widget.badgeValue!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Kanit',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-          ],
-        );
-      
-      case InputVariant.inactive:
+
       default:
         return const SizedBox.shrink();
     }
@@ -151,7 +102,6 @@ class _InputState extends State<Input> {
 
   InputBorder _buildBorder({required bool isFocused, required bool isError}) {
     if (widget.showGradientBorder) {
-      // For gradient border, we'll use a custom approach
       return OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
         borderSide: BorderSide.none,
@@ -174,10 +124,7 @@ class _InputState extends State<Input> {
 
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
-      borderSide: BorderSide(
-        color: borderColor,
-        width: borderWidth,
-      ),
+      borderSide: BorderSide(color: borderColor, width: borderWidth),
     );
   }
 
@@ -194,7 +141,7 @@ class _InputState extends State<Input> {
         borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
       ),
       child: Container(
-        margin: const EdgeInsets.only(left: 1, right: 1, bottom: 1), // No top margin for no top border
+        margin: const EdgeInsets.only(left: 1, right: 1, bottom: 1),
         decoration: BoxDecoration(
           color: const Color(0xFFFFF7F7),
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
@@ -206,72 +153,155 @@ class _InputState extends State<Input> {
 
   @override
   Widget build(BuildContext context) {
-    final hasError = widget.validator != null && 
-        widget.controller != null && 
+    final hasError =
+        widget.validator != null &&
+        widget.controller != null &&
         widget.validator!(widget.controller!.text) != null;
 
-    Widget textField = TextFormField(
+    TextFormField textField = TextFormField(
       controller: widget.controller,
       focusNode: _focusNode,
       obscureText: widget.obscureText,
       validator: widget.validator,
+      onChanged: (value) {
+        widget.onChanged?.call(value);
+        if (widget.validator != null) {
+          setState(() {});
+        }
+      },
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.hintText,
         helperText: widget.helperText,
         suffixIcon: _buildSuffixIcon(),
-        
+
         // Background Color
         filled: true,
         fillColor: const Color(0xFFFFF7F7),
-        
+
         // Padding
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+
         // Borders
         border: _buildBorder(isFocused: false, isError: false),
         enabledBorder: _buildBorder(isFocused: false, isError: hasError),
-        focusedBorder: _buildBorder(isFocused: true, isError: hasError),
+        focusedBorder: _buildBorder(isFocused: true, isError: false),
+        disabledBorder: _buildBorder(isFocused: false, isError: false),
         errorBorder: _buildBorder(isFocused: false, isError: true),
         focusedErrorBorder: _buildBorder(isFocused: true, isError: true),
-        
+
         // Text Styling
         floatingLabelStyle: TextStyle(
           color: hasError ? AppColors.error : AppColors.primary,
-          fontSize: 12,
           fontFamily: 'Kanit',
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
         ),
         labelStyle: TextStyle(
-          color: hasError ? AppColors.error : AppColors.textSecondary,
+          color: hasError ? AppColors.error : AppColors.primary,
           fontFamily: 'Kanit',
         ),
         hintStyle: const TextStyle(
-          color: AppColors.textSecondary,
+          color: Color(0xFF666666),
           fontFamily: 'Kanit',
         ),
         helperStyle: const TextStyle(
-          color: AppColors.primary,
-          fontSize: 10,
+          color: Color(0xFF666666),
           fontFamily: 'Kanit',
         ),
         errorStyle: const TextStyle(
           color: AppColors.error,
-          fontSize: 10,
           fontFamily: 'Kanit',
         ),
       ),
-      style: const TextStyle(
-        fontFamily: 'Kanit',
-        color: Color(0xFF45171D),
-      ),
+      style: const TextStyle(fontFamily: 'Kanit', color: Color(0xFF45171D)),
     );
 
-    return _buildGradientBorderContainer(child: textField);
+    Widget inputWidget = _buildGradientBorderContainer(child: textField);
+
+    if (widget.showActionsBadge) {
+      final actionsBadgeBorderConfig =
+          widget.actionBadgePosition == ActionBadgePosition.left
+          ? const {'tl': 16.0, 'tr': 8.0, 'bl': 16.0, 'br': 8.0}
+          : const {'tl': 8.0, 'tr': 16.0, 'bl': 8.0, 'br': 16.0};
+
+      final inputBorderRadius =
+          widget.actionBadgePosition == ActionBadgePosition.left
+          ? const {'tl': 8.0, 'tr': 16.0, 'bl': 8.0, 'br': 16.0}
+          : const {'tl': 16.0, 'tr': 8.0, 'bl': 16.0, 'br': 8.0};
+
+      if (widget.actionBadgePosition == ActionBadgePosition.left) {
+        inputWidget = Row(
+          children: [
+            ActionsBadge(
+              itemCount: widget.actionsBadgeCount,
+              icon: widget.actionsBadgeIcon ?? Icons.shopping_cart,
+              borderConfig: actionsBadgeBorderConfig,
+              onPressed: widget.onActionsBadgePressed,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildInputWithCustomBorder(
+                child: textField,
+                borderRadius: inputBorderRadius,
+                hasError: hasError,
+              ),
+            ),
+          ],
+        );
+      } else {
+        inputWidget = Row(
+          children: [
+            Expanded(
+              child: _buildInputWithCustomBorder(
+                child: textField,
+                borderRadius: inputBorderRadius,
+                hasError: hasError,
+              ),
+            ),
+            const SizedBox(width: 12),
+            ActionsBadge(
+              itemCount: widget.actionsBadgeCount,
+              icon: widget.actionsBadgeIcon ?? Icons.shopping_cart,
+              borderConfig: actionsBadgeBorderConfig,
+              onPressed: widget.onActionsBadgePressed,
+            ),
+          ],
+        );
+      }
+    }
+
+    return inputWidget;
+  }
+
+  Widget _buildInputWithCustomBorder({
+    required Widget child,
+    required Map<String, double> borderRadius,
+    required bool hasError,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7F7),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(borderRadius['tl'] ?? 16),
+          topRight: Radius.circular(borderRadius['tr'] ?? 16),
+          bottomLeft: Radius.circular(borderRadius['bl'] ?? 16),
+          bottomRight: Radius.circular(borderRadius['br'] ?? 16),
+        ),
+        border: Border.all(
+          color: hasError
+              ? AppColors.error
+              : (_isFocused ? AppColors.primary : const Color(0xFFE0E0E0)),
+          width: _isFocused ? 2 : 1,
+        ),
+      ),
+      child: child,
+    );
   }
 }
 
-// Custom Icon Widget for use with the input
 class CustomInputIcon extends StatelessWidget {
   final IconData icon;
   final Color? color;
@@ -286,98 +316,84 @@ class CustomInputIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Icon(
-      icon,
-      color: color ?? Colors.white,
-      size: size,
-    );
+    return Icon(icon, color: color ?? Colors.white, size: size);
   }
 }
 
-// Example usage class
-class InputExamples extends StatefulWidget {
-  const InputExamples({super.key});
+class ActionsBadge extends StatelessWidget {
+  final int itemCount;
+  final VoidCallback? onPressed;
+  final double size;
+  final IconData icon;
 
-  @override
-  State<InputExamples> createState() => _InputExamplesState();
-}
+  final Color badgeColor;
+  final Color iconColor;
+  final Map<String, double> borderConfig;
 
-class _InputExamplesState extends State<InputExamples> {
-  final TextEditingController _controller1 = TextEditingController();
-  final TextEditingController _controller2 = TextEditingController();
-  final TextEditingController _controller3 = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller1.dispose();
-    _controller2.dispose();
-    _controller3.dispose();
-    super.dispose();
-  }
+  const ActionsBadge({
+    super.key,
+    required this.itemCount,
+    this.onPressed,
+    required this.icon,
+    this.size = 48.0,
+    this.badgeColor = const Color(0xFFFF4757),
+    this.iconColor = const Color(0xFF45171D),
+    this.borderConfig = const {'tl': 12, 'tr': 20, 'bl': 12, 'br': 20},
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFDF2F2),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
-            
-            // Variant 1: Active (with search icon)
-            Input(
-              controller: _controller1,
-              labelText: "Title",
-              hintText: "Text",
-              helperText: "* req",
-              variant: InputVariant.active,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: size,
+          height: size,
+          decoration: ShapeDecoration(
+            color: const Color(0xFFFFF7F7),
+            shape: RoundedRectangleBorder(
+              side: BorderSide(width: 1.5, color: iconColor),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(borderConfig['tl'] ?? 12),
+                topRight: Radius.circular(borderConfig['tr'] ?? 20),
+                bottomLeft: Radius.circular(borderConfig['bl'] ?? 12),
+                bottomRight: Radius.circular(borderConfig['br'] ?? 20),
+              ),
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Variant 2: Inactive (normal)
-            Input(
-              controller: _controller2,
-              labelText: "Title", 
-              hintText: "Text",
-              helperText: "* req",
-              variant: InputVariant.inactive,
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Variant 3: With Action (button with badge)
-            Input(
-              controller: _controller3,
-              labelText: "Title",
-              hintText: "Label",
-              helperText: "* req",
-              variant: InputVariant.withAction,
-              badgeValue: "1",
-              customIcon: const CustomInputIcon(icon: Icons.shopping_cart),
-              materialIcon: Icons.add,
-              onActionPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Action pressed!')),
-                );
-              },
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Example with gradient border
-            Input(
-              controller: TextEditingController(),
-              labelText: "Title",
-              hintText: "Text",
-              helperText: "* req",
-              variant: InputVariant.inactive,
-              showGradientBorder: true,
-            ),
-          ],
+          ),
+          child: IconButton(
+            icon: Icon(icon, color: iconColor, size: size * 0.5),
+            onPressed: () {
+              onPressed?.call();
+            },
+          ),
         ),
-      ),
+        // Badge
+        if (itemCount > 0)
+          Positioned(
+            right: -4,
+            top: -4,
+            child: Container(
+              height: 20,
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              decoration: BoxDecoration(
+                color: badgeColor,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFFFF7F7), width: 1.5),
+              ),
+              child: Center(
+                child: Text(
+                  itemCount > 99 ? '99+' : itemCount.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

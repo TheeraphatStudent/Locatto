@@ -35,19 +35,68 @@ export class LotteryService {
     });
   }
 
-  static async getAll(): Promise<any[]> {
+  static async getAll(page: number, size: number): Promise<{ lotteries: any[], total: number }> {
     return new Promise((resolve, reject) => {
-      conn.query(
-        'SELECT * FROM lottery ORDER BY created DESC',
-        (err: any, result: any[]) => {
-          if (err) {
-            console.error('Database error:', err);
-            reject(err);
-            return;
-          }
-          resolve(result);
-        }
-      );
+      const offset = (page - 1) * size;
+
+      // console.log("Offset: ", offset)
+      // console.log("Size: ", size)
+
+      const dataQuery = 'SELECT * FROM lottery LIMIT ? OFFSET ?';
+      const countQuery = 'SELECT COUNT(*) as total FROM lottery';
+
+      Promise.all([
+        new Promise((resolve, reject) => {
+          conn.query(dataQuery, [size, offset], (err: any, results: any) => {
+            if (err) reject(err);
+            else resolve(results);
+          });
+        }),
+        new Promise((resolve, reject) => {
+          conn.query(countQuery, [], (err: any, results: any) => {
+            if (err) reject(err);
+            else resolve(results);
+          });
+        })
+      ]).then(([lotteriesResult, countResult]: any) => {
+        const lotteries = lotteriesResult;
+        const total = countResult[0].total;
+        resolve({ lotteries, total });
+      }).catch((err) => {
+        console.error('Database error:', err);
+        reject(err);
+      });
+    });
+  }
+
+  static async search(query: string, page: number, size: number): Promise<{ lotteries: any[], total: number }> {
+    return new Promise((resolve, reject) => {
+      const offset = (page - 1) * size;
+      const searchQuery = `%${query}%`;
+      const dataQuery = 'SELECT * FROM lottery WHERE lottery_number LIKE ? ORDER BY created DESC LIMIT ? OFFSET ?';
+      const countQuery = 'SELECT COUNT(*) as total FROM lottery WHERE lottery_number LIKE ?';
+
+      Promise.all([
+        new Promise((resolve, reject) => {
+          conn.query(dataQuery, [searchQuery, size, offset], (err: any, results: any) => {
+            if (err) reject(err);
+            else resolve(results);
+          });
+        }),
+        new Promise((resolve, reject) => {
+          conn.query(countQuery, [searchQuery], (err: any, results: any) => {
+            if (err) reject(err);
+            else resolve(results);
+          });
+        })
+      ]).then(([lotteriesResult, countResult]: any) => {
+        const lotteries = lotteriesResult;
+        const total = countResult[0].total;
+        resolve({ lotteries, total });
+      }).catch((err) => {
+        console.error('Database error:', err);
+        reject(err);
+      });
     });
   }
 
@@ -72,14 +121,14 @@ export class LotteryService {
   static async selectRandomWinners(followed: boolean = false): Promise<{ success: boolean; winners?: any; message?: string }> {
     return new Promise(async (resolve) => {
       try {
-        const lotteries = followed ? await this.getPurchasedLotteries() : await this.getAll();
+        const lotteryData = followed ? await this.getPurchasedLotteries() : (await this.getAll(1, 1000000)).lotteries;
 
-        if (lotteries.length < 3) {
+        if (lotteryData.length < 3) {
           resolve({ success: false, message: 'Not enough lottery entries for random selection' });
           return;
         }
 
-        const lotteryNumbers = [...new Set(lotteries.map(l => l.lottery_number))];
+        const lotteryNumbers = [...new Set(lotteryData.map((l: any) => l.lottery_number))];
 
         if (lotteryNumbers.length < 3) {
           resolve({ success: false, message: 'Not enough unique lottery numbers for random selection' });

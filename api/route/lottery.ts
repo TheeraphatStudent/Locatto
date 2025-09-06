@@ -26,6 +26,8 @@ router.get('/random/reward/unfollowed', LotteryController.selectRandomWinnersUnf
 router.get('/', LotteryController.getAll);
 router.get('/:id', LotteryController.getById);
 
+router.post('/search', LotteryController.search);
+
 router.put('/:id', LotteryController.update);
 
 router.delete('/:id', LotteryController.delete);

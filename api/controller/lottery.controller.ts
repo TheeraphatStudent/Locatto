@@ -39,20 +39,40 @@ export class LotteryController {
 
   static async getAll(req: Request, res: Response): Promise<void> {
     try {
-      if (req.query.id) {
-        const id = +req.query.id;
-        const lottery = await LotteryService.getById(id);
-        if (lottery) {
-          res.json(lottery);
-        } else {
-          res.status(404).json({ error: 'Lottery not found' });
-        }
-      } else {
-        const lotteries = await LotteryService.getAll();
-        res.json(lotteries);
-      }
+      const page = parseInt(req.query.page as string) || 1;
+      const size = parseInt(req.query.size as string) || 10;
+
+      const { lotteries, total } = await LotteryService.getAll(page, size);
+      res.json({
+        data: lotteries,
+        totalPages: Math.ceil(total / size),
+        currentPage: page,
+      });
     } catch (error) {
       console.error('Get lotteries error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async search(req: Request, res: Response): Promise<void> {
+    try {
+      const { search } = req.body;
+      const page = parseInt(req.query.page as string) || 1;
+      const size = parseInt(req.query.size as string) || 10;
+
+      if (!search) {
+        res.status(400).json({ error: 'Search query is required' });
+        return;
+      }
+
+      const { lotteries, total } = await LotteryService.search(search, page, size);
+      res.json({
+        data: lotteries,
+        totalPages: Math.ceil(total / size),
+        currentPage: page,
+      });
+    } catch (error) {
+      console.error('Search lotteries error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
