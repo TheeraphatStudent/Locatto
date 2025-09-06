@@ -41,6 +41,7 @@ export class LotteryController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const size = parseInt(req.query.size as string) || 10;
+
       const { lotteries, total } = await LotteryService.getAll(page, size);
       res.json({
         data: lotteries,
