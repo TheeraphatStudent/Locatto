@@ -24,7 +24,7 @@ class Avatar extends StatefulWidget {
     this.initialImagePath,
     this.onImageChanged,
     this.state = AvatarState.edit,
-    this.size = 96,
+    this.size = 120,
     this.backgroundColor = const Color(0xFFAE9DA0),
     this.iconColor = const Color(0xFF6D4C5A),
     this.editButtonColor = const Color(0xFFFF69B4),
