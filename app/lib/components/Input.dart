@@ -21,8 +21,8 @@ class Input extends StatefulWidget {
   final InputVariant variant;
   final Color? suffixColor;
   final IconData? suffixIcon;
-
   final VoidCallback? onActionPressed;
+
   final String? badgeValue;
   final Widget? customIcon;
   final IconData? materialIcon;
@@ -33,6 +33,7 @@ class Input extends StatefulWidget {
   final IconData? actionsBadgeIcon;
   final VoidCallback? onActionsBadgePressed;
   final ActionBadgePosition actionBadgePosition;
+  final ValueChanged<String>? onChanged;
 
   const Input({
     super.key,
@@ -58,6 +59,7 @@ class Input extends StatefulWidget {
     this.actionsBadgeIcon = Icons.shopping_cart,
     this.onActionsBadgePressed,
     this.actionBadgePosition = ActionBadgePosition.right,
+    this.onChanged,
   });
 
   @override
@@ -162,6 +164,7 @@ class _InputState extends State<Input> {
       obscureText: widget.obscureText,
       validator: widget.validator,
       onChanged: (value) {
+        widget.onChanged?.call(value);
         if (widget.validator != null) {
           setState(() {});
         }
@@ -185,7 +188,7 @@ class _InputState extends State<Input> {
         // Borders
         border: _buildBorder(isFocused: false, isError: false),
         enabledBorder: _buildBorder(isFocused: false, isError: hasError),
-        // focusedBorder: _buildBorder(isFocused: true, isError: false),
+        focusedBorder: _buildBorder(isFocused: true, isError: false),
         disabledBorder: _buildBorder(isFocused: false, isError: false),
         errorBorder: _buildBorder(isFocused: false, isError: true),
         focusedErrorBorder: _buildBorder(isFocused: true, isError: true),

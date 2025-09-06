@@ -1,10 +1,20 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as jwt_lib;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as json;
 import '../config.dart';
 
+enum RequestMethod {
+  get,
+  post,
+  put,
+  delete
+}
+
 class Transport {
   final AppConfig config = AppConfig();
+    final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
   bool isSign;
 
   Transport({this.isSign = false});
@@ -32,18 +42,35 @@ class Transport {
   }
 
   Future<Map<String, dynamic>> requestTransport(
+    RequestMethod reqMethod,
     String endpoint,
     Object payload,
   ) async {
     final token = encodePayload(payload);
     final url = Uri.http(config.getBaseUrl(), endpoint);
 
+    final accessToken = _storage.read(key: config.getTokenStoragename());
+
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: '{"data": "$token"}',
-      );
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken'
+      };
+      http.Response response;
+      switch (reqMethod) {
+        case RequestMethod.get:
+          response = await http.get(url, headers: headers);
+          break;
+        case RequestMethod.post:
+          response = await http.post(url, headers: headers, body: '{"data": "$token"}');
+          break;
+        case RequestMethod.put:
+          response = await http.put(url, headers: headers, body: '{"data": "$token"}');
+          break;
+        case RequestMethod.delete:
+          response = await http.delete(url, headers: headers);
+          break;
+      }
 
       final responseData = json.jsonDecode(response.body);
       if (responseData.containsKey('data')) {

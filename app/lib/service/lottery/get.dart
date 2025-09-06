@@ -1,15 +1,29 @@
-import 'package:http/http.dart' as http;
+import 'package:app/service/transport.dart';
 
 class Lotteryget {
-  Future<http.Response> getCustomerData() async {
-    final response = await http.get(
-      Uri.parse('http://localhost:3000/api/customers'),
-    );
-    return response;
+  final Transport _transport = Transport();
+
+  Future<Map<String, dynamic>> getLotteries(int page, int size) async {
+    final response = await _transport.requestTransport(RequestMethod.post, '/lottery?page=$page&size=$size', {});
+
+    if (response['success'] == true) {
+      return response;
+    } else {
+      throw Exception('Failed to load lotteries');
+    }
+  }
+
+  Future<Map<String, dynamic>> searchLotteries(
+    String query,
+    int page,
+    int size,
+  ) async {
+    final response = await _transport.requestTransport(RequestMethod.post, '/lottery/search?page=$page&size=$size', {'search': query});
+
+    if (response['success'] == true) {
+      return response;
+    } else {
+      throw Exception('Failed to search lotteries');
+    }
   }
 }
-/* int lid 
-  int lottery_number
-  period
-  created
-  update*/
