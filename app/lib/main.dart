@@ -5,6 +5,7 @@ import 'package:app/pages/debug.page.dart';
 import 'package:app/pages/home.page.dart';
 import 'package:app/pages/login.page.dart';
 import 'package:app/pages/lottery.page.dart';
+import 'package:app/pages/onboarding.page.dart';
 // import 'package:app/components/Avatar.dart';
 // import 'package:app/components/Button.dart';
 // import 'package:app/components/Footer.dart';
@@ -14,6 +15,7 @@ import 'package:app/pages/lottery.page.dart';
 import 'package:app/pages/profile.page.dart';
 import 'package:app/pages/purchase.page.dart';
 import 'package:app/pages/register.page.dart';
+import 'package:app/pages/forgotpass.page.dart';
 import 'package:flutter/material.dart';
 import 'style/theme.dart';
 // import 'package:app/components/ActiveButton.dart';
@@ -39,6 +41,8 @@ class MyApp extends StatelessWidget {
         '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
         '/debug': (context) => const DebugPage(),
+        '/onboarding': (context) => const OnboardingPage(),
+        '/fogotpass': (context) => const ForgotPassPage(),
       },
       // onUnknownRoute: (context) => const NotfoundPage(),
     );
