@@ -1,10 +1,18 @@
+import 'dart:developer';
+
 import 'package:app/service/transport.dart';
 
 class Lotteryget {
   final Transport _transport = Transport();
 
   Future<Map<String, dynamic>> getLotteries(int page, int size) async {
-    final response = await _transport.requestTransport(RequestMethod.post, '/lottery?page=$page&size=$size', {});
+    log("Print lottery work!");
+
+    final response = await _transport.requestTransport(
+      RequestMethod.post,
+      '/lottery?page=$page&size=$size',
+      {},
+    );
 
     if (response['success'] == true) {
       return response;
@@ -18,7 +26,11 @@ class Lotteryget {
     int page,
     int size,
   ) async {
-    final response = await _transport.requestTransport(RequestMethod.post, '/lottery/search?page=$page&size=$size', {'search': query});
+    final response = await _transport.requestTransport(
+      RequestMethod.post,
+      '/lottery/search?page=$page&size=$size',
+      {'search': query},
+    );
 
     if (response['success'] == true) {
       return response;
