@@ -1,4 +1,4 @@
-import { conn } from '../db/connectiondb';
+import { conn, queryAsync } from '../db/connectiondb';
 
 export interface PaymentData {
   payid?: number;
@@ -9,85 +9,69 @@ export interface PaymentData {
 
 export class PaymentService {
   static async create(data: PaymentData): Promise<{ success: boolean; message: string; payment?: any }> {
-    return new Promise((resolve) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         'INSERT INTO payment (uid, tier, revenue) VALUES (?, ?, ?)',
-        [data.uid, data.tier, data.revenue],
-        (err: any, result: any) => {
-          if (err) {
-            console.error('Database error:', err);
-            resolve({ success: false, message: 'Internal server error' });
-            return;
-          }
-
-          resolve({
-            success: true,
-            message: 'Payment created successfully',
-            payment: { payid: result.insertId, ...data }
-          });
-        }
+        [data.uid, data.tier, data.revenue]
       );
-    });
+
+      return {
+        success: true,
+        message: 'Payment created successfully',
+        payment: { payid: (result as any).insertId, ...data }
+      };
+    } catch (error) {
+      console.error('Database error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
   }
 
   static async getAll(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         `SELECT p.*, u.name as user_name, u.username 
          FROM payment p 
          LEFT JOIN user u ON p.uid = u.uid 
-         ORDER BY p.created DESC`,
-        (err: any, result: any[]) => {
-          if (err) {
-            console.error('Database error:', err);
-            reject(err);
-            return;
-          }
-          resolve(result);
-        }
+         ORDER BY p.created DESC`
       );
-    });
+      return Array.isArray(result) ? result : [];
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
   }
 
   static async getById(payid: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         `SELECT p.*, u.name as user_name, u.username 
          FROM payment p 
          LEFT JOIN user u ON p.uid = u.uid 
          WHERE p.payid = ?`,
-        [payid],
-        (err: any, result: any[]) => {
-          if (err) {
-            console.error('Database error:', err);
-            reject(err);
-            return;
-          }
-          resolve(result[0] || null);
-        }
+        [payid]
       );
-    });
+      return Array.isArray(result) && result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
   }
 
   static async getByUserId(uid: number): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         'SELECT * FROM payment WHERE uid = ? ORDER BY created DESC',
-        [uid],
-        (err: any, result: any[]) => {
-          if (err) {
-            console.error('Database error:', err);
-            reject(err);
-            return;
-          }
-          resolve(result);
-        }
+        [uid]
       );
-    });
+      return Array.isArray(result) ? result : [];
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
   }
 
   static async update(payid: number, data: Partial<PaymentData>): Promise<{ success: boolean; message: string }> {
-    return new Promise((resolve) => {
+    try {
       const fields = [];
       const values = [];
 
@@ -105,53 +89,39 @@ export class PaymentService {
       }
 
       if (fields.length === 0) {
-        resolve({ success: false, message: 'No fields to update' });
-        return;
+        return { success: false, message: 'No fields to update' };
       }
 
       values.push(payid);
 
-      conn.query(
+      const [result] = await queryAsync(
         `UPDATE payment SET ${fields.join(', ')} WHERE payid = ?`,
-        values,
-        (err: any, result: any) => {
-          if (err) {
-            console.error('Database error:', err);
-            resolve({ success: false, message: 'Internal server error' });
-            return;
-          }
-
-          if (result.affectedRows === 0) {
-            resolve({ success: false, message: 'Payment not found' });
-            return;
-          }
-
-          resolve({ success: true, message: 'Payment updated successfully' });
-        }
+        values
       );
-    });
+
+      if ((result as any).affectedRows === 0) {
+        return { success: false, message: 'Payment not found' };
+      }
+
+      return { success: true, message: 'Payment updated successfully' };
+    } catch (error) {
+      console.error('Database error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
   }
 
   static async delete(payid: number): Promise<{ success: boolean; message: string }> {
-    return new Promise((resolve) => {
-      conn.query(
-        'DELETE FROM payment WHERE payid = ?',
-        [payid],
-        (err: any, result: any) => {
-          if (err) {
-            console.error('Database error:', err);
-            resolve({ success: false, message: 'Internal server error' });
-            return;
-          }
+    try {
+      const [result] = await queryAsync('DELETE FROM payment WHERE payid = ?', [payid]);
 
-          if (result.affectedRows === 0) {
-            resolve({ success: false, message: 'Payment not found' });
-            return;
-          }
+      if ((result as any).affectedRows === 0) {
+        return { success: false, message: 'Payment not found' };
+      }
 
-          resolve({ success: true, message: 'Payment deleted successfully' });
-        }
-      );
-    });
+      return { success: true, message: 'Payment deleted successfully' };
+    } catch (error) {
+      console.error('Database error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
   }
 }
