@@ -8,15 +8,25 @@ const IS_SIGN = process.env.IS_SIGN === 'true';
 const handleRequestDecoding = (req: any): void => {
   try {
     console.group("Request");
-    console.log("Body: ", req.body)
+    console.log("Body: ", req.body);
 
-    let decoded = jwt.decode(req.body.data);
+    let decoded: any;
+    if (IS_SIGN) {
+      decoded = jwt.verify(req.body.data, JWT_SECRET, { algorithms: ['HS256'] });
+    } else {
+      decoded = jwt.decode(req.body.data);
+    }
 
-    console.log("Decoded: ", decoded)
+    console.log("Decoded: ", decoded);
     console.groupEnd();
 
-    req.body = decoded;
+    if (decoded && typeof decoded === 'object') {
+      req.body = decoded;
+    } else {
+      req.body = {};
+    }
   } catch (error) {
+    console.error("JWT decoding error:", error);
     req.body = {};
   }
 };
@@ -24,7 +34,9 @@ const handleRequestDecoding = (req: any): void => {
 const handleResponseEncoding = (res: Response): void => {
   const originalJson = res.json;
   res.json = function(data: any) {
-    const encodedResponse = IS_SIGN ? jwt.sign(data, JWT_SECRET) : jwt.sign(data, '', { algorithm: 'none' });
+    const encodedResponse = IS_SIGN
+      ? jwt.sign(data, JWT_SECRET, { algorithm: 'HS256' })
+      : jwt.sign(data, '', { algorithm: 'none' });
     return originalJson.call(this, { data: encodedResponse });
   };
 };
@@ -43,7 +55,7 @@ const isContain = (content: string) => {
 } 
 
 export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  // console.log("Request Body: ", req.body)
+  console.log("Request Body: ", req.body)
   // console.log("Request Data: ", req.data)
   // console.log("File: ", req)
 

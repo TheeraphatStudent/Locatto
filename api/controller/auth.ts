@@ -31,16 +31,23 @@ export class AuthController {
 
       if (result.success) {
         res.json({
+          success: true,
           message: result.message,
           token: result.token,
           user: result.user
         });
       } else {
-        res.status(result.message === 'Invalid credentials' ? 401 : 500).json({ error: result.message });
+        res.status(result.message === 'Invalid credentials' ? 401 : 500).json({
+          success: false,
+          error: result.message
+        });
       }
     } catch (error) {
       console.error('Login error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error'
+      });
     }
   }
 

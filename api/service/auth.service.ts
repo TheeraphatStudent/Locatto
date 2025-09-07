@@ -43,7 +43,7 @@ export class AuthService {
   }> {
     try {
       const [users] = await queryAsync(
-        'SELECT uid, name, telno, email, password, credit, role FROM user WHERE username = ?',
+        'SELECT uid, password, credit, role FROM user WHERE email = ?',
         [credentials.username]
       );
 
@@ -105,10 +105,14 @@ export class AuthService {
 
   static async resetPassword(data: LoginRequest): Promise<{ success: boolean; message: string }> {
     try {
+      console.log("Reset password data:", data);
+
       const [users] = await queryAsync(
         'SELECT uid FROM user WHERE username = ?',
         [data.username]
       );
+
+      console.log("Users found:", users);
 
       if (!Array.isArray(users) || users.length === 0) {
         return { success: false, message: 'User not found' };
@@ -121,9 +125,11 @@ export class AuthService {
         [hashedPassword, data.username]
       );
 
+      console.log('Password reset successful for user:', data.username);
+
       return { success: true, message: 'Password reset successful' };
     } catch (error) {
-      console.error('Hash error:', error);
+      console.error('Reset password error:', error);
       return { success: false, message: 'Internal server error' };
     }
   }
@@ -148,10 +154,14 @@ export class AuthService {
 
   static async validateUserToken(data: { uid: number; token: string }): Promise<{ success: boolean; message: string; user?: any }> {
     try {
+      console.log("Data: ", data)
+
       const [users] = await queryAsync(
         'SELECT uid, name, telno, email, credit, role FROM user WHERE uid = ? AND token = ?',
         [data.uid, data.token]
       );
+
+      console.log("Users: ", users)
 
       if (!Array.isArray(users) || users.length === 0) {
         return { success: false, message: 'User not found or token mismatch' };
