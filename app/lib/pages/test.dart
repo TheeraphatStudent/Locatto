@@ -1,4 +1,5 @@
 import 'package:app/components/TotalPrice.dart';
+import 'package:app/components/statusLottery.dart';
 import 'package:flutter/material.dart';
 
 class TestPage extends StatelessWidget {
@@ -12,28 +13,16 @@ class TestPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TotalPrice(
-              price: 1500,
-              coin: 20,
-              itemCount: 5,
-              onPay: () {
-                // ใส่ logic เมื่อกดปุ่มชำระเงิน
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('แจ้งเตือน'),
-                    content: const Text('คุณกดปุ่มชำระเงินแล้ว!'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('ปิด'),
-                      ),
-                    ],
-                  ),
-                );
-              },
+            StatusLottery(
+              period: '31 สิงหาคม 2565',
+              status: 'กำลังรอ...',
+              rewards: [
+                {'number': '871955', 'type': '-', 'amount': 1, 'prize': '-'},
+                {'number': '871945', 'type': '-', 'amount': 12, 'prize': '-'},
+              ],
+              backgroundColor: Colors.red.shade50, // สีพื้นหลัง
+              statusColor: Colors.yellow.shade200, // สีของ status
             ),
-            // แสดง component Lottery
           ],
         ),
       ),
