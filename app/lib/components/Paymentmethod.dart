@@ -13,11 +13,13 @@ class _PaymentMethodState extends State<PaymentMethod> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFFFFEFEF), // พื้นหลังชมพูอ่อน
+      color: const Color(0xFFF8F8F8), // พื้นหลังชมพูอ่อน
       elevation: 6.0,
       shadowColor: Colors.black.withOpacity(0.15),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
+      child: Container(
+        width: 350, // กำหนดความกว้างของการ์ด
+        height: 100, // กำหนดความสูงของการ์ด
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,8 +60,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   const Text(
                     "Lotto Coin",
                     style: TextStyle(
-                      color: Colors.pink,
-                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF45171D),
+                      // เพิ่มขนาดตัวอักษร
                     ),
                   ),
                 ],
