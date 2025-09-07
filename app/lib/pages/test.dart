@@ -1,6 +1,5 @@
+import 'package:app/components/TotalPrice.dart';
 import 'package:flutter/material.dart';
-import 'package:app/components/Paymentmethod.dart';
-import '../components/Lottery.dart';
 
 class TestPage extends StatelessWidget {
   const TestPage({super.key});
@@ -12,8 +11,28 @@ class TestPage extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            PaymentMethod(),
+          children: [
+            TotalPrice(
+              price: 1500,
+              coin: 20,
+              itemCount: 5,
+              onPay: () {
+                // ใส่ logic เมื่อกดปุ่มชำระเงิน
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('แจ้งเตือน'),
+                    content: const Text('คุณกดปุ่มชำระเงินแล้ว!'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('ปิด'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
             // แสดง component Lottery
           ],
         ),
