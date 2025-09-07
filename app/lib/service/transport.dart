@@ -20,12 +20,16 @@ class Transport {
   Transport({this.isSign = false});
 
   String encodePayload(Object body) {
-    final jwt = jwt_lib.JWT(body);
+    final jwt = jwt_lib.JWT(
+      body,
+      issuer: 'flutter-app',
+    );
+
     if (isSign) {
       return jwt.sign(jwt_lib.SecretKey(config.getJwtSecret()));
     }
 
-    return jwt.toString();
+    return jwt.sign(jwt_lib.SecretKey(''));
   }
 
   Map<String, dynamic> decodePayload(String token) {

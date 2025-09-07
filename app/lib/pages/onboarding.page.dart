@@ -1,119 +1,191 @@
+import 'package:app/components/Button.dart';
+import 'package:app/components/Input.dart';
+import 'package:app/components/redcurve.dart';
+import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 
-class OnboardingPage extends StatelessWidget {
-  const OnboardingPage({super.key});
+class OnBoardingPage extends StatelessWidget {
+  const OnBoardingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFA615D),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: AppColors.secondary, // เปลี่ยนเป็นสีเหลือง
+      body: SafeArea(
+        child: Stack(
           children: [
-          
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.amber,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                Icons.pets,
-                size: 50,
-                color: Colors.white,
-              ),
-            ),
-            
-            SizedBox(height: 20),
-            
-            Text(
-              'Locatto',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.yellow,
-              ),
-            ),
-            
-            SizedBox(height: 50),
-         
-            
-            
-            SizedBox(height: 10),
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'จะเลขไหนก็  ',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+            // พื้นหลังแดงแบบโค้ง
+            Positioned.fill(child: CustomPaint(painter: RedCurvePainter())),
+            // เนื้อหาเดิม
+            Expanded(
+              child: SizedBox(
+                height:
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
                   ),
-                ),
-                Text(
-                  '80',
-                  style: TextStyle(
-                    fontSize: 60,
-                    //fontWeight: FontWeight.bold,
-                    color: Colors.yellow,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Logo & Title
+                          Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(
+                              bottom: 0,
+                            ), // ปรับ margin เป็น 0
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  'assets/images/logo_primary.png',
+                                  height: 80,
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Lotcatto',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFFF5A5F),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 240), // ขยับฟิลด์ลงมาจากโลโก้
+                          Container(
+                            width: double.infinity,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              spacing: 10,
+                              children: [
+                                Text(
+                                  'จะเลขไหนก็ ',
+                                  style: TextStyle(
+                                    color: const Color(
+                                      0xFFFFF7F7,
+                                    ) /* Lottocat-White */,
+                                    fontSize: 24,
+                                    fontFamily: 'Kanit',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: ' ',
+                                        style: TextStyle(
+                                          color: const Color(
+                                            0xFFFFF7F7,
+                                          ) /* Lottocat-White */,
+                                          fontSize: 24,
+                                          fontFamily: 'Kanit',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: '80',
+                                        style: TextStyle(
+                                          color: const Color(
+                                            0xFFFAE12F,
+                                          ) /* Lottocat-Secondary */,
+                                          fontSize: 48,
+                                          fontFamily: 'Kanit',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: ' ',
+                                        style: TextStyle(
+                                          color: const Color(
+                                            0xFFFFF7F7,
+                                          ) /* Lottocat-White */,
+                                          fontSize: 24,
+                                          fontFamily: 'Kanit',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  'บาท',
+                                  style: TextStyle(
+                                    color: const Color(
+                                      0xFFFFF7F7,
+                                    ) /* Lottocat-White */,
+                                    fontSize: 24,
+                                    fontFamily: 'Kanit',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      // ปุ่มและข้อความด้านล่างสุด
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // TextButton(
+                          //   // ปุ่มไม่มีบัญชี
+                          //   onPressed: () {},
+                          //   child: const Text(
+                          //     'ยังไม่มีบัญชีหรอ?',
+                          //     style: TextStyle(
+                          //       color: Colors.yellow,
+                          //       decoration: TextDecoration.underline,
+                          //       fontSize: 16,
+                          //     ),
+                          //   ),
+                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/login');
+                                },
+                                child: const Text(
+                                  'ยังไม่มีบัญชี?',
+                                  style: TextStyle(
+                                    color: Colors.yellow,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.yellow,
+                                    fontSize: 16,
+                                    fontFamily: 'Kanit',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ButtonActions(
+                                text: 'มีบัญชีแล้ว',
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/register');
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(width: 10),
-                Text(
-                  'บาท',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            
-            SizedBox(height: 80),
-           
-            GestureDetector(
-              onTap: () {
-                print('ไปหน้า Login');
-                
-              },
-              child: Text(
-                'มีบัญชีแล้ว?',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.yellow,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.yellow,
-                ),
-              ),
-            ),
-            
-            SizedBox(height: 30),
-            
-           
-            ElevatedButton(
-              onPressed: () {
-                print('/Register');
-                
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 150, vertical: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-              child: Text(
-                'สมัครเลย',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFFA615D),
                 ),
               ),
             ),
