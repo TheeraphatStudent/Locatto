@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locatto/components/Make_reward_termself.dart';
 import 'package:locatto/page/onboarding.page.dart';
 
 void main() {
@@ -31,9 +32,10 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: '/onboarding',
+      initialRoute: '/make_reward_termself',
       routes: {
         '/onboarding': (context) =>  OnboardingPage(),
+        '/make_reward_termself': (context) => MakeRewardTermself(),
       },
       
     );

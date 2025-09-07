@@ -1,4 +1,4 @@
-/*import 'dart:developer';
+import 'dart:developer';
 
 import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
@@ -67,4 +67,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}*/
+}

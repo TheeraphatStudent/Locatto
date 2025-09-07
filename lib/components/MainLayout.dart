@@ -1,4 +1,4 @@
-/*import 'package:app/components/Footer.dart';
+import 'package:app/components/Footer.dart';
 import 'package:app/components/Header.dart';
 import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
@@ -29,4 +29,4 @@ class MainLayout extends StatelessWidget {
       ),
     );
   }
-}*/
+}
