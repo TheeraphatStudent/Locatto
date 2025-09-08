@@ -1,4 +1,4 @@
-import { conn } from '../db/connectiondb';
+import { conn, queryAsync } from '../db/connectiondb';
 
 export interface PurchaseData {
   pid?: number;
@@ -10,94 +10,78 @@ export interface PurchaseData {
 
 export class PurchaseService {
   static async create(data: PurchaseData): Promise<{ success: boolean; message: string; purchase?: any }> {
-    return new Promise((resolve) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         'INSERT INTO purchase (uid, lid, lot_amount, payid) VALUES (?, ?, ?, ?)',
-        [data.uid, data.lid, data.lot_amount, data.payid],
-        (err: any, result: any) => {
-          if (err) {
-            console.error('Database error:', err);
-            resolve({ success: false, message: 'Internal server error' });
-            return;
-          }
-
-          resolve({
-            success: true,
-            message: 'Purchase created successfully',
-            purchase: { pid: result.insertId, ...data }
-          });
-        }
+        [data.uid, data.lid, data.lot_amount, data.payid]
       );
-    });
+
+      return {
+        success: true,
+        message: 'Purchase created successfully',
+        purchase: { pid: (result as any).insertId, ...data }
+      };
+    } catch (error) {
+      console.error('Database error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
   }
 
   static async getAll(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         `SELECT p.*, u.name as user_name, l.lottery_number, pay.tier as payment_tier 
          FROM purchase p 
          LEFT JOIN user u ON p.uid = u.uid 
          LEFT JOIN lottery l ON p.lid = l.lid 
          LEFT JOIN payment pay ON p.payid = pay.payid 
-         ORDER BY p.created DESC`,
-        (err: any, result: any[]) => {
-          if (err) {
-            console.error('Database error:', err);
-            reject(err);
-            return;
-          }
-          resolve(result);
-        }
+         ORDER BY p.created DESC`
       );
-    });
+      return Array.isArray(result) ? result : [];
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
   }
 
   static async getById(pid: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         `SELECT p.*, u.name as user_name, l.lottery_number, pay.tier as payment_tier 
          FROM purchase p 
          LEFT JOIN user u ON p.uid = u.uid 
          LEFT JOIN lottery l ON p.lid = l.lid 
          LEFT JOIN payment pay ON p.payid = pay.payid 
          WHERE p.pid = ?`,
-        [pid],
-        (err: any, result: any[]) => {
-          if (err) {
-            console.error('Database error:', err);
-            reject(err);
-            return;
-          }
-          resolve(result[0] || null);
-        }
+        [pid]
       );
-    });
+      return Array.isArray(result) && result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
   }
 
   static async getByUserId(uid: number): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      conn.query(
+    try {
+      const [result] = await queryAsync(
         `SELECT p.*, l.lottery_number, pay.tier as payment_tier 
          FROM purchase p 
          LEFT JOIN lottery l ON p.lid = l.lid 
          LEFT JOIN payment pay ON p.payid = pay.payid 
          WHERE p.uid = ? 
          ORDER BY p.created DESC`,
-        [uid],
-        (err: any, result: any[]) => {
-          if (err) {
-            console.error('Database error:', err);
-            reject(err);
-            return;
-          }
-          resolve(result);
-        }
+        [uid]
       );
-    });
+      return Array.isArray(result) ? result : [];
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
   }
 
   static async update(pid: number, data: Partial<PurchaseData>): Promise<{ success: boolean; message: string }> {
-    return new Promise((resolve) => {
+    try {
       const fields = [];
       const values = [];
 
@@ -119,53 +103,39 @@ export class PurchaseService {
       }
 
       if (fields.length === 0) {
-        resolve({ success: false, message: 'No fields to update' });
-        return;
+        return { success: false, message: 'No fields to update' };
       }
 
       values.push(pid);
 
-      conn.query(
+      const [result] = await queryAsync(
         `UPDATE purchase SET ${fields.join(', ')} WHERE pid = ?`,
-        values,
-        (err: any, result: any) => {
-          if (err) {
-            console.error('Database error:', err);
-            resolve({ success: false, message: 'Internal server error' });
-            return;
-          }
-
-          if (result.affectedRows === 0) {
-            resolve({ success: false, message: 'Purchase not found' });
-            return;
-          }
-
-          resolve({ success: true, message: 'Purchase updated successfully' });
-        }
+        values
       );
-    });
+
+      if ((result as any).affectedRows === 0) {
+        return { success: false, message: 'Purchase not found' };
+      }
+
+      return { success: true, message: 'Purchase updated successfully' };
+    } catch (error) {
+      console.error('Database error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
   }
 
   static async delete(pid: number): Promise<{ success: boolean; message: string }> {
-    return new Promise((resolve) => {
-      conn.query(
-        'DELETE FROM purchase WHERE pid = ?',
-        [pid],
-        (err: any, result: any) => {
-          if (err) {
-            console.error('Database error:', err);
-            resolve({ success: false, message: 'Internal server error' });
-            return;
-          }
+    try {
+      const [result] = await queryAsync('DELETE FROM purchase WHERE pid = ?', [pid]);
 
-          if (result.affectedRows === 0) {
-            resolve({ success: false, message: 'Purchase not found' });
-            return;
-          }
+      if ((result as any).affectedRows === 0) {
+        return { success: false, message: 'Purchase not found' };
+      }
 
-          resolve({ success: true, message: 'Purchase deleted successfully' });
-        }
-      );
-    });
+      return { success: true, message: 'Purchase deleted successfully' };
+    } catch (error) {
+      console.error('Database error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
   }
 }

@@ -16,12 +16,10 @@ import 'package:app/pages/profile.page.dart';
 import 'package:app/pages/purchase.page.dart';
 import 'package:app/pages/register.page.dart';
 import 'package:app/pages/forgotpass.page.dart';
+import 'package:app/pages/test.dart';
 import 'package:flutter/material.dart';
 import 'style/theme.dart';
-import 'package:app/pages/test.dart';
-// import 'package:app/components/ActiveButton.dart';
-// import 'package:app/components/DisabledButton.dart';
-// import 'package:app/components/์Select_Number_Button.dart';
+import 'package:app/pages/admin/home.dart' as AdminHome;
 
 void main() => runApp(const MyApp());
 
@@ -32,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      initialRoute: '/test',
+      initialRoute: '/onboarding',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
@@ -41,10 +39,13 @@ class MyApp extends StatelessWidget {
         '/purchase': (context) => const PurchasePage(),
         '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
-        '/debug': (context) => const DebugPage(),
-        '/onboarding': (context) => const OnboardingPage(),
+        '/onboarding': (context) => const OnBoardingPage(),
         '/forgotpass': (context) => const ForgotPassPage(),
+
+        '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
+
+        '/admin': (context) => const AdminHome.HomePage(),
       },
       // onUnknownRoute: (context) => const NotfoundPage(),
     );

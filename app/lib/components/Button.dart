@@ -9,6 +9,7 @@ class ButtonActions extends StatefulWidget {
   const ButtonActions({
     super.key,
     this.text = '',
+    this.label,
     this.hasShadow = true,
     this.variant = ButtonVariant.light,
     this.theme,
@@ -16,6 +17,7 @@ class ButtonActions extends StatefulWidget {
   });
 
   final String text;
+  final String? label;
   final bool hasShadow;
   final ButtonVariant variant;
   final Color? theme;
@@ -126,7 +128,8 @@ class _ButtonActionsState extends State<ButtonActions>
         break;
     }
 
-    return AnimatedBuilder(
+    // Main button widget
+    final buttonWidget = AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
         return Transform.scale(
@@ -192,6 +195,29 @@ class _ButtonActionsState extends State<ButtonActions>
           ),
         );
       },
+    );
+
+    if (widget.label == null || widget.label!.isEmpty) {
+      return buttonWidget;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8, bottom: 4),
+          child: Text(
+            widget.label!,
+            style: TextStyle(
+              color: accent,
+              fontSize: 12,
+              fontFamily: 'Kanit',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        buttonWidget,
+      ],
     );
   }
 }

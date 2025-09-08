@@ -1,7 +1,10 @@
+import 'package:app/components/Dialogue.dart';
 import 'package:app/style/theme.dart';
 import 'package:app/utils/qr_helper.dart';
 import 'package:app/utils/text_healper.dart';
 import 'package:flutter/material.dart';
+
+// Test kubbb 
 
 class Lottery extends StatefulWidget {
   final String lotteryNumber;
@@ -237,99 +240,43 @@ class _LotteryState extends State<Lottery> {
   }
 
   void _showPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      useSafeArea: true,
-      builder: (BuildContext context) => _LotteryDialog(
-        lotteryNumber: widget.lotteryNumber,
-        qrData: widget.qrData,
-      ),
-    );
-  }
-}
-
-class _LotteryDialog extends StatelessWidget {
-  final String lotteryNumber;
-  final String qrData;
-
-  const _LotteryDialog({required this.lotteryNumber, required this.qrData});
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 320),
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFFE2E2), Color(0xFFFFFADD)],
+    DynamicDialog.show(
+      context,
+      title: 'QR Code',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Cache QR widget to avoid regeneration
+          RepaintBoundary(child: QrWidget(data: widget.qrData)),
+          const SizedBox(height: 20),
+          Text(
+            'หมายเลข: ${widget.lotteryNumber}',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF45171D),
+              fontFamily: 'Kanit',
+            ),
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'QR Code',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF45171D),
-                fontFamily: 'Kanit',
-              ),
+          const SizedBox(height: 8),
+          const Text(
+            'ราคา: 80 บาท',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF666666),
+              fontFamily: 'Kanit',
             ),
-            const SizedBox(height: 20),
-            // Cache QR widget to avoid regeneration
-            RepaintBoundary(child: QrWidget(data: qrData)),
-            const SizedBox(height: 20),
-            Text(
-              'หมายเลข: $lotteryNumber',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF45171D),
-                fontFamily: 'Kanit',
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'ราคา: 80 บาท',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xFF666666),
-                fontFamily: 'Kanit',
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF4745),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'ปิด',
-                  style: TextStyle(
-                    fontFamily: 'Kanit',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+      type: DialogType.custom,
+      actions: [
+        DialogButton(
+          text: 'ปิด',
+          onPressed: () => Navigator.of(context).pop(),
+          backgroundColor: const Color(0xFFFF4745),
+        ),
+      ],
     );
   }
 }
