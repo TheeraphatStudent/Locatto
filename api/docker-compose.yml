@@ -1,40 +1,15 @@
 services:
-  mysql:
-    image: mysql:5.7
-    container_name: mysql-container
+  api:
+    build:
+      context: .
+      dockerfile: dockerFile
     restart: always
-    environment:
-      - MYSQL_HOST=${DB_HOST}
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_USER=${DB_USERNAME}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    env_file:
-      - .env
     ports:
-      - "3306:3306"
+      - "3000:3000"
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql:Z
+      - ./uploads:/app/uploads
     networks:
       - lotcatto
-
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: dockerFile
-  #   restart: always
-  #   depends_on:
-  #     - mysql
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./uploads:/app/uploads
-  #   networks:
-  #     - lotcatto
-
-volumes:
-  mysql_data:
 
 networks:
   lotcatto:
