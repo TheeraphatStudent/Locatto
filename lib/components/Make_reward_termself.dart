@@ -70,11 +70,11 @@ class RewardPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      child: Text('ยกเลิก', style: TextStyle(color: Colors.white ,fontWeight:FontWeight.bold)),
+                      child: Text('ยกเลิก', style: TextStyle(color: Colors.white ,fontWeight:FontWeight.bold,fontSize: 20)),
                     ),
                   ),
                   
-                  SizedBox(width: 10),
+                  SizedBox(width: 40),
                   
                   Expanded(
                     child: ElevatedButton(
@@ -86,7 +86,7 @@ class RewardPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      child: Text('ดำเนินการ', style: TextStyle(color: Color(0xFFFA615D),fontWeight: FontWeight.bold)),
+                      child: Text('ดำเนินการ', style: TextStyle(color: Color(0xFFFA615D),fontWeight: FontWeight.bold,fontSize: 20)),
                     ),
                   ),
                 ],
