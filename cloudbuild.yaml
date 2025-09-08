@@ -1,12 +1,15 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: Build
-    args: ['build', '-f', './api/dockerFile', '-t', 'gcr.io/$PROJECT_ID/api', './api']
+    dir: 'api'
+    args: ['build', '-f', 'dockerFile', '-t', 'gcr.io/$PROJECT_ID/api', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Push
     args: ['push', 'gcr.io/$PROJECT_ID/api']
+    waitFor: ['Build']
 
   - name: 'docker/compose:1.29.2'
-    args: ['-f', 'api/docker-compose.yaml', 'up', '-d']
+    dir: 'api'
+    args: ['up', '-d']
     waitFor: ['Push']
