@@ -1,5 +1,7 @@
 ## Gcloud deploy api 
 
+- [Source](/cloudbuild.yaml)
+
 ### 1. Login gcloud
 
 ```bash
@@ -14,10 +16,8 @@ gcloud auth login
 gcloud run deploy --source .
 ```
 
-```bash
- gcloud run deploy lottocat --source . --platform managed --region us-central1 --allow-unauthenticated
-```
+### List project secret
 
 ```bash
-gcloud run deploy lottocat --source . --platform managed --region asia-southeast1 --allow-unauthenticated --quiet
+gcloud secrets list
 ```
