@@ -4,6 +4,14 @@ services:
       context: .
       dockerfile: dockerFile
     restart: always
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRE_IN=${JWT_EXPIRE_IN}
+      - IS_SIGN=${IS_SIGN}
     ports:
       - "3000:3000"
     volumes:
