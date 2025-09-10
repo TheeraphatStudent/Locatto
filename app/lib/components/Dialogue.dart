@@ -1,12 +1,8 @@
+import 'dart:ui'; // สำหรับเบลอพื้นหลัง
+
 import 'package:flutter/material.dart';
 
-enum DialogType {
-  success,
-  error,
-  warning,
-  info,
-  custom
-}
+enum DialogType { success, error, warning, info, custom }
 
 class DynamicDialog extends StatelessWidget {
   final String title;
@@ -122,31 +118,34 @@ class DynamicDialog extends StatelessWidget {
             content,
             if (actions != null && actions!.isNotEmpty) ...[
               const SizedBox(height: 20),
-              ...actions!.map((action) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: action.onPressed,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: action.backgroundColor ?? const Color(0xFFFF4745),
-                      foregroundColor: action.foregroundColor ?? Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+              ...actions!.map(
+                (action) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: action.onPressed,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            action.backgroundColor ?? const Color(0xFFFF4745),
+                        foregroundColor: action.foregroundColor ?? Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      action.text,
-                      style: TextStyle(
-                        fontFamily: 'Kanit',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      child: Text(
+                        action.text,
+                        style: TextStyle(
+                          fontFamily: 'Kanit',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              )),
+              ),
             ],
           ],
         ),
@@ -219,12 +218,14 @@ class DialogHelper {
         textAlign: TextAlign.center,
       ),
       type: DialogType.success,
-      actions: actions ?? [
-        DialogButton(
-          text: 'ตกลง',
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ],
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
     );
   }
 
@@ -248,12 +249,14 @@ class DialogHelper {
         textAlign: TextAlign.center,
       ),
       type: DialogType.error,
-      actions: actions ?? [
-        DialogButton(
-          text: 'ตกลง',
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ],
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
     );
   }
 
@@ -277,12 +280,14 @@ class DialogHelper {
         textAlign: TextAlign.center,
       ),
       type: DialogType.warning,
-      actions: actions ?? [
-        DialogButton(
-          text: 'ตกลง',
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ],
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
     );
   }
 
@@ -306,12 +311,14 @@ class DialogHelper {
         textAlign: TextAlign.center,
       ),
       type: DialogType.info,
-      actions: actions ?? [
-        DialogButton(
-          text: 'ตกลง',
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ],
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
     );
   }
 
@@ -355,4 +362,87 @@ class DialogHelper {
       ],
     );
   }
+}
+
+//โชว์ Dialog ระบุจำนวนเหรียญ
+void showCreateMoneyDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'ระบุจำนวนเหรียญสำหรับทดสอบระบบ',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '1 เหรียญ = 1 บาท',
+                style: TextStyle(fontSize: 14, color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: '100',
+                  suffixText: 'เหรียญ',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // ปิด dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'ย้อนกลับ',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Logic สำหรับการยืนยัน
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      side: const BorderSide(color: Colors.red),
+                    ),
+                    child: const Text(
+                      'ยืนยัน',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

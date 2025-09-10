@@ -1,4 +1,4 @@
-import 'package:app/components/TotalPrice.dart';
+import 'package:app/components/Dialogue.dart';
 import 'package:app/components/statusLottery.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +22,19 @@ class TestPage extends StatelessWidget {
               ],
               backgroundColor: Colors.red.shade50, // สีพื้นหลัง
               statusColor: Colors.yellow.shade200, // สีของ status
+            ),
+            InkWell(
+              onTap: () {
+                showCreateMoneyDialog(context);
+              },
+              child: const Text(
+                'เปิด Dialog',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 12,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ],
         ),
