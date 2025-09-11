@@ -1,29 +1,23 @@
+import 'dart:developer';
+
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as jwt_lib;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as json;
 import '../config.dart';
 
-enum RequestMethod {
-  get,
-  post,
-  put,
-  delete
-}
+enum RequestMethod { get, post, put, delete }
 
 class Transport {
   final AppConfig config = AppConfig();
-    final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   bool isSign;
 
   Transport({this.isSign = false});
 
   String encodePayload(Object body) {
-    final jwt = jwt_lib.JWT(
-      body,
-      issuer: 'flutter-app',
-    );
+    final jwt = jwt_lib.JWT(body, issuer: 'flutter-app');
 
     if (isSign) {
       return jwt.sign(jwt_lib.SecretKey(config.getJwtSecret()));
@@ -58,7 +52,7 @@ class Transport {
     try {
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken'
+        'Authorization': 'Bearer $accessToken',
       };
       http.Response response;
       switch (reqMethod) {
@@ -66,10 +60,18 @@ class Transport {
           response = await http.get(url, headers: headers);
           break;
         case RequestMethod.post:
-          response = await http.post(url, headers: headers, body: '{"data": "$token"}');
+          response = await http.post(
+            url,
+            headers: headers,
+            body: '{"data": "$token"}',
+          );
           break;
         case RequestMethod.put:
-          response = await http.put(url, headers: headers, body: '{"data": "$token"}');
+          response = await http.put(
+            url,
+            headers: headers,
+            body: '{"data": "$token"}',
+          );
           break;
         case RequestMethod.delete:
           response = await http.delete(url, headers: headers);
@@ -78,6 +80,8 @@ class Transport {
 
       final responseData = json.jsonDecode(response.body);
       if (responseData.containsKey('data')) {
+        log(responseData.toString());
+
         return decodePayload(responseData['data']);
       }
 

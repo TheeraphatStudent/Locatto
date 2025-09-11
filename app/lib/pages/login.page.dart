@@ -88,7 +88,10 @@ class _LoginPageState extends State<LoginPage> {
         log(response.toString());
 
         if (mounted) {
-          AlertMessage.showError(context, response['message'] ?? 'เข้าสู่ระบบล้มเหลว');
+          AlertMessage.showError(
+            context,
+            response['message'] ?? 'เข้าสู่ระบบล้มเหลว',
+          );
         }
       }
     } catch (e) {

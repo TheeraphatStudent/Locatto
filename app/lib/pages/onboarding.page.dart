@@ -159,14 +159,14 @@ class OnBoardingPage extends StatelessWidget {
                             children: [
                               // const SizedBox(height: 16),
                               ButtonActions(
-                                label: 'ยังไม่มีบัญชีหรอ?',
-                                text: 'มีบัญชีแล้ว',
+                                // label: 'ยังไม่มีบัญชีหรอ?',
+                                text: 'ไปกันเลย',
                                 onPressed: () {
-                                  Navigator.pushNamed(context, '/register');
-                                },
-                                onLabelPressed: () {
                                   Navigator.pushNamed(context, '/login');
                                 },
+                                // onLabelPressed: () {
+                                //   Navigator.pushNamed(context, '/register');
+                                // },
                               ),
                             ],
                           ),

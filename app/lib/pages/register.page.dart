@@ -121,59 +121,6 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  void _showCreditDialog() {
-    _creditController.clear();
-    DynamicDialog.show(
-      context,
-      title: 'จำนวนเครดิตเริ่มต้น',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'กรุณากรอกจำนวนเครดิตที่ต้องการให้ผู้ใช้เริ่มต้น',
-            style: TextStyle(
-              fontSize: 16,
-              color: Color(0xFF45171D),
-              fontFamily: 'Kanit',
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            controller: _creditController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'จำนวนเครดิต',
-              hintText: '0',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            validator: _validateCredit,
-          ),
-        ],
-      ),
-      actions: [
-        DialogButton(
-          text: 'ยกเลิก',
-          onPressed: () => Navigator.of(context).pop(),
-          backgroundColor: const Color(0xFF6C757D),
-        ),
-        DialogButton(
-          text: 'ดำเนินการ',
-          onPressed: () {
-            Navigator.of(context).pop();
-            _handleRegistration();
-          },
-          backgroundColor: const Color(0xFF28A745),
-        ),
-      ],
-    );
-  }
-
   Future<void> _handleRegistration() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -181,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // Validate credit input
     final creditValidation = _validateCredit(_creditController.text);
-    
+
     if (creditValidation != null) {
       AlertMessage.showError(context, creditValidation);
       return;
@@ -361,7 +308,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ButtonActions(
                     label: 'มีบัญชีแล้ว?',
                     text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
-                    onPressed: _isLoading ? null : _showCreditDialog,
+                    onPressed: _isLoading ? null : () { showCreateMoneyDialog(context, (value) { _creditController.text = value; _handleRegistration(); }); },
                     onLabelPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },

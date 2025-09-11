@@ -98,7 +98,7 @@ class DynamicDialog extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
-        constraints: BoxConstraints(maxWidth: maxWidth!),
+        constraints: BoxConstraints(maxWidth: maxWidth ?? 400.0),
         padding: padding,
         decoration: _getDefaultDecoration(),
         child: Column(
@@ -365,7 +365,8 @@ class DialogHelper {
 }
 
 //โชว์ Dialog ระบุจำนวนเหรียญ
-void showCreateMoneyDialog(BuildContext context) {
+void showCreateMoneyDialog(BuildContext context, Function(String) onConfirm) {
+  final TextEditingController _moneyController = TextEditingController();
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -379,7 +380,7 @@ void showCreateMoneyDialog(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                'ระบุจำนวนเหรียญสำหรับทดสอบระบบ',
+                'ระบุจำนวนเครดิตสำหรับสมัครสมาชิก',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -388,15 +389,16 @@ void showCreateMoneyDialog(BuildContext context) {
               ),
               const SizedBox(height: 8),
               const Text(
-                '1 เหรียญ = 1 บาท',
+                '1 เครดิต = เริ่มต้น',
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
               const SizedBox(height: 16),
               TextField(
+                controller: _moneyController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: '100',
-                  suffixText: 'เหรียญ',
+                  suffixText: 'เครดิต',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -423,7 +425,8 @@ void showCreateMoneyDialog(BuildContext context) {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Logic สำหรับการยืนยัน
+                      onConfirm(_moneyController.text);
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
