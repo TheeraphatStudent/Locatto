@@ -157,27 +157,15 @@ class OnBoardingPage extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/login');
-                                },
-                                child: const Text(
-                                  'ยังไม่มีบัญชี?',
-                                  style: TextStyle(
-                                    color: Colors.yellow,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Colors.yellow,
-                                    fontSize: 16,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
+                              // const SizedBox(height: 16),
                               ButtonActions(
+                                label: 'ยังไม่มีบัญชีหรอ?',
                                 text: 'มีบัญชีแล้ว',
                                 onPressed: () {
                                   Navigator.pushNamed(context, '/register');
+                                },
+                                onLabelPressed: () {
+                                  Navigator.pushNamed(context, '/login');
                                 },
                               ),
                             ],

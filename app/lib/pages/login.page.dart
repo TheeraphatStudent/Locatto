@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:app/components/Alert.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/redcurve.dart';
@@ -21,7 +22,6 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _auth = Auth();
   bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -60,7 +60,6 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
@@ -73,12 +72,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response['success'] == true) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('เข้าสู่ระบบสำเร็จ'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          AlertMessage.showSuccess(context, 'เข้าสู่ระบบสำเร็จ');
 
           final role = response['role'];
 
@@ -93,16 +87,16 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         log(response.toString());
 
-        setState(() {
-          _errorMessage = response['message'] ?? 'เข้าสู่ระบบล้มเหลว';
-        });
+        if (mounted) {
+          AlertMessage.showError(context, response['message'] ?? 'เข้าสู่ระบบล้มเหลว');
+        }
       }
     } catch (e) {
       log(e.toString());
 
-      setState(() {
-        _errorMessage = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
-      });
+      if (mounted) {
+        AlertMessage.showError(context, 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -187,13 +181,6 @@ class _LoginPageState extends State<LoginPage> {
                                   hintText: 'กรุณากรอกอีเมลล์',
                                   materialIcon: Icons.email,
                                   validator: _validateUsername,
-                                  onChanged: (value) {
-                                    if (_errorMessage != null) {
-                                      setState(() {
-                                        _errorMessage = null;
-                                      });
-                                    }
-                                  },
                                 ),
                                 const SizedBox(height: 16),
                                 // Password Field
@@ -204,37 +191,8 @@ class _LoginPageState extends State<LoginPage> {
                                   materialIcon: Icons.lock,
                                   obscureText: true,
                                   validator: _validatePassword,
-                                  onChanged: (value) {
-                                    if (_errorMessage != null) {
-                                      setState(() {
-                                        _errorMessage = null;
-                                      });
-                                    }
-                                  },
                                 ),
                                 const SizedBox(height: 8),
-                                // Error Message Display
-                                if (_errorMessage != null)
-                                  Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondary.withOpacity(
-                                        0.1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: AppColors.secondary,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      _errorMessage!,
-                                      style: const TextStyle(
-                                        color: AppColors.secondary,
-                                        fontFamily: 'Kanit',
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
                               ],
                             ),
                           ),

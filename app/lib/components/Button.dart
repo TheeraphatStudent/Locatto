@@ -14,6 +14,7 @@ class ButtonActions extends StatefulWidget {
     this.variant = ButtonVariant.light,
     this.theme,
     this.onPressed,
+    this.onLabelPressed,
   });
 
   final String text;
@@ -22,6 +23,7 @@ class ButtonActions extends StatefulWidget {
   final ButtonVariant variant;
   final Color? theme;
   final VoidCallback? onPressed;
+  final VoidCallback? onLabelPressed;
 
   @override
   State<ButtonActions> createState() => _ButtonActionsState();
@@ -204,18 +206,21 @@ class _ButtonActionsState extends State<ButtonActions>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 4),
+        GestureDetector(
+          onTap: widget.onLabelPressed,
           child: Text(
             widget.label!,
-            style: TextStyle(
-              color: accent,
-              fontSize: 12,
+            style: const TextStyle(
+              color: Colors.yellow,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.yellow,
+              fontSize: 16,
               fontFamily: 'Kanit',
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
+        const SizedBox(height: 8),
         buttonWidget,
       ],
     );

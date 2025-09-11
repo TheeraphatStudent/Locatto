@@ -1,3 +1,4 @@
+import 'package:app/components/Alert.dart';
 import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
@@ -26,7 +27,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final _auth = Auth();
   bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -181,16 +181,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // Validate credit input
     final creditValidation = _validateCredit(_creditController.text);
+    
     if (creditValidation != null) {
-      setState(() {
-        _errorMessage = creditValidation;
-      });
+      AlertMessage.showError(context, creditValidation);
       return;
     }
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
@@ -209,30 +207,26 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (response['success'] == true) {
         if (mounted) {
-          DialogHelper.showSuccess(
-            context,
-            title: 'สมัครสมาชิกสำเร็จ!',
-            message: 'บัญชีของคุณถูกสร้างเรียบร้อยแล้ว',
-            actions: [
-              DialogButton(
-                text: 'เข้าสู่ระบบ',
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, '/login');
-                },
-              ),
-            ],
-          );
+          AlertMessage.showSuccess(context, 'สมัครสมาชิกสำเร็จ!');
+
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.pushNamed(context, '/login');
+            }
+          });
         }
       } else {
-        setState(() {
-          _errorMessage = response['message'] ?? 'การสมัครสมาชิกล้มเหลว';
-        });
+        if (mounted) {
+          AlertMessage.showError(
+            context,
+            response['message'] ?? 'การสมัครสมาชิกล้มเหลว',
+          );
+        }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'เกิดข้อผิดพลาดในการสมัครสมาชิก';
-      });
+      if (mounted) {
+        AlertMessage.showError(context, 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -364,42 +358,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    child: Text(
-                      "มีบัญชีแล้ว?",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.yellow,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Error message display
-                  if (_errorMessage != null)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red),
-                      ),
-                      child: Text(
-                        _errorMessage!,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontFamily: 'Kanit',
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  if (_errorMessage != null) const SizedBox(height: 16),
                   ButtonActions(
+                    label: 'มีบัญชีแล้ว?',
                     text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
                     onPressed: _isLoading ? null : _showCreditDialog,
+                    onLabelPressed: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
                   ),
                 ],
               ),
