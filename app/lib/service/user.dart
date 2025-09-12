@@ -27,15 +27,24 @@ class UserService {
   }
 
   Future<String?> getUserRole() async {
-    final userDataString = await _storage.read(key: _userDataKey);
-    if (userDataString != null) {
-      if (userDataString.contains('role: admin')) {
-        return 'admin';
+    try {
+      final userDataString = await _storage.read(key: _userDataKey);
+      if (userDataString != null && userDataString.isNotEmpty) {
+        try {
+          if (userDataString.contains('admin')) {
+            return 'admin';
+          }
+        } catch (e) {
+          if (userDataString.contains('admin')) {
+            return 'admin';
+          }
+        }
       }
+
+      return 'user';
+    } catch (e) {
       return 'user';
     }
-
-    return 'user';
   }
 
   Future<void> clearUserData() async {

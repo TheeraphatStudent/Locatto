@@ -19,6 +19,7 @@ class Auth {
       );
       if ((response['statusCode'] as int?) == 200 &&
           response['token'] != null) {
+
         await _storage.write(
           key: config.getTokenStoragename(),
           value: response['token'],

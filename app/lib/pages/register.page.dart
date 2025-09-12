@@ -6,6 +6,7 @@ import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/Dialogue.dart';
 import 'package:app/service/auth.dart';
+import 'package:app/service/user.dart';
 import 'package:app/type/register.dart';
 import 'package:app/utils/response_helper.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
   AlertMessage alert = AlertMessage();
 
   final _auth = Auth();
+  final _userService = UserService();
   bool _isLoading = false;
 
   @override
@@ -195,6 +197,13 @@ class _RegisterPageState extends State<RegisterPage> {
         log('Registration successful');
         if (mounted) {
           alert.showSuccess(context, 'สมัครสมาชิกสำเร็จ!');
+
+          final userData = response['data']?['user'] ?? response['user'];
+          if (userData != null) {
+            await _userService.storeUserData(userData);
+            final credit = userData['credit']?.toString() ?? _creditController.text;
+            await _userService.storeUserCredit(credit);
+          }
 
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
