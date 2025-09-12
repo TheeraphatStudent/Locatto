@@ -14,15 +14,17 @@ steps:
     dir: 'api'
     args: ['up', '-d']
     waitFor: ['Push']
+    secretEnv:
+      - DB_HOST
+      - DB_USERNAME
+      - DB_PASSWORD
+      - DB_NAME
+      - JWT_SECRET
+      - JWT_EXPIRE_IN
+      - IS_SIGN
     env:
-      - 'DB_HOST=$$DB_HOST'
-      - 'DB_USERNAME=$$DB_USERNAME'
-      - 'DB_PASSWORD=$$DB_PASSWORD'
-      - 'DB_NAME=$$DB_NAME'
-      - 'JWT_SECRET=$$JWT_SECRET'
-      - 'JWT_EXPIRE_IN=$$JWT_EXPIRE_IN'
-      - 'IS_SIGN=$$IS_SIGN'
       - 'UPLOAD_TO_GCS=true'
+
 
 availableSecrets:
   secretManager:
