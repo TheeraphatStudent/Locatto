@@ -25,7 +25,7 @@ const List<NavItem> userNavItems = [
 
 /// Admin navigation configuration
 const List<NavItem> adminNavItems = [
-  NavItem(route: '/home', iconName: 'logo', label: 'Home'),
+  NavItem(route: '/admin', iconName: 'logo', label: 'Home'),
   NavItem(route: '/profile', iconName: 'profile', label: 'Profile'),
 ];
 
