@@ -3,7 +3,7 @@ import path from 'path';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
-import { UploadController } from '../controller/upload';
+import { UploadController } from '../controller/upload.controller';
 
 const router = express.Router();
 

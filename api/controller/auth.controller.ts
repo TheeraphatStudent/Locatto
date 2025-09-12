@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../service/auth.service';
 import * as jwt from 'jsonwebtoken';
-import { sendSuccess, sendError } from '../utils/response.helper';
+import { sendError, sendFromService, sendSuccess } from '../utils/response.helper';
 
 export class AuthController {
   static async register(req: Request, res: Response): Promise<void> {
@@ -9,15 +9,11 @@ export class AuthController {
       const { fullname, telno, cardId, email, img, username, password, credit } = req.body;
 
       const result = await AuthService.register({ fullname, telno, cardId, email, img, username, password, credit });
-
-      if (result.success) {
-        sendSuccess(res, result.message, { userId: result.userId }, 201);
-      } else {
-        sendError(res, result.message, null, result.message === 'User already exists' ? 400 : 500);
-      }
+      const status = result.success ? 201 : (result.message === 'User already exists' ? 400 : 500);
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Register error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -26,22 +22,11 @@ export class AuthController {
       const { username, password } = req.body;
 
       const result = await AuthService.login({ username, password });
-
-      if (result.success) {
-        // res.json({
-        //   message: result.message,
-        //   data: {
-        //     token: result.token,
-        //     user: result.user
-        //   }
-        // });
-        sendSuccess(res, result.message, { token: result.token, user: result.user }, 200);
-      } else {
-        sendError(res, result.message, null, result.message === 'Invalid credentials' ? 401 : 500);
-      }
+      const status = result.success ? 200 : (result.message === 'Invalid credentials' ? 401 : 500);
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Login error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -49,41 +34,33 @@ export class AuthController {
     try {
       const { username, password, repeatPassword } = req.body;
       if (password !== repeatPassword) {
-        sendError(res, 'Passwords do not match', null, 400);
+        sendError({ res, status: 400, message: 'Passwords do not match' });
         return;
       }
 
       const result = await AuthService.resetPassword({ username, password });
-
-      if (result.success) {
-        sendSuccess(res, result.message, null, 200);
-      } else {
-        sendError(res, result.message, null, result.message === 'User not found' ? 404 : 500);
-      }
+      const status = result.success ? 200 : (result.message === 'User not found' ? 404 : 500);
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Reset password error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
   static async me(req: Request, res: Response): Promise<void> {
     try {
       if (!req.user) {
-        sendError(res, 'User not authenticated', null, 401);
+        sendError({ res, status: 401, message: 'User not authenticated' });
         return;
       }
 
       const user = req.user as any;
       const result = await AuthService.me({ uid: user.uid });
-
-      if (result.success) {
-        sendSuccess(res, result.message, { user: result.user }, 200);
-      } else {
-        sendError(res, result.message, null, result.message === 'User not found' ? 404 : 500);
-      }
+      const status = result.success ? 200 : (result.message === 'User not found' ? 404 : 500);
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Me error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -97,15 +74,11 @@ export class AuthController {
       const { uid } = decoded as any;
 
       const result = await AuthService.logout({ uid, token });
-
-      if (result.success) {
-        sendSuccess(res, result.message, null, 200);
-      } else {
-        sendError(res, result.message, null, 500);
-      }
+      const status = result.success ? 200 : 500;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Logout error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 }

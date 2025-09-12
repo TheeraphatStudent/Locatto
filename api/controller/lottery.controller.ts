@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { LotteryService, LotteryData } from '../service/lottery.service';
 import { isRoleExst } from '../utils/auth.helper';
-import { sendSuccess, sendError } from '../utils/response.helper';
+import { sendError, sendFromService } from '../utils/response.helper';
 
 export class LotteryController {
   static async create(req: Request, res: Response): Promise<void> {
@@ -12,28 +12,22 @@ export class LotteryController {
       const { n } = req.body;
 
       if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
-        sendError(res, 'Admin access required', null, 403);
+        sendError({ res, status: 403, message: 'Admin access required', data: null as any });
         return;
       }
 
       if (!n || typeof n !== 'number') {
-        sendError(res, 'n parameter is required and must be a number', null, 400);
+        sendError({ res, status: 400, message: 'n parameter is required and must be a number', data: null as any });
         return;
       }
 
       const result = await LotteryService.generateBulkLotteries(n);
 
-      if (result.success) {
-        sendSuccess(res, result.message, {
-          lotteries: result.lotteries,
-          generated: result.generated
-        }, 201);
-      } else {
-        sendError(res, result.message, null, 400);
-      }
+      const status = result.success ? 201 : 400;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Create lottery error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -43,14 +37,19 @@ export class LotteryController {
       const size = parseInt(req.query.size as string) || 10;
 
       const { lotteries, total } = await LotteryService.getAll(page, size);
-      sendSuccess(res, 'Lotteries retrieved successfully', {
-        data: lotteries,
-        totalPages: Math.ceil(total / size),
-        currentPage: page,
-      }, 200);
+      sendFromService({
+        res,
+        status: 200,
+        result: {
+          data: lotteries,
+          totalPages: Math.ceil(total / size),
+          currentPage: page
+        },
+        message: 'Lotteries fetched successfully'
+      });
     } catch (error) {
       console.error('Get lotteries error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -61,19 +60,24 @@ export class LotteryController {
       const size = parseInt(req.query.size as string) || 10;
 
       if (!search) {
-        sendError(res, 'Search query is required', null, 400);
+        sendError({ res, status: 400, message: 'Search query is required' });
         return;
       }
 
       const { lotteries, total } = await LotteryService.search(search, page, size);
-      sendSuccess(res, 'Lotteries searched successfully', {
-        data: lotteries,
-        totalPages: Math.ceil(total / size),
-        currentPage: page,
-      }, 200);
+      sendFromService({
+        res,
+        status: 200,
+        result: {
+          data: lotteries,
+          totalPages: Math.ceil(total / size),
+          currentPage: page
+        },
+        message: 'Search completed'
+      });
     } catch (error) {
       console.error('Search lotteries error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -83,13 +87,13 @@ export class LotteryController {
       const lottery = await LotteryService.getById(id);
       
       if (lottery) {
-        sendSuccess(res, 'Lottery found', lottery, 200);
+        sendFromService({ res, status: 200, result: lottery, message: 'Lottery found' });
       } else {
-        sendError(res, 'Lottery not found', null, 404);
+        sendError({ res, status: 404, message: 'Lottery not found' });
       }
     } catch (error) {
       console.error('Get lottery by id error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -102,15 +106,11 @@ export class LotteryController {
       if (req.body.period) updateData.period = req.body.period;
 
       const result = await LotteryService.update(id, updateData);
-
-      if (result.success) {
-        sendSuccess(res, result.message, null, 200);
-      } else {
-        sendError(res, result.message, null, 404);
-      }
+      const status = result.success ? 200 : 404;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Update lottery error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -118,55 +118,43 @@ export class LotteryController {
     try {
       const id = +req.params.id;
       const result = await LotteryService.delete(id);
-
-      if (result.success) {
-        sendSuccess(res, result.message, null, 200);
-      } else {
-        sendError(res, result.message, null, 404);
-      }
+      const status = result.success ? 200 : 404;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Delete lottery error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
   static async selectRandomWinnersFollowed(req: Request, res: Response): Promise<void> {
     try {
       if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
-        sendError(res, 'Admin access required', null, 403);
+        sendError({ res, status: 403, message: 'Admin access required' });
         return;
       }
 
       const result = await LotteryService.selectRandomWinners(true);
-
-      if (result.success) {
-        sendSuccess(res, 'Random winners selected successfully (followed)', null, 200);
-      } else {
-        sendError(res, result.message, null, 400);
-      }
+      const status = result.success ? 200 : 400;
+      sendFromService({ res, status, result: result.success ? { ...result, message: 'Random winners selected successfully (followed)' } : result });
     } catch (error) {
       console.error('Select random winners followed error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
   static async selectRandomWinnersUnfollowed(req: Request, res: Response): Promise<void> {
     try {
       if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
-        sendError(res, 'Admin access required', null, 403);
+        sendError({ res, status: 403, message: 'Admin access required' });
         return;
       }
 
       const result = await LotteryService.selectRandomWinners(false);
-
-      if (result.success) {
-        sendSuccess(res, 'Random winners selected successfully (unfollowed)', null, 200);
-      } else {
-        sendError(res, result.message || 'Failed to select winners', null, 400);
-      }
+      const status = result.success ? 200 : 400;
+      sendFromService({ res, status, result: result.success ? { ...result, message: 'Random winners selected successfully (unfollowed)' } : result });
     } catch (error) {
       console.error('Select random winners unfollowed error:', error);
-      sendError(res, 'Internal server error', null, 500);
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 }

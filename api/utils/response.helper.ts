@@ -10,23 +10,68 @@ function send(res: Response, status: StatusCode, message: MessageResponse, data:
   } as ApiResponse);
 }
 
-export function sendSuccess(res: Response, message: MessageResponse = 'Success', data: any = null, status: StatusCode = 200): void {
+export function sendSuccess({
+  res,
+  message,
+  data,
+  status
+}: {
+  res: Response;
+  message?: MessageResponse;
+  data?: any;
+  status: StatusCode;
+}): void {
   if (![200, 201, 202].includes(status)) {
     throw new Error('Invalid success status code');
   }
   send(res, status, message, data);
 }
 
-export function sendError(res: Response, message: MessageResponse = 'Error', data: any = null, status: StatusCode = 400): void {
-  if (![400, 401, 404, 500].includes(status)) {
+export function sendError({
+  res,
+  message,
+  data,
+  status
+}: {
+  res: Response;
+  message?: MessageResponse;
+  data?: any;
+  status: StatusCode;
+}): void {
+  if (![400, 401, 403, 404, 500].includes(status)) {
     throw new Error('Invalid error status code');
   }
   send(res, status, message, data);
 }
 
-export function sendRedirect(res: Response, message: MessageResponse = 'Redirect', data: any = null, status: StatusCode = 302): void {
+export function sendRedirect({
+  res,
+  message,
+  data,
+  status
+}: {
+  res: Response, 
+  message?: MessageResponse, 
+  data?: any,
+  status: StatusCode}
+): void {
   if (status !== 302) {
     throw new Error('Invalid redirect status code');
   }
   send(res, status, message, data);
+}
+
+export function sendFromService({
+  res,
+  status,
+  result,
+  message
+}: {
+  res: Response;
+  status: StatusCode;
+  result: any;
+  message?: string;
+}): void {
+  const responseMessage = message ?? (result?.message as string | undefined);
+  send(res, status, responseMessage, result);
 }
