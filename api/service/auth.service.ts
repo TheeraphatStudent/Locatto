@@ -19,10 +19,13 @@ export class AuthService {
 
       const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-      const role = userData.email.includes('admin') ? 'admin' : 'user';
+      const emailLower = userData.email.toLowerCase();
+      const role = emailLower.includes('admin') ? 'admin' : 'user';
+
+      console.log(`User email: ${userData.email}, Lowercase: ${emailLower}, Assigned role: ${role}`);
 
       const [result] = await queryAsync(
-        'INSERT INTO user (name, telno, card_id, email, img, username, password, credit, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO user (name, telno, card_id, email, img, username, password, credit, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           userData.fullname, 
           userData.telno, 

@@ -128,17 +128,45 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _handleRegistration() async {
+    log('=== _handleRegistration called ===');
+
     if (!_formKey.currentState!.validate()) {
+      log('Form validation failed');
       return;
     }
+
+    final email = _emailController.text.trim();
+    final isAdmin = email.contains('admin');
+
+    log('Email: $email, isAdmin: $isAdmin');
+
+    if (!isAdmin) {
+      log('Showing credit dialog for non-admin user');
+      showCreateMoneyDialog(context, (value) {
+        log('Credit dialog confirmed with value: $value');
+        _creditController.text = value;
+        _performRegistration();
+      }, initialValue: _creditController.text);
+      return;
+    }
+
+    log('Admin user detected, proceeding directly to registration');
+    await _performRegistration();
+  }
+
+  Future<void> _performRegistration() async {
+    log('=== _performRegistration called ===');
+    log('Credit controller text: ${_creditController.text}');
 
     final creditValidation = _validateCredit(_creditController.text);
 
     if (creditValidation != null) {
+      log('Credit validation failed: $creditValidation');
       alert.showError(context, creditValidation);
       return;
     }
 
+    log('Setting loading state to true');
     setState(() {
       _isLoading = true;
     });
@@ -155,22 +183,28 @@ class _RegisterPageState extends State<RegisterPage> {
         credit: int.parse(_creditController.text),
       );
 
+      log('Register data prepared: ${registerData.toJson()}');
+
       final response = await _auth.register(registerData);
 
-      log(response.toString());
-      log(responseHelper.isSuccess(response['statusCode'] as int).toString());
+      log('Registration response received');
+      log('Response: $response');
+      log('Response status code: ${response['statusCode']}');
 
       if (responseHelper.isSuccess(response['statusCode'] as int)) {
+        log('Registration successful');
         if (mounted) {
           alert.showSuccess(context, 'สมัครสมาชิกสำเร็จ!');
 
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
+              log('Navigating to login page');
               Navigator.pushNamed(context, '/login');
             }
           });
         }
       } else {
+        log('Registration failed with status: ${response['statusCode']}');
         if (mounted) {
           alert.showError(
             context,
@@ -179,10 +213,12 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       }
     } catch (e) {
+      log('Registration error: $e');
       if (mounted) {
         alert.showError(context, 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
       }
     } finally {
+      log('Setting loading state to false');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -316,14 +352,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ButtonActions(
                     label: 'มีบัญชีแล้ว?',
                     text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
-                    onPressed: _isLoading
-                        ? null
-                        : () {
-                            showCreateMoneyDialog(context, (value) {
-                              _creditController.text = value;
-                              _handleRegistration();
-                            }, initialValue: _creditController.text);
-                          },
+                    onPressed: _isLoading ? null : _handleRegistration,
                     onLabelPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },
