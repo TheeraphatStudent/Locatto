@@ -54,6 +54,13 @@ const isContain = (content: string) => {
   return reject.some((item) => content.includes(item));
 } 
 
+// { samkfds } -> eyjlkdfsklnf
+// eyjlkdfsklnf -> { samkfds }
+
+// response -> endode -> jwt
+
+// api -> jwt -> app -> decode
+
 export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   console.log("Request Body: ", req.body)
   // console.log("Request Data: ", req.data)

@@ -20,6 +20,7 @@ class _HeaderState extends State<Header> {
   String _currentTime = '';
   int _userCredit = 0;
   String _userRole = 'user';
+  
   final UserService _userService = UserService();
 
   @override

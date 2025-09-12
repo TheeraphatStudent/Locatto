@@ -1,14 +1,23 @@
 import { Request, Response } from 'express';
 import { UploadService } from '../service/upload.service';
-import * as fs from 'fs';
-import * as path from 'path';
 import { sendError, sendFromService } from '../utils/response.helper';
+
+import path from 'path';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
 
 interface AuthenticatedRequest extends Request {
   uid?: any;
 }
 
 export class UploadController {
+  
+  
+  constructor() {
+    
+  }
+
   static parseFilename(filename: string) {
 
     const parts = filename.split('&');
@@ -22,8 +31,6 @@ export class UploadController {
 
   static async upload(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      // console.log(req)
-
       const file = (req as any).file;
       if (!file) {
         sendError({ res, status: 400, message: 'No file uploaded' });
@@ -46,7 +53,19 @@ export class UploadController {
 
       fs.renameSync(oldPath, newPath);
 
-      sendFromService({ res, status: 201, result: { filename: newFilename }, message: 'File uploaded' });
+      let gcsUrl: string | null = null;
+      try {
+        gcsUrl = await UploadService.uploadToGCS(newPath, newFilename);
+      } catch (gcsError) {
+        console.error('GCS upload failed:', gcsError);
+      }
+
+      const result: any = { filename: newFilename };
+      if (gcsUrl) {
+        result.gcsUrl = gcsUrl;
+      }
+
+      sendFromService({ res, status: 201, result, message: 'File uploaded' });
     } catch (error) {
       console.error('Upload error:', error);
       sendError({ res, status: 500, message: 'Internal server error' });
