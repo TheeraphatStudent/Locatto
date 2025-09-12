@@ -19,7 +19,7 @@ import 'package:app/pages/forgotpass.page.dart';
 import 'package:app/pages/test.dart';
 import 'package:flutter/material.dart';
 import 'style/theme.dart';
-import 'package:app/pages/admin/home.dart' as AdminHome;
+import 'package:app/pages/admin/home.dart' as _AdminHome;
 
 void main() => runApp(const MyApp());
 
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
 
-        '/admin': (context) => const AdminHome.HomePage(),
+        '/admin': (context) => const _AdminHome.HomePage(),
       },
       // onUnknownRoute: (context) => const NotfoundPage(),
     );

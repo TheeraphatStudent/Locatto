@@ -1,4 +1,5 @@
 import 'dart:ui'; // สำหรับเบลอพื้นหลัง
+import 'package:app/components/Tag.dart';
 import 'package:flutter/material.dart';
 
 void showStatusLotteryDialog(
@@ -74,23 +75,10 @@ class StatusLottery extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: statusColor, // ใช้สีของ status ที่รับมา
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  status,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
+              Tag(
+                text: status,
+                textColor: Colors.black,
+                backgroundColor: statusColor,
               ),
             ],
           ),

@@ -1,3 +1,6 @@
-export type Status = '200' | '404' | '500';
+export interface ApiResponse {
+    message: string | undefined;
+    data: any;
+}
 
-// export type data = { [key: string]: any };
+export type StatusCode = 200 | 201 | 202 | 302 | 400 | 401 | 403 | 404 | 500;

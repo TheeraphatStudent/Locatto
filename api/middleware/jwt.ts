@@ -35,8 +35,8 @@ const handleResponseEncoding = (res: Response): void => {
   const originalJson = res.json;
   res.json = function(data: any) {
     const encodedResponse = IS_SIGN
-      ? jwt.sign(data, JWT_SECRET, { algorithm: 'HS256' })
-      : jwt.sign(data, '', { algorithm: 'none' });
+      ? jwt.sign(data, JWT_SECRET, { algorithm: 'HS256', noTimestamp: true })
+      : jwt.sign(data, '', { algorithm: 'none', noTimestamp: true });
     return originalJson.call(this, { data: encodedResponse });
   };
 };

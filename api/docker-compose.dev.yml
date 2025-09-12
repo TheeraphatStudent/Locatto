@@ -1,9 +1,11 @@
 services:
-  prod-lottocat-api:
+  dev-lottocat-api:
     build:
       context: .
       dockerfile: dockerFile
     restart: always
+    env_file:
+      - .env
     environment:
       - DB_HOST=${DB_HOST}
       - DB_USERNAME=${DB_USERNAME}

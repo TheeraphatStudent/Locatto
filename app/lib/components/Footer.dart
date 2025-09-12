@@ -1,6 +1,33 @@
 import 'package:flutter/material.dart';
-// Note: flutter_svg is no longer used in this widget.
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:app/service/user.dart';
+
+/// A navigation item model
+class NavItem {
+  final String route;
+  final String iconName;
+  final String label;
+
+  const NavItem({
+    required this.route,
+    required this.iconName,
+    required this.label,
+  });
+}
+
+/// User navigation configuration
+const List<NavItem> userNavItems = [
+  NavItem(route: '/home', iconName: 'logo', label: 'Home'),
+  NavItem(route: '/lottery', iconName: 'lottery', label: 'Lottery'),
+  NavItem(route: '/cart', iconName: 'cart', label: 'Cart'),
+  NavItem(route: '/purchase', iconName: 'pocket', label: 'Wallet'),
+  NavItem(route: '/profile', iconName: 'profile', label: 'Profile'),
+];
+
+/// Admin navigation configuration
+const List<NavItem> adminNavItems = [
+  NavItem(route: '/admin', iconName: 'logo', label: 'Home'),
+  NavItem(route: '/profile', iconName: 'profile', label: 'Profile'),
+];
 
 class Footer extends StatefulWidget {
   const Footer({super.key});
@@ -11,71 +38,41 @@ class Footer extends StatefulWidget {
 
 class _FooterState extends State<Footer> {
   int _selectedIndex = 0;
+  final UserService _userService = UserService();
+  String _userRole = 'user';
+
+  List<NavItem> get _navItems =>
+      _userRole == 'admin' ? adminNavItems : userNavItems;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _updateSelectedIndexFromRoute();
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final role = await _userService.getUserRole();
+    if (role != null && mounted) {
+      setState(() => _userRole = role);
+      _updateSelectedIndexFromRoute();
+    }
   }
 
   void _updateSelectedIndexFromRoute() {
     final String currentRoute =
         ModalRoute.of(context)?.settings.name ?? '/home';
 
-    switch (currentRoute) {
-      case '/home':
-        _selectedIndex = 0;
-        break;
-      case '/lottery':
-        _selectedIndex = 1;
-        break;
-      case '/cart':
-        _selectedIndex = 2;
-        break;
-      case '/purchase':
-        _selectedIndex = 3;
-        break;
-      case '/profile':
-        _selectedIndex = 4;
-        break;
-      default:
-        _selectedIndex = 0;
-    }
-
-    if (mounted) {
-      setState(() {});
-    }
+    final index = _navItems.indexWhere((item) => item.route == currentRoute);
+    setState(() {
+      _selectedIndex = index >= 0 ? index : 0;
+    });
   }
 
   void _onDestinationSelected(int index) {
     if (_selectedIndex == index) return;
 
-    String routeName;
-    switch (index) {
-      case 0:
-        routeName = '/home';
-        break;
-      case 1:
-        routeName = '/lottery';
-        break;
-      case 2:
-        routeName = '/cart';
-        break;
-      case 3:
-        routeName = '/purchase';
-        break;
-      case 4:
-        routeName = '/profile';
-        break;
-      default:
-        routeName = '/home';
-    }
-
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    Navigator.pushNamed(context, routeName);
+    setState(() => _selectedIndex = index);
+    Navigator.pushNamed(context, _navItems[index].route);
   }
 
   Widget _buildInactiveIcon(String iconName) {
@@ -104,42 +101,24 @@ class _FooterState extends State<Footer> {
         'assets/images/footer/active/$iconName.png',
         width: 28,
         height: 28,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFD5553),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: const Icon(
+              Icons.error_outline,
+              size: 20,
+              color: Colors.white,
+            ),
+          );
+        },
       ),
     );
   }
-
-  //  Widget _buildActiveIcon(String iconName) {
-  //   return Container(
-  //     padding: const EdgeInsets.all(12),
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.circular(16),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.1),
-  //           blurRadius: 8,
-  //           offset: const Offset(0, 2),
-  //         ),
-  //       ],
-  //     ),
-  //     child: Image.asset(
-  //       'assets/images/footer/active/$iconName.png',
-  //       width: 28,
-  //       height: 28,
-  //       errorBuilder: (context, error, stackTrace) {
-  //         return Container(
-  //           width: 28,
-  //           height: 28,
-  //           decoration: BoxDecoration(
-  //             color: const Color(0xFFFD5553),
-  //             borderRadius: BorderRadius.circular(4),
-  //           ),
-  //           child: const Icon(Icons.error_outline, size: 20, color: Colors.white),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -153,34 +132,13 @@ class _FooterState extends State<Footer> {
       indicatorColor: Colors.transparent,
       selectedIndex: _selectedIndex,
       onDestinationSelected: _onDestinationSelected,
-      destinations: <Widget>[
-        NavigationDestination(
-          icon: _buildInactiveIcon('logo'),
-          selectedIcon: _buildActiveIcon('logo'),
-          label: 'Home',
-        ),
-        NavigationDestination(
-          icon: _buildInactiveIcon('lottery'),
-          selectedIcon: _buildActiveIcon('lottery'),
-          label: 'Lottery',
-        ),
-        NavigationDestination(
-          icon: _buildInactiveIcon('cart'),
-          selectedIcon: _buildActiveIcon('cart'),
-          label: 'Cart',
-        ),
-        NavigationDestination(
-          // Assuming 'pocket.png' is for the 'Wallet' label
-          icon: _buildInactiveIcon('pocket'),
-          selectedIcon: _buildActiveIcon('pocket'),
-          label: 'Wallet',
-        ),
-        NavigationDestination(
-          icon: _buildInactiveIcon('profile'),
-          selectedIcon: _buildActiveIcon('profile'),
-          label: 'Profile',
-        ),
-      ],
+      destinations: _navItems.map((item) {
+        return NavigationDestination(
+          icon: _buildInactiveIcon(item.iconName),
+          selectedIcon: _buildActiveIcon(item.iconName),
+          label: item.label,
+        );
+      }).toList(),
     );
   }
 }
