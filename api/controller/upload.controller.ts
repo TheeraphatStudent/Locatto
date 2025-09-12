@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UploadService } from '../service/upload.service';
 import * as fs from 'fs';
 import * as path from 'path';
+import { sendError, sendFromService } from '../utils/response.helper';
 
 interface AuthenticatedRequest extends Request {
   uid?: any;
@@ -25,7 +26,7 @@ export class UploadController {
 
       const file = (req as any).file;
       if (!file) {
-        res.status(400).json({ error: 'No file uploaded' });
+        sendError({ res, status: 400, message: 'No file uploaded' });
         return;
       }
 
@@ -39,16 +40,16 @@ export class UploadController {
       const newPath = path.join(path.dirname(oldPath), newFilename);
 
       if (fs.existsSync(newPath)) {
-        res.json({ message: "file already exists" });
+        sendFromService({ res, status: 200, result: { message: 'file already exists' } });
         return;
       }
 
       fs.renameSync(oldPath, newPath);
 
-      res.json({ filename: newFilename });
+      sendFromService({ res, status: 201, result: { filename: newFilename }, message: 'File uploaded' });
     } catch (error) {
       console.error('Upload error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -59,14 +60,14 @@ export class UploadController {
       const files = fs.readdirSync(uploadsDir);
       const filename = files.find(f => f.startsWith(`uid_${uid}`));
       if (!filename) {
-        res.status(404).json({ error: 'File not found' });
+        sendError({ res, status: 404, message: 'File not found' });
         return;
       }
       const filePath = path.join(uploadsDir, filename);
       res.sendFile(filePath);
     } catch (error) {
       console.error('Get file error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -74,10 +75,10 @@ export class UploadController {
     try {
       const filename = req.body as string;
       const parsed = UploadController.parseFilename(filename);
-      res.json(parsed);
+      sendFromService({ res, status: 200, result: parsed, message: 'File info parsed' });
     } catch (error) {
       console.error('Get file info error:', error);
-      res.status(404).json({ error: 'File not found' });
+      sendError({ res, status: 404, message: 'File not found' });
     }
   }
 
@@ -88,19 +89,19 @@ export class UploadController {
       const files = fs.readdirSync(uploadsDir);
       const filename = files.find(f => f.startsWith(`uid_${uid}`));
       if (!filename) {
-        res.status(404).json({ error: 'File not found' });
+        sendError({ res, status: 404, message: 'File not found' });
         return;
       }
       const result = UploadService.deleteFile(filename);
       if (result) {
         const parsed = UploadController.parseFilename(filename);
-        res.json({ message: 'File deleted successfully', ...parsed });
+        sendFromService({ res, status: 200, result: { message: 'File deleted successfully', ...parsed } });
       } else {
-        res.status(404).json({ error: 'File not found' });
+        sendError({ res, status: 404, message: 'File not found' });
       }
     } catch (error) {
       console.error('Delete file error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -109,10 +110,10 @@ export class UploadController {
       const uploadsDir = path.join(__dirname, '../uploads');
       const files = fs.readdirSync(uploadsDir);
       const parsedFiles = files.map(file => UploadController.parseFilename(file));
-      res.json({ files: parsedFiles });
+      sendFromService({ res, status: 200, result: { files: parsedFiles }, message: 'Files listed' });
     } catch (error) {
       console.error('Get all files error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 }

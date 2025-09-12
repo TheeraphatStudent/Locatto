@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PurchaseService, PurchaseData } from '../service/purchase.service';
+import { sendError, sendFromService } from '../utils/response.helper';
 
 export class PurchaseController {
   static async create(req: Request, res: Response): Promise<void> {
@@ -7,23 +8,16 @@ export class PurchaseController {
       const { uid, lid, lot_amount, payid } = req.body;
 
       if (!uid || !lid || !lot_amount || !payid) {
-        res.status(400).json({ error: 'uid, lid, lot_amount, and payid are required' });
+        sendError({ res, status: 400, message: 'uid, lid, lot_amount, and payid are required' });
         return;
       }
 
       const result = await PurchaseService.create({ uid, lid, lot_amount, payid });
-
-      if (result.success) {
-        res.status(201).json({
-          message: result.message,
-          purchase: result.purchase
-        });
-      } else {
-        res.status(400).json({ error: result.message });
-      }
+      const status = result.success ? 201 : 400;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Create purchase error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -33,21 +27,21 @@ export class PurchaseController {
         const id = +req.query.id;
         const purchase = await PurchaseService.getById(id);
         if (purchase) {
-          res.json(purchase);
+          sendFromService({ res, status: 200, result: purchase, message: 'Purchase found' });
         } else {
-          res.status(404).json({ error: 'Purchase not found' });
+          sendError({ res, status: 404, message: 'Purchase not found' });
         }
       } else if (req.query.uid) {
         const uid = +req.query.uid;
         const purchases = await PurchaseService.getByUserId(uid);
-        res.json(purchases);
+        sendFromService({ res, status: 200, result: purchases, message: 'Purchases fetched' });
       } else {
         const purchases = await PurchaseService.getAll();
-        res.json(purchases);
+        sendFromService({ res, status: 200, result: purchases, message: 'Purchases fetched' });
       }
     } catch (error) {
       console.error('Get purchases error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -57,13 +51,13 @@ export class PurchaseController {
       const purchase = await PurchaseService.getById(id);
       
       if (purchase) {
-        res.json(purchase);
+        sendFromService({ res, status: 200, result: purchase, message: 'Purchase found' });
       } else {
-        res.status(404).json({ error: 'Purchase not found' });
+        sendError({ res, status: 404, message: 'Purchase not found' });
       }
     } catch (error) {
       console.error('Get purchase by id error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -78,15 +72,11 @@ export class PurchaseController {
       if (req.body.payid) updateData.payid = req.body.payid;
 
       const result = await PurchaseService.update(id, updateData);
-
-      if (result.success) {
-        res.json({ message: result.message });
-      } else {
-        res.status(404).json({ error: result.message });
-      }
+      const status = result.success ? 200 : 404;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Update purchase error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -94,15 +84,11 @@ export class PurchaseController {
     try {
       const id = +req.params.id;
       const result = await PurchaseService.delete(id);
-
-      if (result.success) {
-        res.json({ message: result.message });
-      } else {
-        res.status(404).json({ error: result.message });
-      }
+      const status = result.success ? 200 : 404;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Delete purchase error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 }

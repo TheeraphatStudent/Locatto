@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PaymentService, PaymentData } from '../service/payment.service';
+import { sendError, sendFromService } from '../utils/response.helper';
 
 export class PaymentController {
   static async create(req: Request, res: Response): Promise<void> {
@@ -7,23 +8,16 @@ export class PaymentController {
       const { uid, tier, revenue } = req.body;
 
       if (!uid || !tier || revenue === undefined) {
-        res.status(400).json({ error: 'uid, tier, and revenue are required' });
+        sendError({ res, status: 400, message: 'uid, tier, and revenue are required' });
         return;
       }
 
       const result = await PaymentService.create({ uid, tier, revenue });
-
-      if (result.success) {
-        res.status(201).json({
-          message: result.message,
-          payment: result.payment
-        });
-      } else {
-        res.status(400).json({ error: result.message });
-      }
+      const status = result.success ? 201 : 400;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Create payment error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -33,21 +27,21 @@ export class PaymentController {
         const id = +req.query.id;
         const payment = await PaymentService.getById(id);
         if (payment) {
-          res.json(payment);
+          sendFromService({ res, status: 200, result: payment, message: 'Payment found' });
         } else {
-          res.status(404).json({ error: 'Payment not found' });
+          sendError({ res, status: 404, message: 'Payment not found' });
         }
       } else if (req.query.uid) {
         const uid = +req.query.uid;
         const payments = await PaymentService.getByUserId(uid);
-        res.json(payments);
+        sendFromService({ res, status: 200, result: payments, message: 'Payments fetched' });
       } else {
         const payments = await PaymentService.getAll();
-        res.json(payments);
+        sendFromService({ res, status: 200, result: payments, message: 'Payments fetched' });
       }
     } catch (error) {
       console.error('Get payments error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -57,13 +51,13 @@ export class PaymentController {
       const payment = await PaymentService.getById(id);
       
       if (payment) {
-        res.json(payment);
+        sendFromService({ res, status: 200, result: payment, message: 'Payment found' });
       } else {
-        res.status(404).json({ error: 'Payment not found' });
+        sendError({ res, status: 404, message: 'Payment not found' });
       }
     } catch (error) {
       console.error('Get payment by id error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -77,15 +71,11 @@ export class PaymentController {
       if (req.body.revenue !== undefined) updateData.revenue = req.body.revenue;
 
       const result = await PaymentService.update(id, updateData);
-
-      if (result.success) {
-        res.json({ message: result.message });
-      } else {
-        res.status(404).json({ error: result.message });
-      }
+      const status = result.success ? 200 : 404;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Update payment error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -93,15 +83,11 @@ export class PaymentController {
     try {
       const id = +req.params.id;
       const result = await PaymentService.delete(id);
-
-      if (result.success) {
-        res.json({ message: result.message });
-      } else {
-        res.status(404).json({ error: result.message });
-      }
+      const status = result.success ? 200 : 404;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Delete payment error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 }

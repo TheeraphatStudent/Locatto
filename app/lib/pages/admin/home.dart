@@ -1,12 +1,10 @@
 import 'dart:developer';
 
-import 'package:app/components/Avatar.dart';
-import 'package:app/components/Button.dart';
-import 'package:app/components/Input.dart';
-import 'package:app/components/Lottery.dart';
-import 'package:app/components/MainLayout.dart';
+import 'package:app/components/List.dart';
 import 'package:app/service/lottery/post.dart';
 import 'package:flutter/material.dart';
+import 'package:app/components/MainLayout.dart';
+import 'package:app/components/Button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,10 +15,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final LotteryService _lotteryService = LotteryService();
-  final TextEditingController _countController = TextEditingController(text: '0');
+  final TextEditingController _countController = TextEditingController(
+    text: '1000',
+  );
   bool _isLoading = false;
   String? _errorMessage;
   String? _successMessage;
+
+  final List<LotteryData> _mockLotteryData = [
+    LotteryData(lottery: '123456', reward: ''),
+    LotteryData(lottery: '234567', reward: ''),
+    LotteryData(lottery: '345678', reward: ''),
+    LotteryData(lottery: '456789', reward: ''),
+    LotteryData(lottery: '567890', reward: ''),
+    LotteryData(lottery: '678901', reward: ''),
+    LotteryData(lottery: '789012', reward: ''),
+    LotteryData(lottery: '890123', reward: ''),
+  ];
 
   @override
   void dispose() {
@@ -50,7 +61,7 @@ class _HomePageState extends State<HomePage> {
       if (response['success'] == true) {
         setState(() {
           _successMessage = 'สร้างล็อตเตอรี่สำเร็จ ${count} ใบ';
-          _countController.text = '0'; // Reset the input
+          _countController.text = '1000'; // Reset to default
         });
 
         // Show success snackbar
@@ -64,7 +75,8 @@ class _HomePageState extends State<HomePage> {
         }
       } else {
         setState(() {
-          _errorMessage = response['message'] ?? 'เกิดข้อผิดพลาดในการสร้างล็อตเตอรี่';
+          _errorMessage =
+              response['message'] ?? 'เกิดข้อผิดพลาดในการสร้างล็อตเตอรี่';
         });
       }
     } catch (e) {
@@ -92,615 +104,258 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        padding: const EdgeInsets.all(36),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 24,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Tab Bar
+            Row(
+              children: [
+                ButtonTab(text: 'จัดการรางวัล', isActive: true),
+                const SizedBox(width: 6),
+                ButtonTab(text: 'เงินรางวัล', isActive: false),
+                const SizedBox(width: 6),
+                ButtonTab(text: 'สุ่มรางวัล', isActive: false),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Main Content Card
             Container(
-              width: 248,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: ShapeDecoration(
+                color: const Color(0x7FFFF8F8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
                 children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 6,
+                  // Title
+                  RichText(
+                    text: const TextSpan(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            spacing: 6,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 32,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: ShapeDecoration(
-                                    color: const Color(0xFFFFF7F7) /* Lottocat-White */,
-                                    shape: RoundedRectangleBorder(
-                                      side: BorderSide(
-                                        width: 1,
-                                        color: const Color(0xFFC13433) /* Primary-700 */,
-                                      ),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(8),
-                                        topRight: Radius.circular(8),
-                                        bottomLeft: Radius.circular(4),
-                                        bottomRight: Radius.circular(4),
-                                      ),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        width: 62.67,
-                                        child: Text(
-                                          'จัดการรางวัล',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: const Color(0xFF840100) /* Primary-900 */,
-                                            fontSize: 10,
-                                            fontFamily: 'Kanit',
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Opacity(
-                                opacity: 0.80,
-                                child: Expanded(
-                                  child: Container(
-                                    height: 32,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: ShapeDecoration(
-                                      color: const Color(0xFFFFF7F7) /* Lottocat-White */,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(8),
-                                          topRight: Radius.circular(8),
-                                          bottomLeft: Radius.circular(4),
-                                          bottomRight: Radius.circular(4),
-                                        ),
-                                      ),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: 62.67,
-                                          child: Text(
-                                            'เงินรางวัล',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: const Color(0xFFAE9DA0) /* Gray */,
-                                              fontSize: 10,
-                                              fontFamily: 'Kanit',
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Opacity(
-                                opacity: 0.80,
-                                child: Expanded(
-                                  child: Container(
-                                    height: 32,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: ShapeDecoration(
-                                      color: const Color(0xFFFFF7F7) /* Lottocat-White */,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(8),
-                                          topRight: Radius.circular(8),
-                                          bottomLeft: Radius.circular(4),
-                                          bottomRight: Radius.circular(4),
-                                        ),
-                                      ),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: 62.67,
-                                          child: Text(
-                                            'สุ่มรางวัล',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: const Color(0xFFAE9DA0) /* Gray */,
-                                              fontSize: 10,
-                                              fontFamily: 'Kanit',
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                        TextSpan(
+                          text: 'สร้างรางวัล',
+                          style: TextStyle(
+                            color: Color(0xFF45171D),
+                            fontSize: 14,
+                            fontFamily: 'Kanit',
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFFFFF7F7) /* Lottocat-White */,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(4),
-                                topRight: Radius.circular(4),
-                                bottomLeft: Radius.circular(8),
-                                bottomRight: Radius.circular(8),
-                              ),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            spacing: 8,
-                            children: [
-                              Text(
-                                '16 สิงหาคม 2568',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: const Color(0xFF45171D) /* Lottocat-Black */,
-                                  fontSize: 10,
-                                  fontFamily: 'Kanit',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              Text(
-                                '>',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: const Color(0xFFFD5553) /* Lottocat-Primary */,
-                                  fontSize: 10,
-                                  fontFamily: 'Kanit',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              Text(
-                                '31 สิงหาคม 2568',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: const Color(0xFF45171D) /* Lottocat-Black */,
-                                  fontSize: 10,
-                                  fontFamily: 'Kanit',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
+                        TextSpan(
+                          text: ' (สุ่มตามจำนวน)',
+                          style: TextStyle(
+                            color: Color(0xFF45171D),
+                            fontSize: 12,
+                            fontFamily: 'Kanit',
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: ShapeDecoration(
-                color: const Color(0x7FFFF8F8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 16,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 6,
-                      children: [
-                        Text.rich(
-                          TextSpan(
+                  const SizedBox(height: 16),
+
+                  // Input Section
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        child: Text(
+                          'จำนวน',
+                          style: TextStyle(
+                            color: const Color(0xFFAE9DA0),
+                            fontSize: 12,
+                            fontFamily: 'Kanit',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Container(
+                          height: 36,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: ShapeDecoration(
+                            color: const Color(0xFFFFF7F7),
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                width: 1,
+                                color: _errorMessage != null
+                                    ? Colors.red
+                                    : const Color(0xFF45171D),
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Row(
                             children: [
-                              TextSpan(
-                                text: 'สร้างรางวัล',
-                                style: TextStyle(
-                                  color: const Color(0xFF45171D) /* Lottocat-Black */,
-                                  fontSize: 14,
-                                  fontFamily: 'Kanit',
-                                  fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: TextField(
+                                  controller: _countController,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: _onCountChanged,
+                                  style: const TextStyle(
+                                    color: Color(0xFF45171D),
+                                    fontSize: 12,
+                                    fontFamily: 'Kanit',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                    isDense: true,
+                                  ),
                                 ),
                               ),
-                              TextSpan(
-                                text: ' (สุ่มตามจำนวน)',
+                              const Text(
+                                'ใบ',
                                 style: TextStyle(
-                                  color: const Color(0xFF45171D) /* Lottocat-Black */,
+                                  color: Color(0xFFAE9DA0),
                                   fontSize: 12,
+                                  fontFamily: 'Kanit',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Error Message
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 10,
+                        fontFamily: 'Kanit',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 24),
+
+                  // Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            // Cancel action
+                            _countController.text = '1000';
+                            setState(() {
+                              _errorMessage = null;
+                              _successMessage = null;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            decoration: ShapeDecoration(
+                              color: const Color(0xFFFD5553),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              shadows: const [
+                                BoxShadow(
+                                  color: Color(0x3F454517),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 4),
+                                  spreadRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'ยกเลิก',
+                                style: TextStyle(
+                                  color: Color(0xFFFFF7F7),
+                                  fontSize: 15,
                                   fontFamily: 'Kanit',
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        Container(
-                          width: double.infinity,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 6,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  spacing: 8,
-                                  children: [
-                                    SizedBox(
-                                      width: 80,
-                                      child: Text(
-                                        'จำนวน',
-                                        style: TextStyle(
-                                          color: const Color(0xFFAE9DA0) /* Gray */,
-                                          fontSize: 12,
-                                          fontFamily: 'Kanit',
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        spacing: 6,
-                                        children: [
-                                          Container(
-                                            width: double.infinity,
-                                            height: 36,
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                            decoration: ShapeDecoration(
-                                              color: const Color(0xFFFFF7F7) /* Lottocat-White */,
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                  width: 1,
-                                                  color: _errorMessage != null
-                                                    ? const Color(0xFFFF4757) /* Error Color */
-                                                    : const Color(0xFF45171D) /* Lottocat-Black */,
-                                                ),
-                                                borderRadius: BorderRadius.circular(16),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              spacing: 10,
-                                              children: [
-                                                Expanded(
-                                                  child: TextField(
-                                                    controller: _countController,
-                                                    keyboardType: TextInputType.number,
-                                                    onChanged: _onCountChanged,
-                                                    style: const TextStyle(
-                                                      color: Color(0xFF45171D) /* Lottocat-Black */,
-                                                      fontSize: 12,
-                                                      fontFamily: 'Kanit',
-                                                      fontWeight: FontWeight.w400,
-                                                    ),
-                                                    decoration: const InputDecoration(
-                                                      border: InputBorder.none,
-                                                      hintText: '0',
-                                                      hintStyle: TextStyle(
-                                                        color: Color(0xFFAE9DA0) /* Gray */,
-                                                        fontSize: 12,
-                                                        fontFamily: 'Kanit',
-                                                        fontWeight: FontWeight.w400,
-                                                      ),
-                                                      contentPadding: EdgeInsets.zero,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  'ใบ',
-                                                  style: TextStyle(
-                                                    color: Color(0xFFAE9DA0) /* Gray */,
-                                                    fontSize: 12,
-                                                    fontFamily: 'Kanit',
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // Error message display
-                              if (_errorMessage != null)
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFF4757).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: const Color(0xFFFF4757)),
-                                  ),
-                                  child: Text(
-                                    _errorMessage!,
-                                    style: const TextStyle(
-                                      color: Color(0xFFFF4757),
-                                      fontFamily: 'Kanit',
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              // Success message display
-                              if (_successMessage != null)
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.green),
-                                  ),
-                                  child: Text(
-                                    _successMessage!,
-                                    style: const TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: 'Kanit',
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                            ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
-                      children: [
-                        Expanded(
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: _isLoading ? null : _generateLotteries,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
                             decoration: ShapeDecoration(
-                              color: const Color(0xFFFD5553) /* Lottocat-Primary */,
+                              color: _isLoading
+                                  ? const Color(0xFFE0E0E0)
+                                  : const Color(0xFFFFF7F7),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              shadows: [
+                              shadows: const [
                                 BoxShadow(
-                                  color: const Color(0x3F454517),
+                                  color: Color(0x3F454517),
                                   blurRadius: 8,
                                   offset: Offset(0, 4),
                                   spreadRadius: 0,
-                                )
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              spacing: 10,
-                              children: [
-                                Text(
-                                  'ยกเลิก',
-                                  style: TextStyle(
-                                    color: const Color(0xFFFFF7F7) /* Lottocat-White */,
-                                    fontSize: 15,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w700,
-                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: _isLoading ? null : _generateLotteries,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 12),
-                              decoration: ShapeDecoration(
-                                color: _isLoading
-                                  ? const Color(0xFFFD5553).withOpacity(0.6)
-                                  : const Color(0xFFFFF7F7) /* Lottocat-White */,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                shadows: [
-                                  BoxShadow(
-                                    color: const Color(0x3F454517),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                    spreadRadius: 0,
-                                  )
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                spacing: 10,
-                                children: [
-                                  if (_isLoading)
-                                    const SizedBox(
+                            child: Center(
+                              child: _isLoading
+                                  ? const SizedBox(
                                       width: 16,
                                       height: 16,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          Color(0xFFFD5553) /* Lottocat-Primary */
-                                        ),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Color(0xFFFD5553),
+                                            ),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'ดำเนินการ',
+                                      style: TextStyle(
+                                        color: Color(0xFFFD5553),
+                                        fontSize: 15,
+                                        fontFamily: 'Kanit',
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
-                                  Text(
-                                    _isLoading ? 'กำลังดำเนินการ...' : 'ดำเนินการ',
-                                    style: TextStyle(
-                                      color: _isLoading
-                                        ? const Color(0xFFFD5553).withOpacity(0.6)
-                                        : const Color(0xFFFD5553) /* Lottocat-Primary */,
-                                      fontSize: 15,
-                                      fontFamily: 'Kanit',
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            Opacity(
-              opacity: 0.50,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: ShapeDecoration(
-                  color: const Color(0x7FFFF8F8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 16,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 6,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'อัพโหลดล็อตเตอรี่',
-                                  style: TextStyle(
-                                    color: const Color(0xFF45171D) /* Lottocat-Black */,
-                                    fontSize: 14,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' (ยังไม่พร้อมใช้งาน)',
-                                  style: TextStyle(
-                                    color: const Color(0xFF45171D) /* Lottocat-Black */,
-                                    fontSize: 12,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 8,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 12),
-                              decoration: ShapeDecoration(
-                                color: const Color(0xFFFFF7F7) /* Lottocat-White */,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                shadows: [
-                                  BoxShadow(
-                                    color: const Color(0x3F454517),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                    spreadRadius: 0,
-                                  )
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                spacing: 10,
-                                children: [
-                                  Text(
-                                    'อัพโหลด',
-                                    style: TextStyle(
-                                      color: const Color(0xFFAE9DA0) /* Gray */,
-                                      fontSize: 15,
-                                      fontFamily: 'Kanit',
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+
+            SizedBox(height: 16),
+
+            LotteryList(lotteryList: _mockLotteryData),
           ],
         ),
       ),

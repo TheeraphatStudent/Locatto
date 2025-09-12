@@ -41,7 +41,7 @@ class TestPage extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                showCreateMoneyDialog(context);
+                showCreateMoneyDialog(context, (value) {});
               },
               child: const Text(
                 'เปิด Dialog',

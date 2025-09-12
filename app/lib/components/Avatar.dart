@@ -11,6 +11,7 @@ enum AvatarState { view, edit }
 class Avatar extends StatefulWidget {
   final String? initialImagePath;
   final Function(String?)? onImageChanged;
+  
   final AvatarState state;
   final double size;
   final Color backgroundColor;

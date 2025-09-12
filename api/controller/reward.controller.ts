@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { RewardService, RewardData } from '../service/reward.service';
 import { isRoleExst } from '../utils/auth.helper';
 import { Tiers } from '../type/reward';
+import { sendError, sendFromService } from '../utils/response.helper';
 
 export class RewardController {
   static async create(req: Request, res: Response): Promise<void> {
@@ -10,23 +11,16 @@ export class RewardController {
       const { lid, tier, revenue, winner } = req.body;
 
       if (!lid || !tier || revenue === undefined) {
-        res.status(400).json({ error: 'lid, tier, and revenue are required' });
+        sendError({ res, status: 400, message: 'lid, tier, and revenue are required' });
         return;
       }
 
       const result = await RewardService.create({ lid, tier, revenue, winner });
-
-      if (result.success) {
-        res.status(201).json({
-          message: result.message,
-          reward: result.reward
-        });
-      } else {
-        res.status(400).json({ error: result.message });
-      }
+      const status = result.success ? 201 : 400;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Create reward error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -36,21 +30,21 @@ export class RewardController {
         const id = +req.query.id;
         const reward = await RewardService.getById(id);
         if (reward) {
-          res.json(reward);
+          sendFromService({ res, status: 200, result: reward, message: 'Reward found' });
         } else {
-          res.status(404).json({ error: 'Reward not found' });
+          sendError({ res, status: 404, message: 'Reward not found' });
         }
       } else if (req.query.lid) {
         const lid = +req.query.lid;
         const rewards = await RewardService.getByLotteryId(lid);
-        res.json(rewards);
+        sendFromService({ res, status: 200, result: rewards, message: 'Rewards fetched' });
       } else {
         const rewards = await RewardService.getAll();
-        res.json(rewards);
+        sendFromService({ res, status: 200, result: rewards, message: 'Rewards fetched' });
       }
     } catch (error) {
       console.error('Get rewards error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -60,13 +54,13 @@ export class RewardController {
       const reward = await RewardService.getById(id);
       
       if (reward) {
-        res.json(reward);
+        sendFromService({ res, status: 200, result: reward, message: 'Reward found' });
       } else {
-        res.status(404).json({ error: 'Reward not found' });
+        sendError({ res, status: 404, message: 'Reward not found' });
       }
     } catch (error) {
       console.error('Get reward by id error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -81,15 +75,11 @@ export class RewardController {
       if (req.body.winner !== undefined) updateData.winner = req.body.winner;
 
       const result = await RewardService.update(id, updateData);
-
-      if (result.success) {
-        res.json({ message: result.message });
-      } else {
-        res.status(404).json({ error: result.message });
-      }
+      const status = result.success ? 200 : 404;
+      sendFromService({ res, status, result });
     } catch (error) {
       console.error('Update reward error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 
@@ -112,7 +102,7 @@ export class RewardController {
   static async manageRewards(req: Request, res: Response): Promise<void> {
     try {
       if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
-        res.status(403).json({ error: 'Admin access required' });
+        sendError({ res, status: 403, message: 'Admin access required' });
         return;
       }
 
@@ -122,7 +112,7 @@ export class RewardController {
       delete tierData.exp;
 
       if (!tierData || Object.keys(tierData).length === 0) {
-        res.status(400).json({ error: 'No tier data provided' });
+        sendError({ res, status: 400, message: 'No tier data provided' });
         return;
       }
 
@@ -147,7 +137,7 @@ export class RewardController {
         const revenue = revenueValue === '' ? 0 : parseFloat(revenueValue as string);
 
         if (isNaN(revenue)) {
-          res.status(400).json({ error: `Invalid revenue value for ${tierKey}: ${revenueValue}` });
+          sendError({ res, status: 400, message: `Invalid revenue value for ${tierKey}: ${revenueValue}` });
           return;
         }
 
@@ -157,20 +147,17 @@ export class RewardController {
         });
 
         if (!result.success) {
-          res.status(500).json({ error: `Failed to manage ${tierKey}: ${result.message}` });
+          sendError({ res, status: 500, message: `Failed to manage ${tierKey}: ${result.message}` });
           return;
         }
 
         results.push(result.reward);
       }
 
-      res.status(200).json({
-        message: 'All reward tiers managed successfully',
-        rewards: results
-      });
+      sendFromService({ res, status: 200, result: { rewards: results }, message: 'All reward tiers managed successfully' });
     } catch (error) {
       console.error('Manage rewards error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
 }

@@ -1,11 +1,14 @@
 import 'dart:developer';
 
+import 'package:app/components/Alert.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/redcurve.dart';
 import 'package:app/service/auth.dart';
+import 'package:app/service/user.dart';
 import 'package:app/style/theme.dart';
 import 'package:app/type/login.dart';
+import 'package:app/utils/response_helper.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -19,9 +22,17 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  AlertMessage alert = AlertMessage();
+
   final _auth = Auth();
+  final responseHelper = ResponseHelper();
+  final _userService = UserService();
+
   bool _isLoading = false;
-  String? _errorMessage;
+
+  _LoginPageState() {
+    alert = new AlertMessage();
+  }
 
   @override
   void dispose() {
@@ -54,13 +65,18 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    log('Handle login work');
+
     if (!_formKey.currentState!.validate()) {
+      log('Form is not valid');
+      alert.showError(context, 'กรุณากรอกอีเมลล์หรือเบอร์โทรศัพท์และรหัสผ่าน');
       return;
     }
 
+    log('Form is valid');
+
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
@@ -71,38 +87,47 @@ class _LoginPageState extends State<LoginPage> {
 
       final response = await _auth.login(loginData);
 
-      if (response['success'] == true) {
+      log('Login response: $response');
+      log('Status code: ${response['statusCode']}');
+
+      if (responseHelper.isSuccess(response['statusCode'] as int)) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('เข้าสู่ระบบสำเร็จ'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          alert.showSuccess(context, 'เข้าสู่ระบบสำเร็จ');
 
-          final role = response['role'];
+          final userData = response['data']?['user'] ?? response['user'];
+          if (userData != null) {
+            final credit = userData['credit']?.toString() ?? '0';
+            await _userService.storeUserCredit(credit);
+            await _userService.storeUserData(userData);
 
-          switch (role) {
-            case 'admin':
-              Navigator.pushReplacementNamed(context, '/admin');
-              break;
-            default:
-              Navigator.pushReplacementNamed(context, '/home');
+            final role = userData['role'];
+
+            switch (role) {
+              case 'admin':
+                Navigator.pushReplacementNamed(context, '/admin');
+                break;
+              default:
+                Navigator.pushReplacementNamed(context, '/home');
+            }
+          } else {
+            log('User data not found in response');
+            alert.showError(context, 'ข้อมูลผู้ใช้ไม่ถูกต้อง');
           }
         }
       } else {
-        log(response.toString());
+        log('Login failed with response: $response');
 
-        setState(() {
-          _errorMessage = response['message'] ?? 'เข้าสู่ระบบล้มเหลว';
-        });
+        if (mounted) {
+          final errorMessage = response['message'] ?? response['data']?['message'] ?? 'เข้าสู่ระบบล้มเหลว';
+          alert.showError(context, errorMessage);
+        }
       }
     } catch (e) {
-      log(e.toString());
+      log('Login error: $e');
 
-      setState(() {
-        _errorMessage = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
-      });
+      if (mounted) {
+        alert.showError(context, 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -187,13 +212,6 @@ class _LoginPageState extends State<LoginPage> {
                                   hintText: 'กรุณากรอกอีเมลล์',
                                   materialIcon: Icons.email,
                                   validator: _validateUsername,
-                                  onChanged: (value) {
-                                    if (_errorMessage != null) {
-                                      setState(() {
-                                        _errorMessage = null;
-                                      });
-                                    }
-                                  },
                                 ),
                                 const SizedBox(height: 16),
                                 // Password Field
@@ -204,37 +222,8 @@ class _LoginPageState extends State<LoginPage> {
                                   materialIcon: Icons.lock,
                                   obscureText: true,
                                   validator: _validatePassword,
-                                  onChanged: (value) {
-                                    if (_errorMessage != null) {
-                                      setState(() {
-                                        _errorMessage = null;
-                                      });
-                                    }
-                                  },
                                 ),
                                 const SizedBox(height: 8),
-                                // Error Message Display
-                                if (_errorMessage != null)
-                                  Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondary.withOpacity(
-                                        0.1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: AppColors.secondary,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      _errorMessage!,
-                                      style: const TextStyle(
-                                        color: AppColors.secondary,
-                                        fontFamily: 'Kanit',
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
                               ],
                             ),
                           ),
@@ -263,8 +252,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 16),
                           ButtonActions(
-                            text: 'เข้าสู่ระบบ',
-                            onPressed: _isLoading ? null : _handleLogin,
+                            text: _isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ',
+                            onPressed: _isLoading ? null : () {
+                              log('Button pressed, calling _handleLogin');
+                              _handleLogin();
+                            },
                           ),
                         ],
                       ),
