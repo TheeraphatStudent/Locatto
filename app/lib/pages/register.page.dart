@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app/components/Alert.dart';
 import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
@@ -5,6 +7,7 @@ import 'package:app/components/Input.dart';
 import 'package:app/components/Dialogue.dart';
 import 'package:app/service/auth.dart';
 import 'package:app/type/register.dart';
+import 'package:app/utils/response_helper.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,8 +25,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _creditController = TextEditingController();
-  final _role = TextEditingController();
+  final _creditController = TextEditingController(text: '100');
+  // final _role = TextEditingController();
+
+  final responseHelper = ResponseHelper();
 
   final _auth = Auth();
   bool _isLoading = false;
@@ -126,7 +131,6 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // Validate credit input
     final creditValidation = _validateCredit(_creditController.text);
 
     if (creditValidation != null) {
@@ -152,7 +156,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
       final response = await _auth.register(registerData);
 
-      if (response['success'] == true) {
+      log(response.toString());
+      log(responseHelper.isSuccess(response['statusCode'] as int).toString());
+
+      if (responseHelper.isSuccess(response['statusCode'] as int)) {
         if (mounted) {
           AlertMessage.showSuccess(context, 'สมัครสมาชิกสำเร็จ!');
 
@@ -308,7 +315,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   ButtonActions(
                     label: 'มีบัญชีแล้ว?',
                     text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
-                    onPressed: _isLoading ? null : () { showCreateMoneyDialog(context, (value) { _creditController.text = value; _handleRegistration(); }); },
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            showCreateMoneyDialog(context, (value) {
+                              _creditController.text = value;
+                              _handleRegistration();
+                            }, initialValue: _creditController.text);
+                          },
                     onLabelPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },

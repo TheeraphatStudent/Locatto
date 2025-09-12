@@ -79,13 +79,15 @@ class Transport {
       }
 
       final responseData = json.jsonDecode(response.body);
+      Map<String, dynamic> payloadData;
       if (responseData.containsKey('data')) {
         log(responseData.toString());
-
-        return decodePayload(responseData['data']);
+        payloadData = decodePayload(responseData['data']);
+      } else {
+        payloadData = responseData as Map<String, dynamic>;
       }
 
-      return responseData;
+      return {...payloadData, 'statusCode': response.statusCode};
     } catch (e) {
       throw Exception('Network error: $e');
     }

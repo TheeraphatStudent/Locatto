@@ -365,8 +365,14 @@ class DialogHelper {
 }
 
 //โชว์ Dialog ระบุจำนวนเหรียญ
-void showCreateMoneyDialog(BuildContext context, Function(String) onConfirm) {
-  final TextEditingController _moneyController = TextEditingController();
+void showCreateMoneyDialog(
+  BuildContext context,
+  Function(String) onConfirm, {
+  String? initialValue,
+}) {
+  final TextEditingController _moneyController = TextEditingController(
+    text: (initialValue == null || initialValue.isEmpty) ? '100' : initialValue,
+  );
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -425,7 +431,12 @@ void showCreateMoneyDialog(BuildContext context, Function(String) onConfirm) {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      onConfirm(_moneyController.text);
+                      final value = _moneyController.text.trim().isEmpty
+                          ? ((initialValue == null || initialValue.isEmpty)
+                                ? '100'
+                                : initialValue)
+                          : _moneyController.text.trim();
+                      onConfirm(value);
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(

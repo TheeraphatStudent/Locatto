@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
 
       final response = await _auth.login(loginData);
 
-      if (response['success'] == true) {
+      if ((response['statusCode'] as int?) == 200) {
         if (mounted) {
           AlertMessage.showSuccess(context, 'เข้าสู่ระบบสำเร็จ');
 
