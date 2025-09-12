@@ -58,7 +58,7 @@ class Box_make_reward extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text("ยกเลิก",style: TextStyle(fontSize: 20),),
+                  child: const Text("ยกเลิก", style: TextStyle(fontSize: 20)),
                 ),
               ),
               const SizedBox(width: 12),
@@ -66,14 +66,17 @@ class Box_make_reward extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,                  
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                     side: const BorderSide(color: Colors.redAccent),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text("ดำเนินการ",style: TextStyle(fontSize: 20,color: Colors.red),),
+                  child: const Text(
+                    "ดำเนินการ",
+                    style: TextStyle(fontSize: 20, color: Colors.red),
+                  ),
                 ),
               ),
             ],
