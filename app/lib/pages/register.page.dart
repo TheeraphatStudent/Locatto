@@ -29,6 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
   // final _role = TextEditingController();
 
   final responseHelper = ResponseHelper();
+  AlertMessage alert = AlertMessage();
 
   final _auth = Auth();
   bool _isLoading = false;
@@ -134,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final creditValidation = _validateCredit(_creditController.text);
 
     if (creditValidation != null) {
-      AlertMessage.showError(context, creditValidation);
+      alert.showError(context, creditValidation);
       return;
     }
 
@@ -161,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (responseHelper.isSuccess(response['statusCode'] as int)) {
         if (mounted) {
-          AlertMessage.showSuccess(context, 'สมัครสมาชิกสำเร็จ!');
+          alert.showSuccess(context, 'สมัครสมาชิกสำเร็จ!');
 
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
@@ -171,7 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       } else {
         if (mounted) {
-          AlertMessage.showError(
+          alert.showError(
             context,
             response['message'] ?? 'การสมัครสมาชิกล้มเหลว',
           );
@@ -179,7 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       if (mounted) {
-        AlertMessage.showError(context, 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
+        alert.showError(context, 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
       }
     } finally {
       if (mounted) {

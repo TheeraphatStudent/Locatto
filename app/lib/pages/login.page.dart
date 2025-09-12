@@ -5,8 +5,10 @@ import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/redcurve.dart';
 import 'package:app/service/auth.dart';
+import 'package:app/service/user.dart';
 import 'package:app/style/theme.dart';
 import 'package:app/type/login.dart';
+import 'package:app/utils/response_helper.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,8 +22,17 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  AlertMessage alert = AlertMessage();
+
   final _auth = Auth();
+  final responseHelper = ResponseHelper();
+  final _userService = UserService();
+
   bool _isLoading = false;
+
+  _LoginPageState() {
+    alert = new AlertMessage();
+  }
 
   @override
   void dispose() {
@@ -54,9 +65,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    log('Handle login work');
+
     if (!_formKey.currentState!.validate()) {
+      log('Form is not valid');
+      alert.showError(context, 'กรุณากรอกอีเมลล์หรือเบอร์โทรศัพท์และรหัสผ่าน');
       return;
     }
+
+    log('Form is valid');
 
     setState(() {
       _isLoading = true;
@@ -70,35 +87,45 @@ class _LoginPageState extends State<LoginPage> {
 
       final response = await _auth.login(loginData);
 
-      if ((response['statusCode'] as int?) == 200) {
+      log('Login response: $response');
+      log('Status code: ${response['statusCode']}');
+
+      if (responseHelper.isSuccess(response['statusCode'] as int)) {
         if (mounted) {
-          AlertMessage.showSuccess(context, 'เข้าสู่ระบบสำเร็จ');
+          alert.showSuccess(context, 'เข้าสู่ระบบสำเร็จ');
 
-          final role = response['role'];
+          final userData = response['data']?['user'] ?? response['user'];
+          if (userData != null) {
+            final credit = userData['credit']?.toString() ?? '0';
+            await _userService.storeUserCredit(credit);
 
-          switch (role) {
-            case 'admin':
-              Navigator.pushReplacementNamed(context, '/admin');
-              break;
-            default:
-              Navigator.pushReplacementNamed(context, '/home');
+            final role = userData['role'];
+
+            switch (role) {
+              case 'admin':
+                Navigator.pushReplacementNamed(context, '/admin');
+                break;
+              default:
+                Navigator.pushReplacementNamed(context, '/home');
+            }
+          } else {
+            log('User data not found in response');
+            alert.showError(context, 'ข้อมูลผู้ใช้ไม่ถูกต้อง');
           }
         }
       } else {
-        log(response.toString());
+        log('Login failed with response: $response');
 
         if (mounted) {
-          AlertMessage.showError(
-            context,
-            response['message'] ?? 'เข้าสู่ระบบล้มเหลว',
-          );
+          final errorMessage = response['message'] ?? response['data']?['message'] ?? 'เข้าสู่ระบบล้มเหลว';
+          alert.showError(context, errorMessage);
         }
       }
     } catch (e) {
-      log(e.toString());
+      log('Login error: $e');
 
       if (mounted) {
-        AlertMessage.showError(context, 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+        alert.showError(context, 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
       }
     } finally {
       if (mounted) {
@@ -224,8 +251,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 16),
                           ButtonActions(
-                            text: 'เข้าสู่ระบบ',
-                            onPressed: _isLoading ? null : _handleLogin,
+                            text: _isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ',
+                            onPressed: _isLoading ? null : () {
+                              log('Button pressed, calling _handleLogin');
+                              _handleLogin();
+                            },
                           ),
                         ],
                       ),

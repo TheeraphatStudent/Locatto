@@ -1,3 +1,5 @@
+import 'package:app/components/Showcoins.dart';
+import 'package:app/service/user.dart';
 import 'package:app/utils/date_time.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -15,11 +17,14 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
 class _HeaderState extends State<Header> {
   late Timer _timer;
   String _currentTime = '';
+  int _userCredit = 0;
+  final UserService _userService = UserService();
 
   @override
   void initState() {
     super.initState();
     _updateTime();
+    _loadUserCredit();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _updateTime();
     });
@@ -29,6 +34,16 @@ class _HeaderState extends State<Header> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  void _loadUserCredit() async {
+    final creditString = await _userService.getUserCredit();
+    if (creditString != null) {
+      final credit = double.tryParse(creditString)?.toInt() ?? 0;
+      setState(() {
+        _userCredit = credit;
+      });
+    }
   }
 
   void _updateTime() {
@@ -49,37 +64,12 @@ class _HeaderState extends State<Header> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Flexible(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(6.0),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.home, size: 16, color: Colors.grey.shade700),
-                    SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        "Hello world",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // ShowCoins(coinCount: 0),
+            ShowCoins(coinCount: _userCredit),
             Flexible(
               child: Text(
                 _currentTime,

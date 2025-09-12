@@ -164,6 +164,7 @@ class OnBoardingPage extends StatelessWidget {
                                 onPressed: () {
                                   Navigator.pushNamed(context, '/login');
                                 },
+                                icon: Icons.arrow_forward,
                                 // onLabelPressed: () {
                                 //   Navigator.pushNamed(context, '/register');
                                 // },

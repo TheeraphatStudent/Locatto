@@ -14,6 +14,7 @@ class ButtonActions extends StatefulWidget {
     this.variant = ButtonVariant.light,
     this.theme,
     this.onPressed,
+    this.icon,
     this.onLabelPressed,
   });
 
@@ -22,6 +23,7 @@ class ButtonActions extends StatefulWidget {
   final bool hasShadow;
   final ButtonVariant variant;
   final Color? theme;
+  final IconData? icon;
   final VoidCallback? onPressed;
   final VoidCallback? onLabelPressed;
 
@@ -176,19 +178,34 @@ class _ButtonActionsState extends State<ButtonActions>
                         child: Text(widget.text),
                       ),
                       const SizedBox(width: 10),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        transform: Matrix4.translationValues(
-                          _isHovered ? 2 : 0,
-                          0,
-                          0,
+                      if (widget.icon != null)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          transform: Matrix4.translationValues(
+                            _isHovered ? 2 : 0,
+                            0,
+                            0,
+                          ),
+                          child: Icon(
+                            widget.icon,
+                            size: 24,
+                            color: foregroundColor,
+                          ),
+                        )
+                      else if (widget.variant == ButtonVariant.primary)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          transform: Matrix4.translationValues(
+                            _isHovered ? 2 : 0,
+                            0,
+                            0,
+                          ),
+                          child: Icon(
+                            Icons.arrow_right,
+                            size: 24,
+                            color: foregroundColor,
+                          ),
                         ),
-                        child: Icon(
-                          Icons.arrow_right,
-                          size: 24,
-                          color: foregroundColor,
-                        ),
-                      ),
                     ],
                   ),
                 ),
