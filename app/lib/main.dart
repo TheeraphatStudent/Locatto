@@ -1,5 +1,6 @@
 // import 'dart:developer';
 
+import 'package:app/components/Box_make_reward.dart';
 import 'package:app/pages/cart.page.dart';
 import 'package:app/pages/debug.page.dart';
 import 'package:app/pages/home.page.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      initialRoute: '/onboarding',
+      initialRoute: '/test',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const ProfilePage(),
         '/onboarding': (context) => const OnBoardingPage(),
         '/forgotpass': (context) => const ForgotPassPage(),
+        '/boxreward': (context) => const Box_make_reward(),
 
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),

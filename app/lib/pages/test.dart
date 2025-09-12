@@ -1,4 +1,20 @@
-import 'package:app/components/Dialogue.dart';
+import 'package:app/components/Box_make_reward.dart';
+import 'package:flutter/material.dart';
+
+class TestPage extends StatelessWidget {
+  const TestPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFF5F2),
+      body: Center(
+        child: Box_make_reward(),
+      ),
+    );
+  }
+}
+/*import 'package:app/components/Dialogue.dart';
 import 'package:app/components/statusLottery.dart';
 import 'package:flutter/material.dart';
 
@@ -41,4 +57,6 @@ class TestPage extends StatelessWidget {
       ),
     );
   }
-}
+}*/
+
+
