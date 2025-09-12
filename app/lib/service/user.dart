@@ -26,6 +26,18 @@ class UserService {
     return null;
   }
 
+  Future<String?> getUserRole() async {
+    final userDataString = await _storage.read(key: _userDataKey);
+    if (userDataString != null) {
+      if (userDataString.contains('role: admin')) {
+        return 'admin';
+      }
+      return 'user';
+    }
+
+    return 'user';
+  }
+
   Future<void> clearUserData() async {
     await _storage.delete(key: _creditKey);
     await _storage.delete(key: _userDataKey);

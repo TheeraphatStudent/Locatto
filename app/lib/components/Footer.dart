@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/service/user.dart';
 // Note: flutter_svg is no longer used in this widget.
 // import 'package:flutter_svg/flutter_svg.dart';
 
@@ -11,6 +12,23 @@ class Footer extends StatefulWidget {
 
 class _FooterState extends State<Footer> {
   int _selectedIndex = 0;
+  final UserService _userService = UserService();
+  String _userRole = 'user';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final role = await _userService.getUserRole();
+    if (role != null && mounted) {
+      setState(() {
+        _userRole = role;
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -22,24 +40,37 @@ class _FooterState extends State<Footer> {
     final String currentRoute =
         ModalRoute.of(context)?.settings.name ?? '/home';
 
-    switch (currentRoute) {
-      case '/home':
-        _selectedIndex = 0;
-        break;
-      case '/lottery':
-        _selectedIndex = 1;
-        break;
-      case '/cart':
-        _selectedIndex = 2;
-        break;
-      case '/purchase':
-        _selectedIndex = 3;
-        break;
-      case '/profile':
-        _selectedIndex = 4;
-        break;
-      default:
-        _selectedIndex = 0;
+    if (_userRole == 'admin') {
+      switch (currentRoute) {
+        case '/home':
+          _selectedIndex = 0;
+          break;
+        case '/profile':
+          _selectedIndex = 1;
+          break;
+        default:
+          _selectedIndex = 0;
+      }
+    } else {
+      switch (currentRoute) {
+        case '/home':
+          _selectedIndex = 0;
+          break;
+        case '/lottery':
+          _selectedIndex = 1;
+          break;
+        case '/cart':
+          _selectedIndex = 2;
+          break;
+        case '/purchase':
+          _selectedIndex = 3;
+          break;
+        case '/profile':
+          _selectedIndex = 4;
+          break;
+        default:
+          _selectedIndex = 0;
+      }
     }
 
     if (mounted) {
@@ -51,24 +82,37 @@ class _FooterState extends State<Footer> {
     if (_selectedIndex == index) return;
 
     String routeName;
-    switch (index) {
-      case 0:
-        routeName = '/home';
-        break;
-      case 1:
-        routeName = '/lottery';
-        break;
-      case 2:
-        routeName = '/cart';
-        break;
-      case 3:
-        routeName = '/purchase';
-        break;
-      case 4:
-        routeName = '/profile';
-        break;
-      default:
-        routeName = '/home';
+    if (_userRole == 'admin') {
+      switch (index) {
+        case 0:
+          routeName = '/home';
+          break;
+        case 1:
+          routeName = '/profile';
+          break;
+        default:
+          routeName = '/home';
+      }
+    } else {
+      switch (index) {
+        case 0:
+          routeName = '/home';
+          break;
+        case 1:
+          routeName = '/lottery';
+          break;
+        case 2:
+          routeName = '/cart';
+          break;
+        case 3:
+          routeName = '/purchase';
+          break;
+        case 4:
+          routeName = '/profile';
+          break;
+        default:
+          routeName = '/home';
+      }
     }
 
     setState(() {
@@ -143,17 +187,23 @@ class _FooterState extends State<Footer> {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      height: 72,
-      backgroundColor: const Color(0xFF9C8E8E),
-      surfaceTintColor: Colors.transparent,
-      shadowColor: Colors.black26,
-      elevation: 0,
-      labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-      indicatorColor: Colors.transparent,
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: _onDestinationSelected,
-      destinations: <Widget>[
+    List<Widget> destinations;
+    
+    if (_userRole == 'admin') {
+      destinations = [
+        NavigationDestination(
+          icon: _buildInactiveIcon('logo'),
+          selectedIcon: _buildActiveIcon('logo'),
+          label: 'Home',
+        ),
+        NavigationDestination(
+          icon: _buildInactiveIcon('profile'),
+          selectedIcon: _buildActiveIcon('profile'),
+          label: 'Profile',
+        ),
+      ];
+    } else {
+      destinations = [
         NavigationDestination(
           icon: _buildInactiveIcon('logo'),
           selectedIcon: _buildActiveIcon('logo'),
@@ -170,7 +220,6 @@ class _FooterState extends State<Footer> {
           label: 'Cart',
         ),
         NavigationDestination(
-          // Assuming 'pocket.png' is for the 'Wallet' label
           icon: _buildInactiveIcon('pocket'),
           selectedIcon: _buildActiveIcon('pocket'),
           label: 'Wallet',
@@ -180,7 +229,20 @@ class _FooterState extends State<Footer> {
           selectedIcon: _buildActiveIcon('profile'),
           label: 'Profile',
         ),
-      ],
+      ];
+    }
+
+    return NavigationBar(
+      height: 72,
+      backgroundColor: const Color(0xFF9C8E8E),
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.black26,
+      elevation: 0,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+      indicatorColor: Colors.transparent,
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: _onDestinationSelected,
+      destinations: destinations,
     );
   }
 }

@@ -243,3 +243,57 @@ class _ButtonActionsState extends State<ButtonActions>
     );
   }
 }
+
+class ButtonTab extends StatelessWidget {
+  final String text;
+  final bool isActive;
+  final VoidCallback? onTap;
+
+  const ButtonTab({
+    super.key,
+    required this.text,
+    required this.isActive,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 32,
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          decoration: ShapeDecoration(
+            color: const Color(0xFFFFF7F7),
+            shape: RoundedRectangleBorder(
+              side: isActive
+                  ? BorderSide(width: 1, color: const Color(0xFFC13433))
+                  : BorderSide.none,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+                bottomLeft: Radius.circular(4),
+                bottomRight: Radius.circular(4),
+              ),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isActive
+                    ? const Color(0xFF840100)
+                    : const Color(0xFFAE9DA0),
+                fontSize: 10,
+                fontFamily: 'Kanit',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
