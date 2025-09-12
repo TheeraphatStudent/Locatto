@@ -15,8 +15,35 @@ export const conn = mysql.createPool({
   authPlugins: {
     mysql_clear_password: () => () => Buffer.from(process.env.DB_PASSWORD + '\0')
   },
-  connectTimeout: 60000
+  connectTimeout: 60000,
+  waitForConnections: true,
+  queueLimit: 0
 });
 
 export const queryAsync = conn.promise().query.bind(conn.promise());
 export const executeAsync = conn.promise().execute.bind(conn.promise());
+
+export async function pingDatabase(): Promise<void> {
+  try {
+    await queryAsync('SELECT 1');
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] Database ping successful`);
+  } catch (error: any) {
+    const timestamp = new Date().toISOString();
+    console.error(`[${timestamp}] Database ping failed:`, error?.message || error);
+  }
+}
+
+let keepAliveTimer: NodeJS.Timeout | null = null;
+
+export function initDbKeepAlive(intervalMs: number = 5 * 60 * 1000): void {
+  void pingDatabase();
+
+  if (keepAliveTimer) {
+    clearInterval(keepAliveTimer);
+  }
+
+  keepAliveTimer = setInterval(() => {
+    void pingDatabase();
+  }, intervalMs);
+}

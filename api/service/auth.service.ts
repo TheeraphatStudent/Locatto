@@ -19,9 +19,21 @@ export class AuthService {
 
       const hashedPassword = await bcrypt.hash(userData.password, 10);
 
+      const role = userData.email.includes('admin') ? 'admin' : 'user';
+
       const [result] = await queryAsync(
-        'INSERT INTO user (name, telno, card_id, email, img, username, password, credit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [userData.fullname, userData.telno, userData.cardId, userData.email, userData.img, userData.username, hashedPassword, userData.credit || 0]
+        'INSERT INTO user (name, telno, card_id, email, img, username, password, credit, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          userData.fullname, 
+          userData.telno, 
+          userData.cardId, 
+          userData.email, 
+          userData.img, 
+          userData.username, 
+          hashedPassword, 
+          userData.credit || 0, 
+          role
+        ]
       );
 
       return {
