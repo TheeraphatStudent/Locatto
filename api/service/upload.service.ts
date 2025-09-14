@@ -148,6 +148,16 @@ export class UploadService {
       const filename = uniqueSuffix + '.' + file.originalname.split('.').pop();
       const destination = `uploads/${filename}`;
 
+      // Debug: Log file properties to understand the structure
+      console.log('File properties:', {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+        hasPath: !!file.path,
+        hasBuffer: !!file.buffer,
+        bufferLength: file.buffer ? file.buffer.length : 0
+      });
+
       let uploadOptions: any = {
         destination: destination,
         metadata: {
@@ -155,11 +165,33 @@ export class UploadService {
         },
       };
 
-      const [uploadedFile] = await this.bucket.upload(file.path, uploadOptions);
+      let uploadedFile;
+      if (file.buffer && file.buffer.length > 0) {
+        console.log('Uploading from buffer, size:', file.buffer.length);
+
+        const fileRef = this.bucket.file(destination);
+
+        await fileRef.save(file.buffer, {
+          metadata: {
+            cacheControl: 'public, max-age=31536000',
+            contentType: file.mimetype,
+          },
+        });
+
+        uploadedFile = fileRef;
+      } else if (file.path) {
+        console.log('Uploading from file path:', file.path);
+        const [uploaded] = await this.bucket.upload(file.path, uploadOptions);
+        uploadedFile = uploaded;
+      } else {
+        throw new Error('No file data available for upload');
+      }
 
       await uploadedFile.makePublic();
 
       const gcsUrl = `https://storage.googleapis.com/${this.bucket.name}/uploads/${filename}`;
+
+      console.log('File uploaded successfully to GCS:', gcsUrl);
 
       return {
         filename: filename,

@@ -202,7 +202,7 @@ gcloud storage buckets get-iam-policy gs://lottocat_bucket
 
 ### Cloud Run logs
 ```bash
-gcloud run services logs read locatto
+gcloud run services logs read locatto --region=europe-west1 --limit=10
 ```
 
 ### Storage
