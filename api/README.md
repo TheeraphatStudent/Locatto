@@ -96,7 +96,7 @@ gcloud secrets list
 ### 1. Create Storage Bucket
 
 ```bash
-BUCKET_NAME="lottocat_bucket"
+BUCKET_NAME="<bucket>"
 gcloud storage buckets create gs://${BUCKET_NAME} \
   --location=asia-southeast1 \
   --uniform-bucket-level-access
@@ -197,7 +197,7 @@ gcloud iam service-accounts get-iam-policy ${PROJECT_NUMBER}@cloudbuild.gservice
 
 gcloud secrets versions list SECRET_NAME
 
-gcloud storage buckets get-iam-policy gs://lottocat_bucket
+gcloud storage buckets get-iam-policy gs://<bucket>
 ```
 
 ### Cloud Run logs
@@ -209,9 +209,19 @@ gcloud run services logs read locatto --region=europe-west1 --limit=10
 
 List
 ```bash
-gcloud storage ls -r gs://lottocat_bucket/
+gcloud storage ls -r gs://<bucket>/
 ```
 
 ### Secret permission
 ```bash
-gcloud storage buckets get-iam-policy gs://lottocat_bucket
+gcloud storage buckets get-iam-policy gs://<bucket>
+
+### Upload file to GCS
+
+```bash
+curl -X POST \
+  --data-binary @"<path to file>" \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: <file type>" \
+  "https://storage.googleapis.com/storage/v1/b/<bucket>/o?name=uploads/<filename>&uploadType=media"
+```
