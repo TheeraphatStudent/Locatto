@@ -44,4 +44,3 @@ availableSecrets:
     env: 'IS_SIGN'
 
 logsBucket: 'gs://lottocat_bucket'
-uploadBucket: 'gs://lottocat_bucket/uploads'
