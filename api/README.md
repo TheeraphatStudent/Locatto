@@ -1,6 +1,14 @@
 ## Gcloud deploy api 
 
+API Endpoint: `https://locatto-67775182631.europe-west1.run.app/`
+
 - [Source](/cloudbuild.yaml)
+
+**Example images**
+
+![Cat image](https://locatto-67775182631.europe-west1.run.app/upload/10661a41-be1f-48cc-a6c1-934101b24726)
+
+`https://locatto-67775182631.europe-west1.run.app/upload/10661a41-be1f-48cc-a6c1-934101b24726`
 
 ### 1. Login gcloud
 
@@ -46,7 +54,7 @@ echo -n "false" | gcloud secrets create IS_SIGN --data-file=-
 ```bash
 PROJECT_NUMBER=$(gcloud projects describe lottocat --format="value(projectNumber)")
 
-SERVICE_ACCOUNT="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
+SERVICE_ACCOUNT="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
 gcloud secrets add-iam-policy-binding db-host \
   --member="serviceAccount:${SERVICE_ACCOUNT}" \
@@ -193,3 +201,7 @@ gcloud storage buckets get-iam-policy gs://lottocat_bucket
 ```
 
 
+
+### Secret permission
+```bash
+gcloud storage buckets get-iam-policy gs://lottocat_bucket
