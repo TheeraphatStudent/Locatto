@@ -144,62 +144,78 @@ export class UploadService {
 
   private static async uploadFileToGCS(file: Express.Multer.File): Promise<{ filename: string; gcsUrl: string }> {
     try {
+      // Generate unique filename
       const uniqueSuffix = uuidv4();
-      const filename = uniqueSuffix + '.' + file.originalname.split('.').pop();
+      const fileExtension = file.originalname.split('.').pop() || '';
+      const filename = `${uniqueSuffix}.${fileExtension}`;
       const destination = `uploads/${filename}`;
 
-      // Debug: Log file properties to understand the structure
-      console.log('File properties:', {
-        originalname: file.originalname,
-        mimetype: file.mimetype,
-        size: file.size,
-        hasPath: !!file.path,
-        hasBuffer: !!file.buffer,
-        bufferLength: file.buffer ? file.buffer.length : 0
-      });
+      console.log(`Uploading file to GCS: ${filename} (${file.size} bytes)`);
 
-      let uploadOptions: any = {
+      const uploadOptions = {
         destination: destination,
         metadata: {
           cacheControl: 'public, max-age=31536000',
+          contentType: file.mimetype,
+          metadata: {
+            originalName: file.originalname,
+            uploadTimestamp: new Date().toISOString(),
+          },
         },
+        public: true,
+        validation: 'md5',
       };
 
       let uploadedFile;
       if (file.buffer && file.buffer.length > 0) {
-        console.log('Uploading from buffer, size:', file.buffer.length);
+        console.log('Uploading from buffer using file.save() method');
 
         const fileRef = this.bucket.file(destination);
-
         await fileRef.save(file.buffer, {
-          metadata: {
-            cacheControl: 'public, max-age=31536000',
-            contentType: file.mimetype,
-          },
+          metadata: uploadOptions.metadata,
+          public: true,
+          validation: 'md5',
         });
-
         uploadedFile = fileRef;
-      } else if (file.path) {
-        console.log('Uploading from file path:', file.path);
+
+      } else if (file.path && fs.existsSync(file.path)) {
+        // Upload from file path (recommended for disk-stored files)
+        console.log(`Uploading from file path: ${file.path}`);
+
         const [uploaded] = await this.bucket.upload(file.path, uploadOptions);
         uploadedFile = uploaded;
+
       } else {
-        throw new Error('No file data available for upload');
+        throw new Error('No valid file data or path available for upload');
       }
 
-      await uploadedFile.makePublic();
+      // Ensure file is publicly accessible
+      if (!uploadOptions.public) {
+        await uploadedFile.makePublic();
+      }
 
-      const gcsUrl = `https://storage.googleapis.com/${this.bucket.name}/uploads/${filename}`;
+      // Generate public URL
+      const gcsUrl = `https://storage.googleapis.com/${this.bucket.name}/${destination}`;
 
-      console.log('File uploaded successfully to GCS:', gcsUrl);
+      console.log(`✅ File uploaded successfully to GCS: ${gcsUrl}`);
 
       return {
         filename: filename,
         gcsUrl: gcsUrl
       };
+
     } catch (error) {
-      console.error('Direct GCS upload error:', error);
-      throw new Error('Failed to upload file to Google Cloud Storage');
+      const err = error as any;
+
+      if (err.code === 403) {
+        throw new Error('Access denied to Google Cloud Storage. Check authentication and permissions.');
+      } else if (err.code === 404) {
+        throw new Error('Bucket not found. Verify bucket name and project configuration.');
+      } else if (err.code === 429) {
+        throw new Error('Rate limit exceeded. Please retry after a moment.');
+      } else {
+        throw new Error(`Failed to upload file to Google Cloud Storage: ${err.message || 'Unknown error'}`);
+      }
     }
   }
 
