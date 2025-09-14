@@ -25,8 +25,9 @@ export class UploadService {
     }
     
     try {
+      const destination = `uploads/${filename}`;
       const [file] = await this.bucket.upload(filePath, {
-        destination: filename,
+        destination: destination,
         metadata: {
           cacheControl: 'public, max-age=31536000',
         },
@@ -34,7 +35,7 @@ export class UploadService {
 
       await file.makePublic();
 
-      return `https://storage.googleapis.com/${this.bucket.name}/${filename}`;
+      return `https://storage.googleapis.com/${this.bucket.name}/uploads/${filename}`;
     } catch (error) {
       console.error('GCS upload error:', error);
       throw new Error('Failed to upload to Google Cloud Storage');
