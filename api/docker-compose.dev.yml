@@ -14,6 +14,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRE_IN=${JWT_EXPIRE_IN}
       - IS_SIGN=${IS_SIGN}
+      - UPLOAD_TO_GCS=false
     ports:
       - "3000:3000"
     volumes:

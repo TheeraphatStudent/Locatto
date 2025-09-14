@@ -13,6 +13,9 @@ services:
       - JWT_EXPIRE_IN=${JWT_EXPIRE_IN}
       - IS_SIGN=${IS_SIGN}
       - UPLOAD_TO_GCS=true
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json
+    volumes:
+      - ./gcs-key.json:/app/gcs-key.json:ro
     ports:
       - "3000:3000"
     networks:
