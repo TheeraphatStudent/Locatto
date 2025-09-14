@@ -12,7 +12,12 @@ server.listen(port, () => {
 
   initDbKeepAlive();
 
-}).on("error", (error) => {
+})
+.on('request', (req, res) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${req.method} ${req.url}`);
+})
+.on("error", (error) => {
   const timestamp = new Date().toISOString();
   console.error(`[${timestamp}] ❌ Server error:`, error.message);
 });
