@@ -61,11 +61,51 @@ export class UploadController {
       }
 
       const result: any = { filename: newFilename };
+
       if (gcsUrl) {
         result.gcsUrl = gcsUrl;
       }
 
       sendFromService({ res, status: 201, result, message: 'File uploaded' });
+    } catch (error) {
+      console.error('Upload error:', error);
+      sendError({ res, status: 500, message: 'Internal server error' });
+    }
+  }
+
+  static async uploadFile(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const file = (req as any).file;
+      if (!file) {
+        res.status(400).json({ message: 'No file uploaded' });
+        return;
+      }
+
+      const result = await UploadService.handleFileUpload(file);
+
+      if (result.gcsUrl) {
+        sendFromService({ 
+          res, 
+          status: 201, 
+          result: { 
+            filename: result.filename, 
+            gcsUrl: result.gcsUrl,
+            provider: 'gcloud'
+          }, 
+          message: 'File uploaded successfully to GCS' 
+        });
+      } else if (result.localPath) {
+        sendFromService({ 
+          res, 
+          status: 201, 
+          result: { 
+            filename: result.filename, 
+            localPath: result.localPath,
+            provider: 'local'
+          }, 
+          message: 'File uploaded successfully locally' 
+        });
+      }
     } catch (error) {
       console.error('Upload error:', error);
       sendError({ res, status: 500, message: 'Internal server error' });

@@ -6,9 +6,9 @@ API Endpoint: `https://locatto-67775182631.europe-west1.run.app/`
 
 **Example images**
 
-![Cat image](https://locatto-67775182631.europe-west1.run.app/upload/10661a41-be1f-48cc-a6c1-934101b24726)
+![Cat image](https://locatto-67775182631.europe-west1.run.app/upload/c1bed21d-cd0d-4f13-8d3a-d93a49f5c877)
 
-`https://locatto-67775182631.europe-west1.run.app/upload/10661a41-be1f-48cc-a6c1-934101b24726`
+`https://locatto-67775182631.europe-west1.run.app/upload/c1bed21d-cd0d-4f13-8d3a-d93a49f5c877`
 
 ### 1. Login gcloud
 
@@ -200,7 +200,17 @@ gcloud secrets versions list SECRET_NAME
 gcloud storage buckets get-iam-policy gs://lottocat_bucket
 ```
 
+### Cloud Run logs
+```bash
+gcloud run services logs read locatto
+```
 
+### Storage
+
+List
+```bash
+gcloud storage ls -r gs://lottocat_bucket/
+```
 
 ### Secret permission
 ```bash
