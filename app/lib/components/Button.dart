@@ -14,6 +14,8 @@ class ButtonActions extends StatefulWidget {
     this.variant = ButtonVariant.light,
     this.theme,
     this.onPressed,
+    this.icon,
+    this.onLabelPressed,
   });
 
   final String text;
@@ -21,7 +23,9 @@ class ButtonActions extends StatefulWidget {
   final bool hasShadow;
   final ButtonVariant variant;
   final Color? theme;
+  final IconData? icon;
   final VoidCallback? onPressed;
+  final VoidCallback? onLabelPressed;
 
   @override
   State<ButtonActions> createState() => _ButtonActionsState();
@@ -174,19 +178,34 @@ class _ButtonActionsState extends State<ButtonActions>
                         child: Text(widget.text),
                       ),
                       const SizedBox(width: 10),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        transform: Matrix4.translationValues(
-                          _isHovered ? 2 : 0,
-                          0,
-                          0,
+                      if (widget.icon != null)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          transform: Matrix4.translationValues(
+                            _isHovered ? 2 : 0,
+                            0,
+                            0,
+                          ),
+                          child: Icon(
+                            widget.icon,
+                            size: 24,
+                            color: foregroundColor,
+                          ),
+                        )
+                      else if (widget.variant == ButtonVariant.primary)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          transform: Matrix4.translationValues(
+                            _isHovered ? 2 : 0,
+                            0,
+                            0,
+                          ),
+                          child: Icon(
+                            Icons.arrow_right,
+                            size: 24,
+                            color: foregroundColor,
+                          ),
                         ),
-                        child: Icon(
-                          Icons.arrow_right,
-                          size: 24,
-                          color: foregroundColor,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -204,20 +223,77 @@ class _ButtonActionsState extends State<ButtonActions>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 4),
+        GestureDetector(
+          onTap: widget.onLabelPressed,
           child: Text(
             widget.label!,
-            style: TextStyle(
-              color: accent,
-              fontSize: 12,
+            style: const TextStyle(
+              color: Colors.yellow,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.yellow,
+              fontSize: 16,
               fontFamily: 'Kanit',
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
+        const SizedBox(height: 8),
         buttonWidget,
       ],
+    );
+  }
+}
+
+class ButtonTab extends StatelessWidget {
+  final String text;
+  final bool isActive;
+  final VoidCallback? onTap;
+
+  const ButtonTab({
+    super.key,
+    required this.text,
+    required this.isActive,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 32,
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          decoration: ShapeDecoration(
+            color: const Color(0xFFFFF7F7),
+            shape: RoundedRectangleBorder(
+              side: isActive
+                  ? BorderSide(width: 1, color: const Color(0xFFC13433))
+                  : BorderSide.none,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+                bottomLeft: Radius.circular(4),
+                bottomRight: Radius.circular(4),
+              ),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isActive
+                    ? const Color(0xFF840100)
+                    : const Color(0xFFAE9DA0),
+                fontSize: 10,
+                fontFamily: 'Kanit',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

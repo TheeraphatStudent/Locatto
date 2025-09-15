@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import '../config.dart';
 import '../type/login.dart';
 import '../type/register.dart';
@@ -13,9 +12,18 @@ class Auth {
 
   Future<Map<String, dynamic>> login(Login loginData) async {
     try {
-      final response = await _transport.requestTransport(RequestMethod.post, '/auth/login', loginData.toJson());
-      if (response['success'] == true && response['token'] != null) {
-        await _storage.write(key: config.getTokenStoragename(), value: response['token']);
+      final response = await _transport.requestTransport(
+        RequestMethod.post,
+        '/auth/login',
+        loginData.toJson(),
+      );
+      if ((response['statusCode'] as int?) == 200 &&
+          response['token'] != null) {
+
+        await _storage.write(
+          key: config.getTokenStoragename(),
+          value: response['token'],
+        );
       }
       return response;
     } catch (e) {
@@ -25,7 +33,11 @@ class Auth {
 
   Future<Map<String, dynamic>> register(Register registerData) async {
     try {
-      final response = await _transport.requestTransport(RequestMethod.post,'/auth/register', registerData.toJson());
+      final response = await _transport.requestTransport(
+        RequestMethod.post,
+        '/auth/register',
+        registerData.toJson(),
+      );
       return response;
     } catch (e) {
       throw Exception('Registration failed: $e');
@@ -34,7 +46,11 @@ class Auth {
 
   Future<Map<String, dynamic>> resetPassword(ResetPassowrd resetData) async {
     try {
-      final response = await _transport.requestTransport(RequestMethod.post,'/auth/repass', resetData.toJson());
+      final response = await _transport.requestTransport(
+        RequestMethod.post,
+        '/auth/repass',
+        resetData.toJson(),
+      );
       return response;
     } catch (e) {
       throw Exception('Password reset failed: $e');
@@ -43,8 +59,12 @@ class Auth {
 
   Future<Map<String, dynamic>> logout() async {
     try {
-      final response = await _transport.requestTransport(RequestMethod.post,'/auth/logout', {});
-      if (response['success'] == true) {
+      final response = await _transport.requestTransport(
+        RequestMethod.post,
+        '/auth/logout',
+        {},
+      );
+      if ((response['statusCode'] as int?) == 200) {
         await _storage.delete(key: 'LottocatToken');
       }
       return response;

@@ -23,3 +23,4 @@
 - [Document here!](/app/README.md)
 
 
+if 'build.service_account' is specified, the build must either (a) specify 'build.logs_bucket', (b) use the REGIONAL_USER_OWNED_BUCKET build.options.default_logs_bucket_behavior option, or (c) use either CLOUD_LOGGING_ONLY / NONE logging options: invalid argument

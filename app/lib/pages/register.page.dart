@@ -1,9 +1,14 @@
+import 'dart:developer';
+
+import 'package:app/components/Alert.dart';
 import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/Dialogue.dart';
 import 'package:app/service/auth.dart';
+import 'package:app/service/user.dart';
 import 'package:app/type/register.dart';
+import 'package:app/utils/response_helper.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -21,12 +26,15 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _creditController = TextEditingController();
-  final _role = TextEditingController();
+  final _creditController = TextEditingController(text: '100');
+  // final _role = TextEditingController();
+
+  final responseHelper = ResponseHelper();
+  AlertMessage alert = AlertMessage();
 
   final _auth = Auth();
+  final _userService = UserService();
   bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -121,76 +129,48 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  void _showCreditDialog() {
-    _creditController.clear();
-    DynamicDialog.show(
-      context,
-      title: 'จำนวนเครดิตเริ่มต้น',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'กรุณากรอกจำนวนเครดิตที่ต้องการให้ผู้ใช้เริ่มต้น',
-            style: TextStyle(
-              fontSize: 16,
-              color: Color(0xFF45171D),
-              fontFamily: 'Kanit',
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            controller: _creditController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'จำนวนเครดิต',
-              hintText: '0',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            validator: _validateCredit,
-          ),
-        ],
-      ),
-      actions: [
-        DialogButton(
-          text: 'ยกเลิก',
-          onPressed: () => Navigator.of(context).pop(),
-          backgroundColor: const Color(0xFF6C757D),
-        ),
-        DialogButton(
-          text: 'ดำเนินการ',
-          onPressed: () {
-            Navigator.of(context).pop();
-            _handleRegistration();
-          },
-          backgroundColor: const Color(0xFF28A745),
-        ),
-      ],
-    );
+  Future<void> _handleRegistration() async {
+    log('=== _handleRegistration called ===');
+
+    if (!_formKey.currentState!.validate()) {
+      log('Form validation failed');
+      return;
+    }
+
+    final email = _emailController.text.trim();
+    final isAdmin = email.contains('admin');
+
+    log('Email: $email, isAdmin: $isAdmin');
+
+    if (!isAdmin) {
+      log('Showing credit dialog for non-admin user');
+      showCreateMoneyDialog(context, (value) {
+        log('Credit dialog confirmed with value: $value');
+        _creditController.text = value;
+        _performRegistration();
+      }, initialValue: _creditController.text);
+      return;
+    }
+
+    log('Admin user detected, proceeding directly to registration');
+    await _performRegistration();
   }
 
-  Future<void> _handleRegistration() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> _performRegistration() async {
+    log('=== _performRegistration called ===');
+    log('Credit controller text: ${_creditController.text}');
 
-    // Validate credit input
     final creditValidation = _validateCredit(_creditController.text);
+
     if (creditValidation != null) {
-      setState(() {
-        _errorMessage = creditValidation;
-      });
+      log('Credit validation failed: $creditValidation');
+      alert.showError(context, creditValidation);
       return;
     }
 
+    log('Setting loading state to true');
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
@@ -205,35 +185,49 @@ class _RegisterPageState extends State<RegisterPage> {
         credit: int.parse(_creditController.text),
       );
 
+      log('Register data prepared: ${registerData.toJson()}');
+
       final response = await _auth.register(registerData);
 
-      if (response['success'] == true) {
+      log('Registration response received');
+      log('Response: $response');
+      log('Response status code: ${response['statusCode']}');
+
+      if (responseHelper.isSuccess(response['statusCode'] as int)) {
+        log('Registration successful');
         if (mounted) {
-          DialogHelper.showSuccess(
-            context,
-            title: 'สมัครสมาชิกสำเร็จ!',
-            message: 'บัญชีของคุณถูกสร้างเรียบร้อยแล้ว',
-            actions: [
-              DialogButton(
-                text: 'เข้าสู่ระบบ',
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, '/login');
-                },
-              ),
-            ],
-          );
+          alert.showSuccess(context, 'สมัครสมาชิกสำเร็จ!');
+
+          final userData = response['data']?['user'] ?? response['user'];
+          if (userData != null) {
+            await _userService.storeUserData(userData);
+            final credit = userData['credit']?.toString() ?? _creditController.text;
+            await _userService.storeUserCredit(credit);
+          }
+
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              log('Navigating to login page');
+              Navigator.pushNamed(context, '/login');
+            }
+          });
         }
       } else {
-        setState(() {
-          _errorMessage = response['message'] ?? 'การสมัครสมาชิกล้มเหลว';
-        });
+        log('Registration failed with status: ${response['statusCode']}');
+        if (mounted) {
+          alert.showError(
+            context,
+            response['message'] ?? 'การสมัครสมาชิกล้มเหลว',
+          );
+        }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'เกิดข้อผิดพลาดในการสมัครสมาชิก';
-      });
+      log('Registration error: $e');
+      if (mounted) {
+        alert.showError(context, 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
+      }
     } finally {
+      log('Setting loading state to false');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -364,42 +358,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  GestureDetector(
-                    onTap: () {
+                  ButtonActions(
+                    label: 'มีบัญชีแล้ว?',
+                    text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
+                    onPressed: _isLoading ? null : _handleRegistration,
+                    onLabelPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },
-                    child: Text(
-                      "มีบัญชีแล้ว?",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.yellow,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Error message display
-                  if (_errorMessage != null)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red),
-                      ),
-                      child: Text(
-                        _errorMessage!,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontFamily: 'Kanit',
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  if (_errorMessage != null) const SizedBox(height: 16),
-                  ButtonActions(
-                    text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
-                    onPressed: _isLoading ? null : _showCreditDialog,
                   ),
                 ],
               ),

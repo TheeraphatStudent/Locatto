@@ -4,19 +4,13 @@ class LotteryData {
   final String lottery;
   final String reward;
 
-  LotteryData({
-    required this.lottery,
-    required this.reward,
-  });
+  LotteryData({required this.lottery, required this.reward});
 }
 
-class Content extends StatelessWidget {
+class LotteryList extends StatelessWidget {
   final List<LotteryData> lotteryList;
 
-  const Content({
-    Key? key,
-    required this.lotteryList,
-  }) : super(key: key);
+  const LotteryList({super.key, required this.lotteryList});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +20,11 @@ class Content extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: ShapeDecoration(
-            color: const Color(0xFFFFF7F7), /* Lottocat-White */
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            color: const Color(0xFFFFF7F7),
+            /* Lottocat-White */
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -36,12 +33,16 @@ class Content extends StatelessWidget {
             children: [
               // Header row
               _buildHeaderRow(),
-              
+
               // Data rows
               ...lotteryList.asMap().entries.map((entry) {
                 int index = entry.key + 1;
                 LotteryData data = entry.value;
-                return _buildDataRow(index.toString(), data.lottery, data.reward);
+                return _buildDataRow(
+                  index.toString(),
+                  data.lottery,
+                  data.reward,
+                );
               }).toList(),
             ],
           ),
@@ -63,7 +64,8 @@ class Content extends StatelessWidget {
             child: Text(
               'รหัส',
               style: TextStyle(
-                color: const Color(0xFF45171D), /* Lottocat-Black */
+                color: const Color(0xFF45171D),
+                /* Lottocat-Black */
                 fontSize: 8,
                 fontFamily: 'Kanit',
                 fontWeight: FontWeight.w600,
@@ -75,7 +77,8 @@ class Content extends StatelessWidget {
             child: Text(
               'เลขรางวัล',
               style: TextStyle(
-                color: const Color(0xFF45171D), /* Lottocat-Black */
+                color: const Color(0xFF45171D),
+                /* Lottocat-Black */
                 fontSize: 8,
                 fontFamily: 'Kanit',
                 fontWeight: FontWeight.w600,
@@ -88,7 +91,8 @@ class Content extends StatelessWidget {
             child: Text(
               'ประเภทรางวัล',
               style: TextStyle(
-                color: const Color(0xFF45171D), /* Lottocat-Black */
+                color: const Color(0xFF45171D),
+                /* Lottocat-Black */
                 fontSize: 8,
                 fontFamily: 'Kanit',
                 fontWeight: FontWeight.w600,
@@ -114,7 +118,8 @@ class Content extends StatelessWidget {
             child: Text(
               index,
               style: TextStyle(
-                color: const Color(0xFFFD5553), /* Lottocat-Primary */
+                color: const Color(0xFFFD5553),
+                /* Lottocat-Primary */
                 fontSize: 8,
                 fontFamily: 'Kanit',
                 fontWeight: FontWeight.w300,
@@ -126,7 +131,8 @@ class Content extends StatelessWidget {
             child: Text(
               lottery,
               style: TextStyle(
-                color: const Color(0xFFFD5553), /* Lottocat-Primary */
+                color: const Color(0xFFFD5553),
+                /* Lottocat-Primary */
                 fontSize: 8,
                 fontFamily: 'Kanit',
                 fontWeight: FontWeight.w300,
@@ -139,7 +145,8 @@ class Content extends StatelessWidget {
             child: Text(
               reward,
               style: TextStyle(
-                color: const Color(0xFFFD5553), /* Lottocat-Primary */
+                color: const Color(0xFFFD5553),
+                /* Lottocat-Primary */
                 fontSize: 8,
                 fontFamily: 'Kanit',
                 fontWeight: FontWeight.w300,
