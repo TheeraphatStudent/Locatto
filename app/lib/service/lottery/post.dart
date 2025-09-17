@@ -8,7 +8,7 @@ class LotteryService {
       final response = await _transport.requestTransport(
         RequestMethod.post,
         '/lottery/generate',
-        {'n': count}
+        {'n': count},
       );
       return response;
     } catch (e) {
@@ -21,7 +21,7 @@ class LotteryService {
       final response = await _transport.requestTransport(
         RequestMethod.get,
         '/lottery',
-        {}
+        {},
       );
       return response;
     } catch (e) {
@@ -29,12 +29,14 @@ class LotteryService {
     }
   }
 
-  Future<Map<String, dynamic>> createLottery(Map<String, dynamic> lotteryData) async {
+  Future<Map<String, dynamic>> createLottery(
+    Map<String, dynamic> lotteryData,
+  ) async {
     try {
       final response = await _transport.requestTransport(
         RequestMethod.post,
         '/lottery',
-        lotteryData
+        lotteryData,
       );
       return response;
     } catch (e) {
@@ -42,12 +44,15 @@ class LotteryService {
     }
   }
 
-  Future<Map<String, dynamic>> updateLottery(int id, Map<String, dynamic> lotteryData) async {
+  Future<Map<String, dynamic>> updateLottery(
+    int id,
+    Map<String, dynamic> lotteryData,
+  ) async {
     try {
       final response = await _transport.requestTransport(
         RequestMethod.put,
         '/lottery/$id',
-        lotteryData
+        lotteryData,
       );
       return response;
     } catch (e) {
@@ -60,11 +65,28 @@ class LotteryService {
       final response = await _transport.requestTransport(
         RequestMethod.delete,
         '/lottery/$id',
-        {}
+        {},
       );
       return response;
     } catch (e) {
       throw Exception('Failed to delete lottery: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> searchLottery(
+    String query,
+    int page,
+    int size,
+  ) async {
+    try {
+      final response = await _transport.requestTransport(
+        RequestMethod.post,
+        '/lottery/search?page=$page&size=$size',
+        {'search': query},
+      );
+      return response;
+    } catch (e) {
+      throw Exception('Failed to search lotteries: $e');
     }
   }
 }

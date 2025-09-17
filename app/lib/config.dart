@@ -2,6 +2,7 @@ class AppConfig {
   final String baseUrl = "10.0.2.2:3000";
   final String jwtSecret = "locatto_secret_key";
   final String tokenStorageName = "LottocatToken";
+  final String userIdStorage = "user_id";
 
   String getBaseUrl() {
     return baseUrl;
@@ -13,5 +14,9 @@ class AppConfig {
 
   String getTokenStoragename() {
     return tokenStorageName;
+  }
+
+  String getUserIdStorage() {
+    return userIdStorage;
   }
 }

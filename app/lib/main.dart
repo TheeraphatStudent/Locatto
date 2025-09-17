@@ -1,5 +1,4 @@
-// import 'dart:developer';
-
+import 'dart:developer';
 import 'package:app/components/Box_make_reward.dart';
 import 'package:app/pages/cart.page.dart';
 import 'package:app/pages/debug.page.dart';
@@ -7,49 +6,142 @@ import 'package:app/pages/home.page.dart';
 import 'package:app/pages/login.page.dart';
 import 'package:app/pages/lottery.page.dart';
 import 'package:app/pages/onboarding.page.dart';
-// import 'package:app/components/Avatar.dart';
-// import 'package:app/components/Button.dart';
-// import 'package:app/components/Footer.dart';
-// import 'package:app/components/Input.dart';
-// import 'package:app/components/Lottery.dart';
-// import 'package:app/pages/notfound.page.dart';
 import 'package:app/pages/profile.page.dart';
 import 'package:app/pages/purchase.page.dart';
 import 'package:app/pages/register.page.dart';
 import 'package:app/pages/forgotpass.page.dart';
+import 'package:app/pages/success.page.dart';
 import 'package:app/pages/test.dart';
+import 'package:app/service/auth.dart';
+import 'package:app/service/user.dart';
+import 'package:provider/provider.dart';
+import 'providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'style/theme.dart';
 import 'package:app/pages/admin/home.dart' as _AdminHome;
 
-void main() => runApp(const MyApp());
+void main() => runApp(
+  ChangeNotifierProvider<UserProvider>(
+    create: (_) => UserProvider(),
+    child: const MyApp(),
+  ),
+);
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final Auth _auth = Auth();
+  final UserService _userService = UserService();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  bool _isCheckingAuth = true;
+  bool _isAuthenticated = false;
+  String? _userRole;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuth();
+  }
+
+  Future<void> _checkAuth() async {
+    try {
+      final result = await _auth.checkAuth();
+      final isValid = result['isValid'] as bool;
+      final role = result['role'] as String?;
+      final credit = result['credit'] as int;
+
+      log("Is valid: $isValid, Role: $role");
+
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = isValid;
+          _isCheckingAuth = false;
+          _userRole = role;
+        });
+
+        final provider = Provider.of<UserProvider>(context, listen: false);
+        provider.updateCredit(credit);
+
+        await _userService.storeUserCredit(credit.toString());
+
+        if (!isValid) {
+          await _storage.deleteAll();
+        }
+      }
+    } catch (e) {
+      log("Auth check error: $e");
+      await _storage.deleteAll();
+
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = false;
+          _isCheckingAuth = false;
+          _userRole = null;
+        });
+      }
+    }
+  }
+
+  Widget get _homeWidget {
+    if (_isCheckingAuth) {
+      return const AuthCheckingScreen();
+    }
+
+    if (_isAuthenticated) {
+      if (_userRole == 'admin') {
+        return const _AdminHome.HomePage();
+      } else {
+        return const HomePage();
+      }
+    }
+
+    return const OnBoardingPage();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      initialRoute: '/onboarding',
+      home: _homeWidget,
+      // initialRoute: '/test',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
         '/lottery': (context) => const LotteryPage(),
         '/purchase': (context) => const PurchasePage(),
-        '/cart': (context) => const CartPage(),
+        // '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
         '/onboarding': (context) => const OnBoardingPage(),
         '/forgotpass': (context) => const ForgotPassPage(),
-        '/boxreward': (context) => const Box_make_reward(),
+        '/success': (context) => const SuccessPage(),
 
+        '/boxreward': (context) => const Box_make_reward(),
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
 
         '/admin': (context) => const _AdminHome.HomePage(),
       },
-      // onUnknownRoute: (context) => const NotfoundPage(),
+      onGenerateRoute: (settings) => MaterialPageRoute(
+        builder: (context) =>
+            const Scaffold(body: Center(child: Text('Page not found'))),
+      ),
     );
+  }
+}
+
+class AuthCheckingScreen extends StatelessWidget {
+  const AuthCheckingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

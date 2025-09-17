@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:developer';
 import 'package:app/service/user.dart';
 
 /// A navigation item model
@@ -18,7 +19,7 @@ class NavItem {
 const List<NavItem> userNavItems = [
   NavItem(route: '/home', iconName: 'logo', label: 'Home'),
   NavItem(route: '/lottery', iconName: 'lottery', label: 'Lottery'),
-  NavItem(route: '/cart', iconName: 'cart', label: 'Cart'),
+  // NavItem(route: '/cart', iconName: 'cart', label: 'Cart'),
   NavItem(route: '/purchase', iconName: 'pocket', label: 'Wallet'),
   NavItem(route: '/profile', iconName: 'profile', label: 'Profile'),
 ];
@@ -40,6 +41,7 @@ class _FooterState extends State<Footer> {
   int _selectedIndex = 0;
   final UserService _userService = UserService();
   String _userRole = 'user';
+  bool _isNavigating = false;
 
   List<NavItem> get _navItems =>
       _userRole == 'admin' ? adminNavItems : userNavItems;
@@ -71,8 +73,21 @@ class _FooterState extends State<Footer> {
   void _onDestinationSelected(int index) {
     if (_selectedIndex == index) return;
 
+    // Prevent multiple rapid taps
+    if (_isNavigating) return;
+    _isNavigating = true;
+
     setState(() => _selectedIndex = index);
-    Navigator.pushNamed(context, _navItems[index].route);
+
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil(_navItems[index].route, (route) => false)
+        .then((_) {
+          _isNavigating = false;
+        })
+        .catchError((error) {
+          log('Navigation error: $error');
+          _isNavigating = false;
+        });
   }
 
   Widget _buildInactiveIcon(String iconName) {

@@ -12,54 +12,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      body: ListView(
-        primary: false,
-        shrinkWrap: true,
-        children: <Widget>[
-          ButtonActions(
-            hasShadow: true,
-            key: const Key("Continue Key"),
-            text: "ไปกันเลย",
-            onPressed: () {
-              log("pressed callback work!");
-              Navigator.pushNamed(context, '/lottery');
-            },
-          ),
-          const Input(
-            labelText: "Something",
-            key: Key("Something-key"),
-            hintText: "It working!",
-            helperText: "Hello world",
-          ),
-          const Avatar(
-            // mode: AvatarMode.view,
-          ),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap:
-                  true, // Important: This makes GridView take only needed space
-              physics:
-                  const NeverScrollableScrollPhysics(), // Disable GridView scrolling
-              childAspectRatio: 2.0,
-              // Gap
-              crossAxisSpacing: 10, // Y
-              mainAxisSpacing: 10, // X
-              children: <Lottery>[
-                Lottery(
-                  lotteryNumber: "123456",
-                  isSelected: false,
-                  onTap: (lotteryNumber) {
-                    log("pressed callback work!");
-                    log(lotteryNumber);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return MainLayout(body: Text("Hello world"));
   }
 }

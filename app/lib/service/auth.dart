@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:app/utils/response_helper.dart';
+
 import '../config.dart';
 import '../type/login.dart';
 import '../type/register.dart';
@@ -10,6 +14,8 @@ class Auth {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final AppConfig config = AppConfig();
 
+  final ResponseHelper _responseHelper = ResponseHelper();
+
   Future<Map<String, dynamic>> login(Login loginData) async {
     try {
       final response = await _transport.requestTransport(
@@ -17,13 +23,24 @@ class Auth {
         '/auth/login',
         loginData.toJson(),
       );
-      if ((response['statusCode'] as int?) == 200 &&
-          response['token'] != null) {
 
+      log("Login response: ${response.toString()}");
+
+      final data = response['data'];
+      final user = data['user'];
+
+      if (data['success']) {
         await _storage.write(
           key: config.getTokenStoragename(),
-          value: response['token'],
+          value: data['token'],
         );
+
+        if (user['uid'] != null) {
+          await _storage.write(
+            key: config.getUserIdStorage(),
+            value: user['uid'].toString(),
+          );
+        }
       }
       return response;
     } catch (e) {
@@ -70,6 +87,35 @@ class Auth {
       return response;
     } catch (e) {
       throw Exception('Logout failed: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> getMe() async {
+    try {
+      final response = await _transport.requestTransport(
+        RequestMethod.get,
+        '/auth/me',
+        {},
+      );
+      return response;
+    } catch (e) {
+      throw Exception('User info failed: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> checkAuth() async {
+    try {
+      final response = await getMe();
+
+      log(response.toString());
+
+      return {
+        'isValid': _responseHelper.isSuccess(response['statusCode'] as int),
+        'role': response['data']['user']['role'],
+        'credit': double.parse(response['data']['user']['credit'].toString()).toInt(),
+      };
+    } catch (e) {
+      return {'isValid': false, 'role': null, 'credit': 0};
     }
   }
 }

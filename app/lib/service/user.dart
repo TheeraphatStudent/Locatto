@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserService {
@@ -10,8 +12,21 @@ class UserService {
     await _storage.write(key: _creditKey, value: credit);
   }
 
-  Future<String?> getUserCredit() async {
-    return await _storage.read(key: _creditKey);
+  Future<int> getUserCredit() async {
+    final creditString = await _storage.read(key: _creditKey);
+
+    // log(creditString.toString());
+
+    if (creditString != null) {
+      final creditDouble = double.tryParse(creditString);
+      if (creditDouble != null) {
+        return creditDouble.toInt();
+      }
+
+      return int.tryParse(creditString) ?? 0;
+    }
+
+    return 0;
   }
 
   Future<void> storeUserData(Map<String, dynamic> userData) async {

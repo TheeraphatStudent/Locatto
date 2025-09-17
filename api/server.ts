@@ -15,7 +15,7 @@ server.listen(port, () => {
 })
 .on('request', (req, res) => {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${req.method} ${req.url}`);
+  console.log(`[${timestamp}] ${req.method} ${req.url} | ${res.statusCode}`);
 })
 .on("error", (error) => {
   const timestamp = new Date().toISOString();

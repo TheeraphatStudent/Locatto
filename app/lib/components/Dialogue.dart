@@ -1,5 +1,7 @@
 import 'dart:ui'; // สำหรับเบลอพื้นหลัง
 
+import 'package:app/components/Button.dart';
+import 'package:app/components/Input.dart';
 import 'package:flutter/material.dart';
 
 enum DialogType { success, error, warning, info, custom }
@@ -449,6 +451,96 @@ void showCreateMoneyDialog(
                     child: const Text(
                       'ยืนยัน',
                       style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void showPurchaseDialogue(
+  BuildContext context,
+  Function(String) onConfirm, {
+  String? initialValue,
+}) {
+  final TextEditingController _lotteryAmountController = TextEditingController(
+    text: (initialValue == null || initialValue.isEmpty) ? '1' : initialValue,
+  );
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'จำนวนหวยที่ต้องการซื้อ',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '1 ใบ = ราคา 80 บาท',
+                style: TextStyle(fontSize: 14, color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+              // TextField(
+              //   controller: _lotteryAmountController,
+              //   keyboardType: TextInputType.number,
+              //   decoration: InputDecoration(
+              //     hintText: '1',
+              //     suffixText: 'ใบ',
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //   ),
+              // ),
+              Input(
+                controller: _lotteryAmountController,
+                // keyboardType: TextInputType.number,
+                hintText: '1',
+                suffixText: 'ใบ',
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: ButtonActions(
+                      text: 'ยกเลิก',
+                      variant: ButtonVariant.light,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  Flexible(
+                    child: ButtonActions(
+                      text: 'ยืนยัน',
+                      variant: ButtonVariant.primary,
+                      onPressed: () {
+                        final value =
+                            _lotteryAmountController.text.trim().isEmpty
+                            ? ((initialValue == null || initialValue.isEmpty)
+                                  ? '1'
+                                  : initialValue)
+                            : _lotteryAmountController.text.trim();
+                        onConfirm(value);
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
                 ],

@@ -103,7 +103,6 @@ export class LotteryController {
       const updateData: Partial<LotteryData> = {};
 
       if (req.body.lottery_number) updateData.lottery_number = req.body.lottery_number;
-      if (req.body.period) updateData.period = req.body.period;
 
       const result = await LotteryService.update(id, updateData);
       const status = result.success ? 200 : 404;
