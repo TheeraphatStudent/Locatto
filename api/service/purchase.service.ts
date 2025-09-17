@@ -9,17 +9,39 @@ export interface PurchaseData {
 }
 
 export class PurchaseService {
-  static async create(data: PurchaseData): Promise<{ success: boolean; message: string; purchase?: any }> {
+  static async create(data: PurchaseData): Promise<{ success: boolean; message: string; purchase?: any, user?: any }> {
     try {
+      const [user_credit] = await queryAsync(
+        'SELECT credit FROM user where uid = ?',
+        [data.uid]
+      )
+
+      const [payment_revenue] = await queryAsync(
+        'SELECT revenue FROM payment WHERE payid = ?',
+        [data.payid]
+      )
+
+      if ((user_credit as any)[0].credit < ((payment_revenue as any) as any)[0].revenue) {
+        return { success: false, message: 'Insufficient credit' };
+      }
+
       const [result] = await queryAsync(
         'INSERT INTO purchase (uid, lid, lot_amount, payid) VALUES (?, ?, ?, ?)',
         [data.uid, data.lid, data.lot_amount, data.payid]
       );
 
+      const updatedCredit = (user_credit as any)[0].credit - (payment_revenue as any)[0].revenue;
+
+      await queryAsync(
+        'UPDATE user SET credit = ? WHERE uid = ?',
+        [updatedCredit, data.uid]
+      )
+
       return {
         success: true,
         message: 'Purchase created successfully',
-        purchase: { pid: (result as any).insertId, ...data }
+        purchase: { pid: (result as any).insertId, uid: data.uid, lid: data.lid, lot_amount: data.lot_amount, payid: data.payid },
+        user: { uid: data.uid, credit: updatedCredit }
       };
     } catch (error) {
       console.error('Database error:', error);

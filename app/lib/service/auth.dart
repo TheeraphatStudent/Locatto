@@ -111,10 +111,11 @@ class Auth {
 
       return {
         'isValid': _responseHelper.isSuccess(response['statusCode'] as int),
-        'role': response['data']['user']['role']
+        'role': response['data']['user']['role'],
+        'credit': double.parse(response['data']['user']['credit'].toString()).toInt(),
       };
     } catch (e) {
-      return {'isValid': false, 'role': null};
+      return {'isValid': false, 'role': null, 'credit': 0};
     }
   }
 }

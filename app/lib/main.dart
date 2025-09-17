@@ -13,12 +13,20 @@ import 'package:app/pages/forgotpass.page.dart';
 import 'package:app/pages/success.page.dart';
 import 'package:app/pages/test.dart';
 import 'package:app/service/auth.dart';
+import 'package:app/service/user.dart';
+import 'package:provider/provider.dart';
+import 'providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'style/theme.dart';
 import 'package:app/pages/admin/home.dart' as _AdminHome;
 
-void main() => runApp(const MyApp());
+void main() => runApp(
+  ChangeNotifierProvider<UserProvider>(
+    create: (_) => UserProvider(),
+    child: const MyApp(),
+  ),
+);
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -29,6 +37,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final Auth _auth = Auth();
+  final UserService _userService = UserService();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   bool _isCheckingAuth = true;
@@ -46,6 +55,7 @@ class _MyAppState extends State<MyApp> {
       final result = await _auth.checkAuth();
       final isValid = result['isValid'] as bool;
       final role = result['role'] as String?;
+      final credit = result['credit'] as int;
 
       log("Is valid: $isValid, Role: $role");
 
@@ -55,6 +65,11 @@ class _MyAppState extends State<MyApp> {
           _isCheckingAuth = false;
           _userRole = role;
         });
+
+        final provider = Provider.of<UserProvider>(context, listen: false);
+        provider.updateCredit(credit);
+
+        await _userService.storeUserCredit(credit.toString());
 
         if (!isValid) {
           await _storage.deleteAll();

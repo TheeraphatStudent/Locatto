@@ -6,6 +6,7 @@ import 'package:app/components/Lottery.dart';
 import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Dialogue.dart';
 import 'package:app/config.dart';
+import 'package:app/service/user.dart';
 import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:app/service/lottery/get.dart';
@@ -14,6 +15,8 @@ import 'package:app/service/payment/post.dart';
 import 'package:app/service/purchase/post.dart';
 import 'package:app/type/lottery.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class LotteryPage extends StatefulWidget {
   const LotteryPage({super.key});
@@ -29,6 +32,7 @@ class _LotteryPageState extends State<LotteryPage> {
   final LotteryService _lotteryPostService = LotteryService();
   final PaymentPost _paymentService = PaymentPost();
   final PurchasePost _purchaseService = PurchasePost();
+  final UserService _userService = UserService();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final AppConfig _config = AppConfig();
@@ -221,37 +225,60 @@ class _LotteryPageState extends State<LotteryPage> {
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      try {
-        final lotAmount = int.tryParse(amount) ?? 1;
-        final revenue = lotAmount * 80.0;
+      // try {
+      final lotAmount = int.tryParse(amount) ?? 1;
+      final revenue = lotAmount * 80.0;
 
-        // Step 1: Create payment
-        final paymentResponse = await _paymentService.createPayment(
-          uid: _uid!,
-          revenue: revenue,
-        );
+      // Step 1: Create payment
+      final userCredit = await _userService.getUserCredit();
 
-        if (paymentResponse['statusCode'] != 200) {
-          throw Exception(paymentResponse['message'] ?? 'Payment failed');
+      if (revenue > userCredit) {
+        throw Exception('ขออภัย คุณมีเงินไม่เพียงพอ!');
+      }
+
+      await _paymentService.createPayment(uid: _uid!, revenue: revenue).then((
+        response,
+      ) async {
+        log("Payment response: ${response.toString()}");
+        final paymentData = response['data'];
+
+        if (!paymentData['success']) {
+          throw Exception(paymentData['message'] ?? 'Payment failed');
         }
 
         log("Payment create complete!");
 
-        final payid = paymentResponse['payid'];
+        log(lid);
+        log(lotteryNumber);
+
+        final payid = paymentData['payment']['payid'];
 
         // Step 2: Create purchase
         final purchaseResponse = await _purchaseService.createPurchase(
           uid: _uid!,
           lid: int.parse(lid),
           lotAmount: lotAmount,
-          payid: payid,
+          payid: payid!,
         );
 
-        if (purchaseResponse['statusCode'] != 200) {
-          throw Exception(purchaseResponse['message'] ?? 'Purchase failed');
+        log("Purchase response: ${purchaseResponse.toString()}");
+
+        final purchaseData = purchaseResponse['data'];
+
+        log("Purchase data: ${purchaseData.toString()}");
+
+        if (!purchaseData['success']) {
+          throw Exception(purchaseData['message'] ?? 'Purchase failed');
         }
 
         log("Purchase create complete!");
+
+        await _userService.storeUserCredit(
+          purchaseData['user']['credit'].toString() ?? '0',
+        );
+
+        final newCredit = await _userService.getUserCredit();
+        Provider.of<UserProvider>(context, listen: false).updateCredit(newCredit);
 
         Navigator.of(context).pop();
 
@@ -259,19 +286,20 @@ class _LotteryPageState extends State<LotteryPage> {
           context,
           '/success',
           arguments: {
-            'purchase': purchaseResponse,
-            'payment': paymentResponse,
+            'purchase': purchaseData,
+            // 'payment': paymentApiResponse,
             'lottery': lotteryNumber,
           },
         );
-      } catch (e) {
-        Navigator.of(context).pop();
+      });
+      // } catch (e) {
+      //   Navigator.of(context).pop();
 
-        log('Purchase error: $e');
-        _showErrorSnackbar(
-          'เกิดข้อผิดพลาด: ${e.toString().replaceAll('Exception: ', '')}',
-        );
-      }
+      //   log('Purchase error: $e');
+      //   _showErrorSnackbar(
+      //     'เกิดข้อผิดพลาด: ${e.toString().replaceAll('Exception: ', '')}',
+      //   );
+      // }
     });
   }
 

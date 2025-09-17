@@ -203,10 +203,7 @@ class _InputState extends State<Input> {
         //   fontWeight: FontWeight.w500,
         // ),
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        labelStyle: TextStyle(
-          color: hasError ? AppColors.secondaryDark : AppColors.primary,
-          fontFamily: 'Kanit',
-        ),
+        labelStyle: TextStyle(color: AppColors.primary, fontFamily: 'Kanit'),
         hintStyle: const TextStyle(
           color: Color(0xFF666666),
           fontFamily: 'Kanit',
