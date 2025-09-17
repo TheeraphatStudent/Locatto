@@ -89,7 +89,6 @@ class _LotteryPageState extends State<LotteryPage> {
           // Step 1: Create payment
           final paymentResponse = await _paymentService.createPayment(
             uid: _uid!,
-            provider: 'lottocat',
             revenue: revenue,
           );
 

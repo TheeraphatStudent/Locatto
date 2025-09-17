@@ -5,7 +5,7 @@ class PaymentPost {
 
   Future<Map<String, dynamic>> createPayment({
     required int uid,
-    required String provider,
+    // required String provider,
     required double revenue,
   }) async {
     try {
@@ -14,7 +14,7 @@ class PaymentPost {
         '/payment',
         {
           'uid': uid,
-          'provider': provider,
+          'provider': 'lottocat',
           'revenue': revenue,
         },
       );

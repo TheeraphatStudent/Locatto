@@ -17,6 +17,7 @@ import 'package:app/pages/profile.page.dart';
 import 'package:app/pages/purchase.page.dart';
 import 'package:app/pages/register.page.dart';
 import 'package:app/pages/forgotpass.page.dart';
+import 'package:app/pages/success.page.dart';
 import 'package:app/pages/test.dart';
 import 'package:flutter/material.dart';
 import 'style/theme.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      initialRoute: '/onboarding',
+      initialRoute: '/success',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
