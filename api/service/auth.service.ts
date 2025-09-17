@@ -58,8 +58,8 @@ export class AuthService {
   }> {
     try {
       const [users] = await queryAsync(
-        'SELECT uid, password, credit, role FROM user WHERE email = ?',
-        [credentials.username]
+        'SELECT uid, name, password, credit, role FROM user WHERE email = ? OR username = ?',
+        [credentials.username, credentials.username]
       );
 
       if (!Array.isArray(users) || users.length === 0) {

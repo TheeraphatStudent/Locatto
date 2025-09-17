@@ -47,4 +47,4 @@ app.use("/purchase", purchase);
 app.use("/reward", reward);
 app.use("/payment", payment);
 
-app.use(morgan('dev'));
+// app.use(morgan('dev'));

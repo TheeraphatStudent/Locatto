@@ -5,15 +5,14 @@ import { generateDerivedTiers, formatTierResult } from '../utils/tier.manager';
 export interface LotteryData {
   lid?: number;
   lottery_number: string;
-  period: string;
 }
 
 export class LotteryService {
   static async create(data: LotteryData): Promise<{ success: boolean; message: string; lottery?: any }> {
     try {
       const [result] = await queryAsync(
-        'INSERT INTO lottery (lottery_number, period) VALUES (?, ?)',
-        [data.lottery_number, data.period]
+        'INSERT INTO lottery (lottery_number) VALUES (?)',
+        [data.lottery_number]
       );
 
       return {
@@ -189,10 +188,6 @@ export class LotteryService {
         fields.push('lottery_number = ?');
         values.push(data.lottery_number);
       }
-      if (data.period) {
-        fields.push('period = ?');
-        values.push(data.period);
-      }
 
       if (fields.length === 0) {
         return { success: false, message: 'No fields to update' };
@@ -249,7 +244,7 @@ export class LotteryService {
       return {
         success: true,
         message: `Successfully generated ${lotteryNumbers.length} unique lottery numbers`,
-        lotteries: lotteryNumbers.map((num, index) => ({
+        lotteries: lotteryNumbers.slice(0, 25).map((num, index) => ({
           lid: (result as any).insertId + index,
           lottery_number: num
         })),
