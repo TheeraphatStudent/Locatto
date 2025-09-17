@@ -47,14 +47,23 @@ class Transport {
     final token = encodePayload(payload);
     final url = Uri.http(config.getBaseUrl(), endpoint);
 
-    final accessToken = _storage.read(key: config.getTokenStoragename());
+    final accessToken = await _storage.read(key: config.getTokenStoragename());
 
     try {
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      };
+      final headers = <String, String>{};
+
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+
+      if (reqMethod != RequestMethod.get && reqMethod != RequestMethod.delete) {
+        headers['Content-Type'] = 'application/json';
+      }
+
       http.Response response;
+
+      log(headers.toString());
+
       switch (reqMethod) {
         case RequestMethod.get:
           response = await http.get(url, headers: headers);
@@ -76,6 +85,13 @@ class Transport {
         case RequestMethod.delete:
           response = await http.delete(url, headers: headers);
           break;
+      }
+
+      // Handle HTML error responses
+      if (response.headers['content-type']?.contains('text/html') == true) {
+        throw Exception(
+          'Server returned HTML error page. Status: ${response.statusCode}',
+        );
       }
 
       final responseData = json.jsonDecode(response.body);

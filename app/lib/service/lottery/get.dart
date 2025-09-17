@@ -14,6 +14,8 @@ class Lotteryget {
       {},
     );
 
+    log(response.toString());
+
     if (response['success'] == true) {
       return response;
     } else {

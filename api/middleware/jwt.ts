@@ -10,25 +10,27 @@ const handleRequestDecoding = (req: any): void => {
     console.group("Request");
     console.log("Body: ", req.body);
 
+    // For GET requests or requests without body, skip decoding
+    if (!req.body || !req.body.data) {
+      console.log("No body data to decode (GET request or empty body)");
+      console.groupEnd();
+      req.body = {};
+      return;
+    }
+
     let decoded: any;
-    if (req.body && req.body.data) {
-      if (IS_SIGN) {
-        decoded = jwt.verify(req.body.data, JWT_SECRET, { algorithms: ['HS256'] });
-      } else {
-        decoded = jwt.decode(req.body.data);
-      }
-
-      console.log("Decoded: ", decoded);
-      console.groupEnd();
-
-      if (decoded && typeof decoded === 'object') {
-        req.body = decoded;
-      } else {
-        req.body = {};
-      }
+    if (IS_SIGN) {
+      decoded = jwt.verify(req.body.data, JWT_SECRET, { algorithms: ['HS256'] });
     } else {
-      console.log("No body data to decode");
-      console.groupEnd();
+      decoded = jwt.decode(req.body.data);
+    }
+
+    console.log("Decoded: ", decoded);
+    console.groupEnd();
+
+    if (decoded && typeof decoded === 'object') {
+      req.body = decoded;
+    } else {
       req.body = {};
     }
   } catch (error) {
