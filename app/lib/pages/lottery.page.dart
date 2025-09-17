@@ -4,8 +4,12 @@ import 'dart:developer';
 import 'package:app/components/Input.dart';
 import 'package:app/components/Lottery.dart';
 import 'package:app/components/MainLayout.dart';
+import 'package:app/components/Dialogue.dart';
 import 'package:flutter/material.dart';
 import 'package:app/service/lottery/get.dart';
+import 'package:app/service/payment/post.dart';
+import 'package:app/service/purchase/post.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LotteryPage extends StatefulWidget {
   const LotteryPage({super.key});
@@ -15,15 +19,18 @@ class LotteryPage extends StatefulWidget {
 }
 
 class _LotteryPageState extends State<LotteryPage> {
-
   final ScrollController _scrollController = ScrollController();
   final Lotteryget _lotteryService = Lotteryget();
+  final PaymentPost _paymentService = PaymentPost();
+  final PurchasePost _purchaseService = PurchasePost();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   List<dynamic> _lotteries = [];
   int _page = 1;
   bool _hasNextPage = true;
   bool _isFetching = false;
   String _searchQuery = '';
+  int? _uid;
 
   Timer? _debounce;
 
@@ -36,6 +43,7 @@ class _LotteryPageState extends State<LotteryPage> {
         _fetchNextPage();
       }
     });
+    _getUserId();
     _fetchNextPage();
   }
 
@@ -50,6 +58,77 @@ class _LotteryPageState extends State<LotteryPage> {
       });
       _fetchNextPage();
     });
+  }
+
+  Future<void> _getUserId() async {
+    // TODO: Get uid from secure storage or login response
+    // For now, assuming uid is stored in secure storage as 'user_id'
+    final uidString = await _storage.read(key: 'user_id');
+    if (uidString != null) {
+      setState(() {
+        _uid = int.tryParse(uidString);
+      });
+    }
+  }
+
+  Future<void> _handleLotteryPurchase(String lid, String lotteryNumber) async {
+    if (_uid == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่')),
+      );
+      return;
+    }
+
+    showPurchaseDialogue(
+      context,
+      (String amount) async {
+        try {
+          final lotAmount = int.tryParse(amount) ?? 1;
+          final revenue = lotAmount * 80.0;
+
+          // Step 1: Create payment
+          final paymentResponse = await _paymentService.createPayment(
+            uid: _uid!,
+            provider: 'lottocat',
+            revenue: revenue,
+          );
+
+          if (paymentResponse['statusCode'] != 200) {
+            throw Exception('Payment failed: ${paymentResponse['message']}');
+          }
+
+          final payid = paymentResponse['payid'];
+
+          // Step 2: Create purchase
+          final purchaseResponse = await _purchaseService.createPurchase(
+            uid: _uid!,
+            lid: int.parse(lid),
+            lotAmount: lotAmount,
+            payid: payid,
+          );
+
+          if (purchaseResponse['statusCode'] != 200) {
+            throw Exception('Purchase failed: ${purchaseResponse['message']}');
+          }
+
+          // Step 3: Navigate to success page
+          Navigator.pushNamed(
+            context,
+            '/success',
+            arguments: {
+              'purchase': purchaseResponse,
+              'payment': paymentResponse,
+              'lottery': lotteryNumber,
+            },
+          );
+        } catch (e) {
+          log('Purchase error: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+          );
+        }
+      },
+    );
   }
 
   Future<void> _fetchNextPage() async {
@@ -113,8 +192,7 @@ class _LotteryPageState extends State<LotteryPage> {
                   lotteryNumber: item['lottery_number'],
                   isSelected: false,
                   onTap: (lotteryNumber) {
-                    log("pressed callback work!");
-                    log(lotteryNumber);
+                    _handleLotteryPurchase(item['lid'].toString(), item['lottery_number']);
                   },
                 );
               },

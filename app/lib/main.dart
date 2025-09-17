@@ -38,12 +38,14 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/lottery': (context) => const LotteryPage(),
         '/purchase': (context) => const PurchasePage(),
-        '/cart': (context) => const CartPage(),
+        // '/cart': (context) => const CartPage(),
         '/profile': (context) => const ProfilePage(),
         '/onboarding': (context) => const OnBoardingPage(),
         '/forgotpass': (context) => const ForgotPassPage(),
-        '/boxreward': (context) => const Box_make_reward(),
 
+        '/success': (context) => const SuccessPage(),
+
+        '/boxreward': (context) => const Box_make_reward(),
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
 

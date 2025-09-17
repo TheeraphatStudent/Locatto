@@ -24,6 +24,14 @@ class Auth {
           key: config.getTokenStoragename(),
           value: response['token'],
         );
+
+        // Store uid if available in response
+        if (response['uid'] != null) {
+          await _storage.write(
+            key: 'user_id',
+            value: response['uid'].toString(),
+          );
+        }
       }
       return response;
     } catch (e) {
