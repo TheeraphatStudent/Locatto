@@ -9,7 +9,7 @@ class Lotteryget {
     log("Print lottery work!");
 
     final response = await _transport.requestTransport(
-      RequestMethod.post,
+      RequestMethod.get,
       '/lottery?page=$page&size=$size',
       {},
     );
