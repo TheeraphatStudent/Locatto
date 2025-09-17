@@ -201,7 +201,7 @@ class _InputState extends State<Input> {
         // ),
         floatingLabelBehavior: FloatingLabelBehavior.never,
         labelStyle: TextStyle(
-          color: hasError ? AppColors.primary : AppColors.secondaryDark,
+          color: hasError ? AppColors.secondaryDark : AppColors.primary,
           fontFamily: 'Kanit',
         ),
         hintStyle: const TextStyle(

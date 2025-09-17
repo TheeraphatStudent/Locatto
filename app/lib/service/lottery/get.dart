@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:app/service/transport.dart';
+import 'package:app/utils/response_helper.dart';
 
 class Lotteryget {
   final Transport _transport = Transport();
+
+  final ResponseHelper _responseHelper = ResponseHelper();
 
   Future<Map<String, dynamic>> getLotteries(int page, int size) async {
     // log("Print lottery work!");
@@ -15,10 +18,10 @@ class Lotteryget {
       {},
     );
 
-    log(response.toString());
+    // log(response.toString());
 
-    if (response['success'] == true) {
-      return response;
+    if (_responseHelper.isSuccess(response['statusCode'] as int)) {
+      return response['data'];
     } else {
       throw Exception('Failed to load lotteries');
     }

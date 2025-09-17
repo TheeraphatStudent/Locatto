@@ -43,9 +43,13 @@ class _LotteryPageState extends State<LotteryPage> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        _fetchNextPage();
+        if (_debounce?.isActive ?? false) _debounce!.cancel();
+        _debounce = Timer(const Duration(milliseconds: 1500), () {
+          _fetchNextPage();
+        });
       }
     });
+
     _getUserId();
     _fetchNextPage();
   }
@@ -53,6 +57,8 @@ class _LotteryPageState extends State<LotteryPage> {
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 1500), () {
+      log("On search work! -> $query");
+
       setState(() {
         _searchQuery = query;
         _lotteries = [];
@@ -137,10 +143,13 @@ class _LotteryPageState extends State<LotteryPage> {
 
     try {
       final newItems = _searchQuery.isEmpty
-          ? await _lotteryService.getLotteries(_page, 10)
+          ? await _lotteryService.getLotteries(_page, 20)
           : await _lotteryService.searchLotteries(_searchQuery, _page, 10);
 
-      if (newItems['data'].isEmpty) {
+      // log("Lottery fetch: ${newItems.toString()}");
+      // log("Items: ${newItems.toString()}");
+
+      if (newItems.isEmpty) {
         _hasNextPage = false;
       } else {
         _lotteries.addAll(newItems['data']);
@@ -164,12 +173,13 @@ class _LotteryPageState extends State<LotteryPage> {
             labelText: "ค้นหาเลขเด็ด",
             variant: InputVariant.active,
             suffixIcon: Icons.search,
-            showActionsBadge: true,
-            actionsBadgeCount: 1,
-            actionsBadgeIcon: Icons.shopping_cart,
-            onActionsBadgePressed: () {
-              log("Cart opened!");
-            },
+            // showActionsBadge: true,
+            // actionsBadgeCount: 1,
+            // actionsBadgeIcon: Icons.shopping_cart,
+            // onActionsBadgePressed: () {
+            //   log("Cart opened!");
+            // },
+            onActionPressed: () => {_onSearchChanged(_searchQuery)},
             onChanged: _onSearchChanged,
           ),
           const SizedBox(height: 16),
