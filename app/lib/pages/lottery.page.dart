@@ -142,7 +142,7 @@ class _LotteryPageState extends State<LotteryPage> {
               itemsPerPage,
             );
 
-      log("Lottery Fetch: ${response.toString()}");
+      // log("Lottery Fetch: ${response.toString()}");
 
       if (response != null && response['data'] != null) {
         dynamic rawData = response['data'];
@@ -235,6 +235,8 @@ class _LotteryPageState extends State<LotteryPage> {
           throw Exception(paymentResponse['message'] ?? 'Payment failed');
         }
 
+        log("Payment create complete!");
+
         final payid = paymentResponse['payid'];
 
         // Step 2: Create purchase
@@ -248,6 +250,8 @@ class _LotteryPageState extends State<LotteryPage> {
         if (purchaseResponse['statusCode'] != 200) {
           throw Exception(purchaseResponse['message'] ?? 'Purchase failed');
         }
+
+        log("Purchase create complete!");
 
         Navigator.of(context).pop();
 

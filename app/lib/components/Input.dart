@@ -18,6 +18,8 @@ class Input extends StatefulWidget {
   final String? Function(String?)? validator;
   final String? helperText;
 
+  final String? suffixText;
+
   final InputVariant variant;
   final Color? suffixColor;
   final IconData? suffixIcon;
@@ -60,6 +62,7 @@ class Input extends StatefulWidget {
     this.onActionsBadgePressed,
     this.actionBadgePosition = ActionBadgePosition.right,
     this.onChanged,
+    this.suffixText,
   });
 
   @override

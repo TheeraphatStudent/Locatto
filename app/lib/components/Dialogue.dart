@@ -1,5 +1,7 @@
 import 'dart:ui'; // สำหรับเบลอพื้นหลัง
 
+import 'package:app/components/Button.dart';
+import 'package:app/components/Input.dart';
 import 'package:flutter/material.dart';
 
 enum DialogType { success, error, warning, info, custom }
@@ -491,60 +493,54 @@ void showPurchaseDialogue(
               ),
               const SizedBox(height: 8),
               const Text(
-                'จำนวนหวย 1 ใบ = ราคา 80 บาท',
+                '1 ใบ = ราคา 80 บาท',
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
               const SizedBox(height: 16),
-              TextField(
+              // TextField(
+              //   controller: _lotteryAmountController,
+              //   keyboardType: TextInputType.number,
+              //   decoration: InputDecoration(
+              //     hintText: '1',
+              //     suffixText: 'ใบ',
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //   ),
+              // ),
+              Input(
                 controller: _lotteryAmountController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: '1',
-                  suffixText: 'ใบ',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                // keyboardType: TextInputType.number,
+                hintText: '1',
+                suffixText: 'ใบ',
               ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // ปิด dialog
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'ยกเลิก',
-                      style: TextStyle(color: Colors.white),
+                  Flexible(
+                    child: ButtonActions(
+                      text: 'ยกเลิก',
+                      variant: ButtonVariant.light,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      final value = _lotteryAmountController.text.trim().isEmpty
-                          ? ((initialValue == null || initialValue.isEmpty)
-                                ? '1'
-                                : initialValue)
-                          : _lotteryAmountController.text.trim();
-                      onConfirm(value);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      side: const BorderSide(color: Colors.red),
-                    ),
-                    child: const Text(
-                      'ยืนยัน',
-                      style: TextStyle(color: Colors.red),
+                  Flexible(
+                    child: ButtonActions(
+                      text: 'ยืนยัน',
+                      variant: ButtonVariant.primary,
+                      onPressed: () {
+                        final value =
+                            _lotteryAmountController.text.trim().isEmpty
+                            ? ((initialValue == null || initialValue.isEmpty)
+                                  ? '1'
+                                  : initialValue)
+                            : _lotteryAmountController.text.trim();
+                        onConfirm(value);
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
                 ],
