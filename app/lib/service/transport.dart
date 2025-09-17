@@ -48,7 +48,7 @@ class Transport {
 
     Uri url;
 
-    if (reqMethod == RequestMethod.get && endpoint.contains('?')) {
+    if (endpoint.contains('?')) {
       final parts = endpoint.split('?');
       final path = parts[0];
       final queryString = parts[1];

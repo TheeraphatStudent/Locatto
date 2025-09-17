@@ -16,7 +16,7 @@ class Lotteryget {
       '/lottery?page=$page&size=$size',
       // /lottery?page=3&size=10
       {},
-    );
+    );  
 
     // log(response.toString());
 

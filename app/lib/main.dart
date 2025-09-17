@@ -1,5 +1,4 @@
-// import 'dart:developer';
-
+import 'dart:developer';
 import 'package:app/components/Box_make_reward.dart';
 import 'package:app/pages/cart.page.dart';
 import 'package:app/pages/debug.page.dart';
@@ -7,12 +6,6 @@ import 'package:app/pages/home.page.dart';
 import 'package:app/pages/login.page.dart';
 import 'package:app/pages/lottery.page.dart';
 import 'package:app/pages/onboarding.page.dart';
-// import 'package:app/components/Avatar.dart';
-// import 'package:app/components/Button.dart';
-// import 'package:app/components/Footer.dart';
-// import 'package:app/components/Input.dart';
-// import 'package:app/components/Lottery.dart';
-// import 'package:app/pages/notfound.page.dart';
 import 'package:app/pages/profile.page.dart';
 import 'package:app/pages/purchase.page.dart';
 import 'package:app/pages/register.page.dart';
@@ -38,8 +31,9 @@ class _MyAppState extends State<MyApp> {
   final Auth _auth = Auth();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  String _initialRoute = '/onboarding';
-  bool _isLoading = true;
+  bool _isCheckingAuth = true;
+  bool _isAuthenticated = false;
+  String? _userRole;
 
   @override
   void initState() {
@@ -49,34 +43,58 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkAuth() async {
     try {
-      final isValid = await _auth.checkAuth();
+      final result = await _auth.checkAuth();
+      final isValid = result['isValid'] as bool;
+      final role = result['role'] as String?;
 
-      if (isValid) {
+      log("Is valid: $isValid, Role: $role");
+
+      if (mounted) {
         setState(() {
-          _initialRoute = '/home';
-          _isLoading = false;
+          _isAuthenticated = isValid;
+          _isCheckingAuth = false;
+          _userRole = role;
         });
-      } else {
-        await _storage.deleteAll();
-        setState(() {
-          _initialRoute = '/onboarding';
-          _isLoading = false;
-        });
+
+        if (!isValid) {
+          await _storage.deleteAll();
+        }
       }
     } catch (e) {
+      log("Auth check error: $e");
       await _storage.deleteAll();
-      setState(() {
-        _initialRoute = '/onboarding';
-        _isLoading = false;
-      });
+
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = false;
+          _isCheckingAuth = false;
+          _userRole = null;
+        });
+      }
     }
+  }
+
+  Widget get _homeWidget {
+    if (_isCheckingAuth) {
+      return const AuthCheckingScreen();
+    }
+
+    if (_isAuthenticated) {
+      if (_userRole == 'admin') {
+        return const _AdminHome.HomePage();
+      } else {
+        return const HomePage();
+      }
+    }
+
+    return const OnBoardingPage();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      initialRoute: _initialRoute,
+      home: _homeWidget,
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
@@ -87,7 +105,6 @@ class _MyAppState extends State<MyApp> {
         '/profile': (context) => const ProfilePage(),
         '/onboarding': (context) => const OnBoardingPage(),
         '/forgotpass': (context) => const ForgotPassPage(),
-
         '/success': (context) => const SuccessPage(),
 
         '/boxreward': (context) => const Box_make_reward(),
@@ -96,10 +113,19 @@ class _MyAppState extends State<MyApp> {
 
         '/admin': (context) => const _AdminHome.HomePage(),
       },
-      // onUnknownRoute: (context) => const NotfoundPage(),
-      onGenerateRoute: (initialRoute) => MaterialPageRoute(
-        builder: (context) => Center(child: const CircularProgressIndicator()),
+      onGenerateRoute: (settings) => MaterialPageRoute(
+        builder: (context) =>
+            const Scaffold(body: Center(child: Text('Page not found'))),
       ),
     );
+  }
+}
+
+class AuthCheckingScreen extends StatelessWidget {
+  const AuthCheckingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

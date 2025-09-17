@@ -12,6 +12,12 @@ class AppColors {
     colors: [Color(0xFFFFE3E2), Color(0xFFFFFBDE)],
   );
 
+  static const LinearGradient softGradientPrimaryFade = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color.fromARGB(0, 255, 227, 226), Color(0xFFFFFBDE)],
+  );
+
   // Primary Colors
   static const Color primary = Color(0xFFFE5654);
   static const Color primaryVariant = Color(0xFFE04442);

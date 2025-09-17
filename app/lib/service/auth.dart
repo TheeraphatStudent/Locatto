@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:app/utils/response_helper.dart';
+
 import '../config.dart';
 import '../type/login.dart';
 import '../type/register.dart';
@@ -11,6 +13,8 @@ class Auth {
   final Transport _transport = Transport();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final AppConfig config = AppConfig();
+
+  final ResponseHelper _responseHelper = ResponseHelper();
 
   Future<Map<String, dynamic>> login(Login loginData) async {
     try {
@@ -99,15 +103,18 @@ class Auth {
     }
   }
 
-  Future<bool> checkAuth() async {
+  Future<Map<String, dynamic>> checkAuth() async {
     try {
       final response = await getMe();
 
       log(response.toString());
 
-      return response['statusCode'] == 200;
+      return {
+        'isValid': _responseHelper.isSuccess(response['statusCode'] as int),
+        'role': response['data']['user']['role']
+      };
     } catch (e) {
-      return false;
+      return {'isValid': false, 'role': null};
     }
   }
 }
