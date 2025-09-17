@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../config.dart';
 import '../type/login.dart';
 import '../type/register.dart';
@@ -19,7 +21,6 @@ class Auth {
       );
       if ((response['statusCode'] as int?) == 200 &&
           response['token'] != null) {
-
         await _storage.write(
           key: config.getTokenStoragename(),
           value: response['token'],
@@ -28,7 +29,7 @@ class Auth {
         // Store uid if available in response
         if (response['uid'] != null) {
           await _storage.write(
-            key: 'user_id',
+            key: config.getUserIdStorage(),
             value: response['uid'].toString(),
           );
         }
@@ -78,6 +79,31 @@ class Auth {
       return response;
     } catch (e) {
       throw Exception('Logout failed: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> getMe() async {
+    try {
+      final response = await _transport.requestTransport(
+        RequestMethod.get,
+        '/auth/me',
+        {},
+      );
+      return response;
+    } catch (e) {
+      throw Exception('User info failed: $e');
+    }
+  }
+
+  Future<bool> checkAuth() async {
+    try {
+      final response = await getMe();
+
+      log(response.toString());
+
+      return response['statusCode'] == 200;
+    } catch (e) {
+      return false;
     }
   }
 }

@@ -10,7 +10,6 @@ const handleRequestDecoding = (req: any): void => {
     console.group("Request");
     console.log("Body: ", req.body);
 
-    // For GET requests or requests without body, skip decoding
     if (!req.body || !req.body.data) {
       console.log("No body data to decode (GET request or empty body)");
       console.groupEnd();

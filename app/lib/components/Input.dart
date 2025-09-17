@@ -194,13 +194,14 @@ class _InputState extends State<Input> {
         focusedErrorBorder: _buildBorder(isFocused: true, isError: true),
 
         // Text Styling
-        floatingLabelStyle: TextStyle(
-          color: hasError ? AppColors.error : AppColors.primary,
-          fontFamily: 'Kanit',
-          fontWeight: FontWeight.w500,
-        ),
+        // floatingLabelStyle: TextStyle(
+        //   color: hasError ? AppColors.error : AppColors.primary,
+        //   fontFamily: 'Kanit',
+        //   fontWeight: FontWeight.w500,
+        // ),
+        floatingLabelBehavior: FloatingLabelBehavior.never,
         labelStyle: TextStyle(
-          color: hasError ? AppColors.error : AppColors.primary,
+          color: hasError ? AppColors.primary : AppColors.secondaryDark,
           fontFamily: 'Kanit',
         ),
         hintStyle: const TextStyle(
@@ -212,7 +213,7 @@ class _InputState extends State<Input> {
           fontFamily: 'Kanit',
         ),
         errorStyle: const TextStyle(
-          color: AppColors.error,
+          color: AppColors.secondaryDark,
           fontFamily: 'Kanit',
         ),
       ),
@@ -224,8 +225,8 @@ class _InputState extends State<Input> {
     if (widget.showActionsBadge) {
       final actionsBadgeBorderConfig =
           widget.actionBadgePosition == ActionBadgePosition.left
-          ? const {'tl': 16.0, 'tr': 8.0, 'bl': 16.0, 'br': 8.0}
-          : const {'tl': 8.0, 'tr': 16.0, 'bl': 8.0, 'br': 16.0};
+          ? const {'tl': 8.0, 'tr': 16.0, 'bl': 8.0, 'br': 16.0}
+          : const {'tl': 16.0, 'tr': 8.0, 'bl': 16.0, 'br': 8.0};
 
       final inputBorderRadius =
           widget.actionBadgePosition == ActionBadgePosition.left
@@ -285,10 +286,10 @@ class _InputState extends State<Input> {
       decoration: BoxDecoration(
         color: const Color(0xFFFFF7F7),
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(borderRadius['tl'] ?? 16),
-          topRight: Radius.circular(borderRadius['tr'] ?? 16),
-          bottomLeft: Radius.circular(borderRadius['bl'] ?? 16),
-          bottomRight: Radius.circular(borderRadius['br'] ?? 16),
+          topLeft: Radius.circular(borderRadius['tl'] ?? 16.0),
+          topRight: Radius.circular(borderRadius['tr'] ?? 16.0),
+          bottomLeft: Radius.circular(borderRadius['bl'] ?? 16.0),
+          bottomRight: Radius.circular(borderRadius['br'] ?? 16.0),
         ),
         border: Border.all(
           color: hasError
@@ -363,9 +364,7 @@ class ActionsBadge extends StatelessWidget {
           ),
           child: IconButton(
             icon: Icon(icon, color: iconColor, size: size * 0.5),
-            onPressed: () {
-              onPressed?.call();
-            },
+            onPressed: onPressed?.call,
           ),
         ),
         // Badge
