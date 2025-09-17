@@ -6,11 +6,12 @@ class Lotteryget {
   final Transport _transport = Transport();
 
   Future<Map<String, dynamic>> getLotteries(int page, int size) async {
-    log("Print lottery work!");
+    // log("Print lottery work!");
 
     final response = await _transport.requestTransport(
       RequestMethod.get,
       '/lottery?page=$page&size=$size',
+      // /lottery?page=3&size=10
       {},
     );
 

@@ -45,9 +45,23 @@ class Transport {
     Object payload,
   ) async {
     final token = encodePayload(payload);
-    final url = Uri.http(config.getBaseUrl(), endpoint);
+
+    Uri url;
+
+    if (reqMethod == RequestMethod.get && endpoint.contains('?')) {
+      final parts = endpoint.split('?');
+      final path = parts[0];
+      final queryString = parts[1];
+      final queryParams = Uri.splitQueryString(queryString);
+      url = Uri.http(config.getBaseUrl(), path, queryParams);
+    } else {
+      url = Uri.http(config.getBaseUrl(), endpoint);
+    }
 
     final accessToken = await _storage.read(key: config.getTokenStoragename());
+
+    // log("Access token: $accessToken");
+    log("Target: ${url.toString()}");
 
     try {
       final headers = <String, String>{};
@@ -62,7 +76,7 @@ class Transport {
 
       http.Response response;
 
-      log(headers.toString());
+      // log("Request headers: $headers");
 
       switch (reqMethod) {
         case RequestMethod.get:
@@ -87,7 +101,8 @@ class Transport {
           break;
       }
 
-      // Handle HTML error responses
+      // log("Actual response: ${response.body}");
+
       if (response.headers['content-type']?.contains('text/html') == true) {
         throw Exception(
           'Server returned HTML error page. Status: ${response.statusCode}',

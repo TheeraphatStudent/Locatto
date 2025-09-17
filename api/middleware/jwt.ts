@@ -11,7 +11,7 @@ const handleRequestDecoding = (req: any): void => {
     console.log("Body: ", req.body);
 
     if (!req.body || !req.body.data) {
-      console.log("No body data to decode (GET request or empty body)");
+      console.log("No body data to decode");
       console.groupEnd();
       req.body = {};
       return;
@@ -90,7 +90,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
 
   const authHeader = req.headers.authorization;
 
-  // console.log("Auth header: ", authHeader)
+  console.log("Auth header: ", authHeader)
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ error: 'Authorization header missing or invalid' });

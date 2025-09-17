@@ -19,18 +19,22 @@ class Auth {
         '/auth/login',
         loginData.toJson(),
       );
-      if ((response['statusCode'] as int?) == 200 &&
-          response['token'] != null) {
+
+      log("Login response: ${response.toString()}");
+
+      final data = response['data'];
+      final user = data['user'];
+
+      if (data['success']) {
         await _storage.write(
           key: config.getTokenStoragename(),
-          value: response['token'],
+          value: data['token'],
         );
 
-        // Store uid if available in response
-        if (response['uid'] != null) {
+        if (user['uid'] != null) {
           await _storage.write(
             key: config.getUserIdStorage(),
-            value: response['uid'].toString(),
+            value: user['uid'].toString(),
           );
         }
       }
