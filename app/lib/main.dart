@@ -7,6 +7,7 @@ import 'package:app/pages/home.page.dart';
 import 'package:app/pages/login.page.dart';
 import 'package:app/pages/lottery.page.dart';
 import 'package:app/pages/onboarding.page.dart';
+import 'package:app/pages/profile_detail.dart';
 // import 'package:app/components/Avatar.dart';
 // import 'package:app/components/Button.dart';
 // import 'package:app/components/Footer.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      initialRoute: '/test',
+      initialRoute: '/profile',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/onboarding': (context) => const OnBoardingPage(),
         '/forgotpass': (context) => const ForgotPassPage(),
         '/boxreward': (context) => const Box_make_reward(),
+        '/profile_detail': (context) => const Profile_Detail(),
 
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
