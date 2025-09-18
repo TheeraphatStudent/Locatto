@@ -8,9 +8,9 @@ class RandomLotto extends StatelessWidget {
     return Container(
       width:
           MediaQuery.of(context).size.width *
-          0.85, // กำหนดความกว้าง 85% ของหน้าจอ
+          0.9, // กำหนดความกว้าง 85% ของหน้าจอ
       constraints: const BoxConstraints(
-        maxHeight: 400, // จำกัดความสูงไม่เกิน 400
+        maxHeight: 100, // จำกัดความสูงไม่เกิน 400
       ),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
