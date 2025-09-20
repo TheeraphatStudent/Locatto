@@ -1,4 +1,4 @@
-import 'dart:ui'; // สำหรับเบลอพื้นหลัง
+// สำหรับเบลอพื้นหลัง
 
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
@@ -372,7 +372,7 @@ void showCreateMoneyDialog(
   Function(String) onConfirm, {
   String? initialValue,
 }) {
-  final TextEditingController _moneyController = TextEditingController(
+  final TextEditingController moneyController = TextEditingController(
     text: (initialValue == null || initialValue.isEmpty) ? '100' : initialValue,
   );
   showDialog(
@@ -402,7 +402,7 @@ void showCreateMoneyDialog(
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: _moneyController,
+                controller: moneyController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: '100',
@@ -433,11 +433,11 @@ void showCreateMoneyDialog(
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      final value = _moneyController.text.trim().isEmpty
+                      final value = moneyController.text.trim().isEmpty
                           ? ((initialValue == null || initialValue.isEmpty)
                                 ? '100'
                                 : initialValue)
-                          : _moneyController.text.trim();
+                          : moneyController.text.trim();
                       onConfirm(value);
                       Navigator.pop(context);
                     },
@@ -468,7 +468,7 @@ void showPurchaseDialogue(
   Function(String) onConfirm, {
   String? initialValue,
 }) {
-  final TextEditingController _lotteryAmountController = TextEditingController(
+  final TextEditingController lotteryAmountController = TextEditingController(
     text: (initialValue == null || initialValue.isEmpty) ? '1' : initialValue,
   );
   showDialog(
@@ -509,7 +509,7 @@ void showPurchaseDialogue(
               //   ),
               // ),
               Input(
-                controller: _lotteryAmountController,
+                controller: lotteryAmountController,
                 // keyboardType: TextInputType.number,
                 hintText: '1',
                 suffixText: 'ใบ',
@@ -533,11 +533,11 @@ void showPurchaseDialogue(
                       variant: ButtonVariant.primary,
                       onPressed: () {
                         final value =
-                            _lotteryAmountController.text.trim().isEmpty
+                            lotteryAmountController.text.trim().isEmpty
                             ? ((initialValue == null || initialValue.isEmpty)
                                   ? '1'
                                   : initialValue)
-                            : _lotteryAmountController.text.trim();
+                            : lotteryAmountController.text.trim();
                         onConfirm(value);
                         Navigator.pop(context);
                       },

@@ -23,11 +23,11 @@ class _AdminHomePageState extends State<AdminHomePage> {
   Widget _buildContent() {
     switch (_selectedIndex) {
       case 0:
-        return const Box_make_reward(); // แสดง Box_make_reward เมื่อเลือก "จัดการรางวัล"
+        return Box_make_reward(); // แสดง Box_make_reward เมื่อเลือก "จัดการรางวัล"
       case 1:
         return PrizesetupPage(); // แสดง PrizeSetup เมื่อเลือก "เงินรางวัล"
       case 2:
-        return const RandomLotto(); // แสดง RandomLotto เมื่อเลือก "สุ่มรางวัล"
+        return RandomLotto(); // แสดง RandomLotto เมื่อเลือก "สุ่มรางวัล"
       default:
         return const SizedBox(); // กรณีไม่มีอะไรถูกเลือก
     }
@@ -136,4 +136,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
       bottomNavigationBar: const AdminFooter(), // เพิ่ม AdminFooter
     );
   }
+}
+
+class HomePage {
+  const HomePage();
 }

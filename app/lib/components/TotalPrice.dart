@@ -34,7 +34,7 @@ class TotalPrice extends StatelessWidget {
                 ),
               ),
               Text(
-                '+${coin} Coin',
+                '+$coin Coin',
                 style: const TextStyle(color: Colors.brown, fontSize: 12),
               ),
             ],

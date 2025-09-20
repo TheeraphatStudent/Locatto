@@ -52,7 +52,7 @@ class SelectedNumberCard extends StatelessWidget {
                 'เลขรางวัล',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF45171D),
+                  color: Color(0xFF45171D),
                   fontSize: 20,
                 ),
               ),
@@ -60,7 +60,7 @@ class SelectedNumberCard extends StatelessWidget {
                 'จำนวน',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF45171D),
+                  color: Color(0xFF45171D),
                   fontSize: 20,
                 ),
               ),

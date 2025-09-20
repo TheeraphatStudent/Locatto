@@ -7,7 +7,7 @@ class LotteryService {
     try {
       final response = await _transport.requestTransport(
         RequestMethod.post,
-        '/lottery/generate',
+        '/lottery',
         {'n': count},
       );
       return response;

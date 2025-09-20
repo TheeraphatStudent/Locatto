@@ -1,6 +1,6 @@
 import 'dart:developer';
-import 'package:app/components/Box_make_reward.dart';
-import 'package:app/pages/cart.page.dart';
+import 'package:app/pages/admin/adminHome.dart' hide HomePage;
+import 'package:app/pages/admin/adminProfile.dart';
 import 'package:app/pages/debug.page.dart';
 import 'package:app/pages/home.page.dart';
 import 'package:app/pages/login.page.dart';
@@ -19,7 +19,6 @@ import 'providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'style/theme.dart';
-import 'package:app/pages/admin/home.dart' as _AdminHome;
 
 void main() => runApp(
   ChangeNotifierProvider<UserProvider>(
@@ -96,7 +95,7 @@ class _MyAppState extends State<MyApp> {
 
     if (_isAuthenticated) {
       if (_userRole == 'admin') {
-        return const _AdminHome.HomePage();
+        return const AdminHomePage();
       } else {
         return const HomePage();
       }
@@ -123,11 +122,10 @@ class _MyAppState extends State<MyApp> {
         '/forgotpass': (context) => const ForgotPassPage(),
         '/success': (context) => const SuccessPage(),
 
-        '/boxreward': (context) => const Box_make_reward(),
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
-
-        '/admin': (context) => const _AdminHome.HomePage(),
+        '/adminProfile': (context) => const AdminProfilePage(),
+        '/adminHome': (context) => const AdminHomePage(),
       },
       onGenerateRoute: (settings) => MaterialPageRoute(
         builder: (context) =>
