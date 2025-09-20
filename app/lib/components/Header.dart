@@ -1,5 +1,6 @@
 import 'package:app/components/Showcoins.dart';
 import 'package:app/service/user.dart';
+import 'package:app/style/theme.dart';
 import 'package:app/utils/date_time.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -82,11 +83,11 @@ class _HeaderState extends State<Header> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 8,
+                    vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFD700), // Gold color
-                    borderRadius: BorderRadius.circular(20),
+                    color: AppColors.onPrimary, // Gold color
+                    borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -95,20 +96,33 @@ class _HeaderState extends State<Header> {
                       ),
                     ],
                   ),
-                  child: const Text(
-                    'รีเซ็ตระบบ',
-                    style: TextStyle(
-                      color: Color(0xFF45171D),
-                      fontSize: 14,
-                      fontFamily: 'Kanit',
-                      fontWeight: FontWeight.w600,
+                  // child: const Text(
+                  //   'รีเซ็ตระบบ',
+                  //   style: TextStyle(
+                  //     color: Color(0xFF45171D),
+                  //     fontSize: 14,
+                  //     fontFamily: 'Kanit',
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
+                  child: Flexible(
+                    child: Text(
+                      'รีเซ็ตระบบ',
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
               )
             else
               Consumer<UserProvider>(
-                builder: (context, provider, child) => ShowCoins(coinCount: provider.credit),
+                builder: (context, provider, child) =>
+                    ShowCoins(coinCount: provider.credit),
               ),
             Flexible(
               child: Text(
@@ -148,7 +162,7 @@ class _HeaderState extends State<Header> {
                 // Handle reset system logic here
                 _handleSystemReset();
               },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               child: const Text('Reset'),
             ),
           ],

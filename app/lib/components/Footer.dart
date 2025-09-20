@@ -52,6 +52,20 @@ class _FooterState extends State<Footer> {
     _loadUserRole();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Update selected index whenever the route changes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Add a small delay to ensure route is fully loaded
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          _updateSelectedIndexFromRoute();
+        }
+      });
+    });
+  }
+
   Future<void> _loadUserRole() async {
     final role = await _userService.getUserRole();
     if (role != null && mounted) {
@@ -64,29 +78,59 @@ class _FooterState extends State<Footer> {
     final String currentRoute =
         ModalRoute.of(context)?.settings.name ?? '/home';
 
+    log('Current route: $currentRoute, User role: $_userRole');
+    log('Available nav items: ${_navItems.map((e) => e.route).toList()}');
+
     final index = _navItems.indexWhere((item) => item.route == currentRoute);
-    setState(() {
-      _selectedIndex = index >= 0 ? index : 0;
-    });
+
+    log('Found index: $index for route: $currentRoute');
+
+    if (index >= 0 && index != _selectedIndex) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    } else if (index < 0) {
+      if (_userRole == 'admin' &&
+          currentRoute.toLowerCase().contains('profile')) {
+        final profileIndex = _navItems.indexWhere(
+          (item) => item.route == '/adminProfile',
+        );
+        if (profileIndex >= 0) {
+          setState(() {
+            _selectedIndex = profileIndex;
+          });
+        }
+      }
+    }
   }
 
   void _onDestinationSelected(int index) {
     if (_selectedIndex == index) return;
 
-    // Prevent multiple rapid taps
     if (_isNavigating) return;
     _isNavigating = true;
 
     setState(() => _selectedIndex = index);
 
+    final targetRoute = _navItems[index].route;
+    log('Navigating to: $targetRoute');
+
     Navigator.of(context)
-        .pushNamedAndRemoveUntil(_navItems[index].route, (route) => false)
+        .pushNamedAndRemoveUntil(targetRoute, (route) => false)
         .then((_) {
           _isNavigating = false;
+          // Add delay to ensure route is fully loaded before checking
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (mounted) {
+              _updateSelectedIndexFromRoute();
+            }
+          });
         })
         .catchError((error) {
           log('Navigation error: $error');
           _isNavigating = false;
+          // Reset selected index on error
+          _updateSelectedIndexFromRoute();
         });
   }
 

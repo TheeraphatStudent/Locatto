@@ -1,3 +1,4 @@
+import 'package:app/components/MainLayout.dart';
 import 'package:app/components/adminFooter.dart';
 import 'package:flutter/material.dart';
 
@@ -6,11 +7,7 @@ class AdminProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Profile'),
-        automaticallyImplyLeading: false,
-      ), // ปิดปุ่ม Back
+    return MainLayout(
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
@@ -39,7 +36,6 @@ class AdminProfilePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const AdminFooter(), // เพิ่ม AdminFooter
     );
   }
 }

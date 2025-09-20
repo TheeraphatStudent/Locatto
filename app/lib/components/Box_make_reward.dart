@@ -15,7 +15,7 @@ class Box_make_reward extends StatefulWidget {
 }
 
 class _Box_make_rewardState extends State<Box_make_reward> {
-  static const double _loadMoreThreshold = 200.0;
+  static const double _loadMoreThreshold = 1000.0;
   static const int _pageSize = 20;
 
   final TextEditingController numberController =

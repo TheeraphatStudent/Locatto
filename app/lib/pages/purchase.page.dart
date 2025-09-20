@@ -1,4 +1,4 @@
-import 'package:app/components/statusLottery.dart';
+import 'package:app/components/StatusTags.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Dialogue.dart';
@@ -61,9 +61,9 @@ class _PurchasePageState extends State<PurchasePage> {
                   onTap: () {
                     final lotInfo =
                         purchase['lot_info'] as Map<String, dynamic>? ?? {};
-                    showCustomStatusLotteryDialog(
+                    showCustomStatusTagsDialog(
                       context,
-                      StatusLottery(
+                      StatusTags(
                         period: purchase["created"] ?? "",
                         status: purchase["status"] ?? "pending",
                         rewards: [
@@ -77,7 +77,7 @@ class _PurchasePageState extends State<PurchasePage> {
                       ),
                     );
                   },
-                  child: StatusLottery(
+                  child: StatusTags(
                     period: purchase["created"] ?? "",
                     status: purchase["status"] ?? "pending",
                     rewards: [
