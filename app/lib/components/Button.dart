@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 
 enum ButtonVariant { primary, light, outline }
@@ -84,7 +85,10 @@ class _ButtonActionsState extends State<ButtonActions>
 
   @override
   Widget build(BuildContext context) {
-    final Color accent = widget.theme ?? const Color(0xFFFD5553);
+    final Color accent = widget.theme ?? AppColors.primary;
+
+    final bool isSecondaryTheme = widget.theme == AppColors.secondary;
+    final Color effectiveAccent = isSecondaryTheme ? AppColors.primary : accent;
 
     final Color backgroundColor;
     final Color foregroundColor;
@@ -93,7 +97,7 @@ class _ButtonActionsState extends State<ButtonActions>
     final List<BoxShadow> boxShadows = widget.hasShadow
         ? [
             BoxShadow(
-              color: accent.withOpacity(_isHovered ? 0.35 : 0.25),
+              color: effectiveAccent.withOpacity(_isHovered ? 0.35 : 0.25),
               blurRadius: _isHovered ? 12 : 8,
               offset: Offset(0, _isHovered ? 6 : 4),
               spreadRadius: _isHovered ? 1 : 0,
@@ -104,34 +108,35 @@ class _ButtonActionsState extends State<ButtonActions>
     switch (widget.variant) {
       case ButtonVariant.primary:
         backgroundColor = _isHovered
-            ? Color.lerp(accent, Colors.white, 0.1)!
+            ? Color.lerp(accent, AppColors.outline, 0.1)!
             : accent;
-        foregroundColor = Colors.white;
+        foregroundColor = isSecondaryTheme ? AppColors.primary : Colors.white;
         shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
         break;
       case ButtonVariant.light:
         backgroundColor = _isHovered
-            ? Color.lerp(const Color(0xFFFFF7F7), accent, 0.05)!
+            ? Color.lerp(const Color(0xFFFFF7F7), effectiveAccent, 0.05)!
             : const Color(0xFFFFF7F7);
-        foregroundColor = accent;
+        foregroundColor = effectiveAccent;
         shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
         break;
       case ButtonVariant.outline:
         backgroundColor = _isHovered
-            ? accent.withOpacity(0.05)
+            ? effectiveAccent.withOpacity(0.05)
             : Colors.transparent;
-        foregroundColor = accent;
+        foregroundColor = effectiveAccent;
         shape = RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: _isHovered ? accent : accent.withOpacity(0.8),
+            color: _isHovered
+                ? effectiveAccent
+                : effectiveAccent.withOpacity(0.8),
             width: _isHovered ? 2.5 : 2,
           ),
         );
         break;
     }
 
-    // Main button widget
     final buttonWidget = AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
