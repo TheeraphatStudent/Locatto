@@ -1,6 +1,6 @@
 import 'package:app/pages/home.page.dart';
 import 'package:flutter/material.dart';
-import 'package:app/components/mainlayout.dart';
+import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Usernavigator.dart';
 import 'package:app/components/Avatar.dart';
 
