@@ -10,9 +10,21 @@ steps:
     waitFor: ['Build']
 
   - name: 'docker/compose:1.29.2'
+    id: Deploy
     dir: 'api'
     args: ['up', '-d']
     waitFor: ['Push']
+    secretEnv:
+      - DB_HOST
+      - DB_USERNAME
+      - DB_PASSWORD
+      - DB_NAME
+      - JWT_SECRET
+      - JWT_EXPIRE_IN
+      - IS_SIGN
+    env:
+      - 'UPLOAD_TO_GCS=true'
+
 
 availableSecrets:
   secretManager:
@@ -24,11 +36,11 @@ availableSecrets:
     env: 'DB_PASSWORD'
   - versionName: projects/$PROJECT_ID/secrets/db-name/versions/latest
     env: 'DB_NAME'
-  - versionName: projects/$PROJECT_ID/secrets/JWT_EXPIRE_IN/versions/latest
+  - versionName: projects/$PROJECT_ID/secrets/JWT_SECRET/versions/latest
     env: 'JWT_SECRET'
   - versionName: projects/$PROJECT_ID/secrets/JWT_EXPIRE_IN/versions/latest
     env: 'JWT_EXPIRE_IN'
   - versionName: projects/$PROJECT_ID/secrets/IS_SIGN/versions/latest
     env: 'IS_SIGN'
 
-logsBucket: 'gs://lottocat_bucket'
+logsBucket: 'gs://lottocat_bucket/logs'

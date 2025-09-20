@@ -7,33 +7,36 @@ class AppColors {
 
   // Gradient Colors
   static const LinearGradient softGradientPrimary = LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        Color(0xFFFFE3E2),
-        Color(0xFFFFFBDE),
-      ],
-    );
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFFFE3E2), Color(0xFFFFFBDE)],
+  );
+
+  static const LinearGradient softGradientPrimaryFade = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color.fromARGB(0, 255, 227, 226), Color(0xFFFFFBDE)],
+  );
 
   // Primary Colors
   static const Color primary = Color(0xFFFE5654);
   static const Color primaryVariant = Color(0xFFE04442);
   static const Color primaryLight = Color(0xFFFF7A78);
   static const Color primaryDark = Color(0xFFD63230);
-  
+
   // Secondary Colors
   static const Color secondary = Color(0xFFFAE12F);
   static const Color secondaryVariant = Color(0xFFE6CB29);
   static const Color secondaryLight = Color(0xFFFBE85C);
-  static const Color secondaryDark = Color(0xFFD4C027);
-  
+  static const Color secondaryDark = Color.fromARGB(255, 236, 225, 135);
+
   // Neutral Colors
   static const LinearGradient background = AppColors.softGradientPrimary;
   static const Color surface = Color(0xFFFFF8F8);
   static const Color surfaceVariant = Color(0xFFF5F1F1);
   static const Color outline = Color(0xFFE0DADA);
   static const Color shadow = Color(0x1A000000);
-  
+
   // Text Colors
   static const Color onPrimary = Color(0xFFFFF8F8);
   static const Color onSecondary = Color(0xFF2D2D2D);
@@ -42,13 +45,13 @@ class AppColors {
   static const Color textPrimary = Color(0xFF2D2D2D);
   static const Color textSecondary = Color(0xFF757575);
   static const Color textDisabled = Color(0xFFBDBDBD);
-  
+
   // Status Colors
   static const Color success = Color(0xFF4CAF50);
   static const Color warning = Color(0xFFFF9800);
   static const Color error = Color(0xFFE53935);
   static const Color info = Color(0xFF2196F3);
-  
+
   // Additional Colors
   static const Color divider = Color(0xFFFFF8F8);
   static const Color disabled = Color(0xFFFFF8F8);
@@ -74,40 +77,37 @@ class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     fontFamily: 'Kanit',
-    
+
     // Color Scheme
     colorScheme: const ColorScheme.light(
       primary: AppColors.primary,
       onPrimary: AppColors.onPrimary,
       primaryContainer: AppColors.primaryLight,
       onPrimaryContainer: AppColors.primaryDark,
-      
+
       secondary: AppColors.secondary,
       onSecondary: AppColors.onSecondary,
       secondaryContainer: AppColors.secondaryLight,
       onSecondaryContainer: AppColors.secondaryDark,
-      
+
       tertiary: AppColors.info,
       onTertiary: Colors.white,
-      
+
       error: AppColors.error,
       onError: Colors.white,
       errorContainer: Color(0xFFFFEBEE),
       onErrorContainer: AppColors.error,
-      
-      background: Color(0xFFFFE3E2),
-      onBackground: AppColors.onBackground,
-      
+
       surface: AppColors.surface,
       onSurface: AppColors.onSurface,
-      surfaceVariant: AppColors.surfaceVariant,
+      surfaceContainerHighest: AppColors.surfaceVariant,
       onSurfaceVariant: AppColors.textSecondary,
-      
+
       outline: AppColors.outline,
       outlineVariant: AppColors.divider,
       shadow: AppColors.shadow,
       scrim: Colors.black54,
-      
+
       inverseSurface: AppColors.textPrimary,
       onInverseSurface: AppColors.surface,
       inversePrimary: AppColors.primaryLight,
@@ -115,7 +115,7 @@ class AppTheme {
 
     // Scaffold Theme
     scaffoldBackgroundColor: AppColors.scaffold,
-    
+
     // App Bar Theme
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.primary,
@@ -130,14 +130,8 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         color: AppColors.onPrimary,
       ),
-      iconTheme: IconThemeData(
-        color: AppColors.onPrimary,
-        size: 24.0,
-      ),
-      actionsIconTheme: IconThemeData(
-        color: AppColors.onPrimary,
-        size: 24.0,
-      ),
+      iconTheme: IconThemeData(color: AppColors.onPrimary, size: 24.0),
+      actionsIconTheme: IconThemeData(color: AppColors.onPrimary, size: 24.0),
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
@@ -169,7 +163,7 @@ class AppTheme {
         letterSpacing: 0.0,
         height: 1.22,
       ),
-      
+
       // Headline styles
       headlineLarge: TextStyle(
         fontSize: 32.0,
@@ -192,7 +186,7 @@ class AppTheme {
         letterSpacing: 0.0,
         height: 1.33,
       ),
-      
+
       // Title styles
       titleLarge: TextStyle(
         fontSize: 22.0,
@@ -215,7 +209,7 @@ class AppTheme {
         letterSpacing: 0.1,
         height: 1.43,
       ),
-      
+
       // Body styles
       bodyLarge: TextStyle(
         fontSize: 16.0,
@@ -238,7 +232,7 @@ class AppTheme {
         letterSpacing: 0.4,
         height: 1.33,
       ),
-      
+
       // Label styles
       labelLarge: TextStyle(
         fontSize: 14.0,
@@ -375,14 +369,8 @@ class AppTheme {
         fontSize: 12.0,
         fontWeight: FontWeight.w600,
       ),
-      hintStyle: const TextStyle(
-        color: AppColors.textDisabled,
-        fontSize: 16.0,
-      ),
-      errorStyle: const TextStyle(
-        color: AppColors.error,
-        fontSize: 12.0,
-      ),
+      hintStyle: const TextStyle(color: AppColors.textDisabled, fontSize: 16.0),
+      errorStyle: const TextStyle(color: AppColors.error, fontSize: 12.0),
       helperStyle: const TextStyle(
         color: AppColors.textSecondary,
         fontSize: 12.0,
@@ -473,8 +461,8 @@ class AppTheme {
       backgroundColor: AppColors.surface,
       elevation: 3.0,
       height: 80.0,
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return const TextStyle(
             fontSize: 12.0,
             fontWeight: FontWeight.w600,
@@ -487,17 +475,11 @@ class AppTheme {
           color: AppColors.textSecondary,
         );
       }),
-      iconTheme: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return const IconThemeData(
-            color: AppColors.primary,
-            size: 24.0,
-          );
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const IconThemeData(color: AppColors.primary, size: 24.0);
         }
-        return const IconThemeData(
-          color: AppColors.textSecondary,
-          size: 24.0,
-        );
+        return const IconThemeData(color: AppColors.textSecondary, size: 24.0);
       }),
     ),
 
@@ -509,10 +491,7 @@ class AppTheme {
     ),
 
     // Icon Theme
-    iconTheme: const IconThemeData(
-      color: AppColors.textPrimary,
-      size: 24.0,
-    ),
+    iconTheme: const IconThemeData(color: AppColors.textPrimary, size: 24.0),
     primaryIconTheme: const IconThemeData(
       color: AppColors.onPrimary,
       size: 24.0,
@@ -541,14 +520,14 @@ class AppTheme {
 
     // Switch Theme
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
         return AppColors.outline;
       }),
-      trackColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary.withOpacity(0.5);
         }
         return AppColors.surfaceVariant;
@@ -557,13 +536,13 @@ class AppTheme {
 
     // Checkbox Theme
     checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
         return Colors.transparent;
       }),
-      checkColor: MaterialStateProperty.all(AppColors.onPrimary),
+      checkColor: WidgetStateProperty.all(AppColors.onPrimary),
       side: const BorderSide(color: AppColors.outline, width: 2.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadiusSmall),
@@ -572,8 +551,8 @@ class AppTheme {
 
     // Radio Theme
     radioTheme: RadioThemeData(
-      fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
         return AppColors.outline;
@@ -600,10 +579,7 @@ class AppTheme {
         color: AppColors.textPrimary.withOpacity(0.9),
         borderRadius: BorderRadius.circular(borderRadiusSmall),
       ),
-      textStyle: const TextStyle(
-        color: AppColors.surface,
-        fontSize: 12.0,
-      ),
+      textStyle: const TextStyle(color: AppColors.surface, fontSize: 12.0),
       padding: const EdgeInsets.symmetric(
         horizontal: spacingSmall,
         vertical: spacingXSmall,

@@ -25,8 +25,6 @@ declare global {
 
 export const app = express();
 
-app.use(morgan('combined'));
-
 app.use(
   cors({
     origin: "*",
@@ -48,3 +46,5 @@ app.use("/lottery", lottery);
 app.use("/purchase", purchase);
 app.use("/reward", reward);
 app.use("/payment", payment);
+
+// app.use(morgan('dev'));

@@ -2,8 +2,10 @@ import 'package:app/components/Showcoins.dart';
 import 'package:app/service/user.dart';
 import 'package:app/utils/date_time.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:developer';
+import '../providers/user_provider.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
   const Header({super.key});
@@ -18,15 +20,14 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
 class _HeaderState extends State<Header> {
   late Timer _timer;
   String _currentTime = '';
-  int _userCredit = 0;
   String _userRole = 'user';
+
   final UserService _userService = UserService();
 
   @override
   void initState() {
     super.initState();
     _updateTime();
-    _loadUserCredit();
     _loadUserRole();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _updateTime();
@@ -49,16 +50,6 @@ class _HeaderState extends State<Header> {
   void dispose() {
     _timer.cancel();
     super.dispose();
-  }
-
-  void _loadUserCredit() async {
-    final creditString = await _userService.getUserCredit();
-    if (creditString != null) {
-      final credit = double.tryParse(creditString)?.toInt() ?? 0;
-      setState(() {
-        _userCredit = credit;
-      });
-    }
   }
 
   void _updateTime() {
@@ -116,7 +107,9 @@ class _HeaderState extends State<Header> {
                 ),
               )
             else
-              ShowCoins(coinCount: _userCredit),
+              Consumer<UserProvider>(
+                builder: (context, provider, child) => ShowCoins(coinCount: provider.credit),
+              ),
             Flexible(
               child: Text(
                 _currentTime,

@@ -5,8 +5,10 @@ import 'package:app/components/Avatar.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/Dialogue.dart';
+import 'package:app/components/redcurve.dart';
 import 'package:app/service/auth.dart';
 import 'package:app/service/user.dart';
+import 'package:app/style/theme.dart';
 import 'package:app/type/register.dart';
 import 'package:app/utils/response_helper.dart';
 import 'package:flutter/material.dart';
@@ -201,7 +203,8 @@ class _RegisterPageState extends State<RegisterPage> {
           final userData = response['data']?['user'] ?? response['user'];
           if (userData != null) {
             await _userService.storeUserData(userData);
-            final credit = userData['credit']?.toString() ?? _creditController.text;
+            final credit =
+                userData['credit']?.toString() ?? _creditController.text;
             await _userService.storeUserCredit(credit);
           }
 
@@ -239,137 +242,149 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: const Color(0xFFFE5654),
-        child: CustomPaint(
-          painter: YellowAccentPainter(),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 100),
-                  const Center(
-                    child: SizedBox(width: 500, height: 120, child: Avatar()),
+      backgroundColor: AppColors.secondary,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // พื้นหลังแดงแบบโค้ง
+            Positioned.fill(child: CustomPaint(painter: RedCurvePainter())),
+            // เนื้อหาเดิม
+            SingleChildScrollView(
+              child: SizedBox(
+                height:
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
                   ),
-                  const SizedBox(height: 50),
-                  Input(
-                    controller: _fullnameController,
-                    labelText: "ชื่อ-นามสกุล",
-                    hintText: "โปรดระบุชื่อ-สกุล",
-                    validator: _validateFullname,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "*โปรดระบุชื่อ-นามสกุล",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.yellow),
-                  ),
-                  const SizedBox(height: 30),
-                  Row(
+                  child: Column(
                     children: [
+                      // const Center(
+                      //   child: SizedBox(
+                      //     width: 500,
+                      //     height: 120,
+                      //     child: Avatar(),
+                      //   ),
+                      // ),
+
+                      // const SizedBox(height: 20),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Input(
-                              controller: _cardIdController,
-                              labelText: "เลขบัตรประชาชน",
-                              hintText: "โปรดระบุเลขบัตรประชาชน",
-                              validator: _validateCardId,
+                        child: Center(
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(child: Avatar()),
+
+                                const SizedBox(height: 20),
+                                // Full Name Field
+                                Input(
+                                  controller: _fullnameController,
+                                  labelText: "ชื่อ-นามสกุล",
+                                  hintText: "โปรดระบุชื่อ-สกุล",
+                                  materialIcon: Icons.person,
+                                  validator: _validateFullname,
+                                ),
+                                const SizedBox(height: 16),
+
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Input(
+                                        controller: _cardIdController,
+                                        labelText: "เลขบัตรประชาชน",
+                                        hintText: "โปรดระบุเลขบัตรประชาชน",
+                                        materialIcon: Icons.credit_card,
+                                        validator: _validateCardId,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Input(
+                                        controller: _telnoController,
+                                        labelText: "เบอร์โทร",
+                                        hintText: "000-000-0000",
+                                        materialIcon: Icons.phone,
+                                        validator: _validateTelno,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Email Field
+                                Input(
+                                  controller: _emailController,
+                                  labelText: "อีเมล",
+                                  hintText: "โปรดระบุอีเมล",
+                                  materialIcon: Icons.email,
+                                  validator: _validateEmail,
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Username Field
+                                Input(
+                                  controller: _usernameController,
+                                  labelText: "ชื่อผู้ใช้",
+                                  hintText: "โปรดระบุชื่อผู้ใช้",
+                                  materialIcon: Icons.account_circle,
+                                  validator: _validateUsername,
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Password Field
+                                Input(
+                                  controller: _passwordController,
+                                  labelText: "รหัสผ่าน",
+                                  hintText: "อย่าลืมกรอกรหัสผ่านนะ",
+                                  materialIcon: Icons.lock,
+                                  obscureText: true,
+                                  validator: _validatePassword,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
                             ),
-                            const Text(
-                              "* โปรดระบุเลขบัตรประชาชน",
-                              style: TextStyle(color: Colors.yellow),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Input(
-                              controller: _telnoController,
-                              labelText: "เบอร์โทร",
-                              hintText: "000-000-0000",
-                              validator: _validateTelno,
+
+                      // Action buttons at bottom
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: const Text(
+                              'มีบัญชีแล้ว?',
+                              style: TextStyle(
+                                color: Colors.yellow,
+                                decoration: TextDecoration.underline,
+                                decorationColor: Colors.yellow,
+                                fontSize: 16,
+                                fontFamily: 'Kanit',
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                            const Text(
-                              "* โปรดระบุเบอร์โทร",
-                              style: TextStyle(color: Colors.yellow),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 16),
+                          ButtonActions(
+                            text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
+                            onPressed: _isLoading ? null : _handleRegistration,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Input(
-                        controller: _emailController,
-                        labelText: "อีเมล",
-                        hintText: "โปรดระบุอีเมล",
-                        validator: _validateEmail,
-                      ),
-                      const Text(
-                        "* โปรดระบุอีเมล",
-                        style: TextStyle(color: Colors.yellow),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Input(
-                        controller: _usernameController,
-                        labelText: "ชื่อผู้ใช้",
-                        hintText: "โปรดระบุชื่อผู้ใช้",
-                        validator: _validateUsername,
-                      ),
-                      const Text(
-                        "* โปรดระบุชื่อผู้ใช้",
-                        style: TextStyle(color: Colors.yellow),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Input(
-                        controller: _passwordController,
-                        labelText: "รหัสผ่าน",
-                        hintText: "อย่าลืมกรอกรหัสผ่านนะ",
-                        obscureText: true,
-                        validator: _validatePassword,
-                      ),
-                      const Text(
-                        "* อย่าลืมกรอกรหัสผ่านนะ",
-                        style: TextStyle(color: Colors.yellow),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  ButtonActions(
-                    label: 'มีบัญชีแล้ว?',
-                    text: _isLoading ? "กำลังดำเนินการ..." : "สมัครเลย",
-                    onPressed: _isLoading ? null : _handleRegistration,
-                    onLabelPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

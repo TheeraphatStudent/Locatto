@@ -48,6 +48,10 @@ export class PurchaseController {
   static async getById(req: Request, res: Response): Promise<void> {
     try {
       const id = +req.params.id;
+      if (isNaN(id)) {
+        sendError({ res, status: 400, message: 'Invalid id' });
+        return;
+      }
       const purchase = await PurchaseService.getById(id);
       
       if (purchase) {
@@ -88,6 +92,21 @@ export class PurchaseController {
       sendFromService({ res, status, result });
     } catch (error) {
       console.error('Delete purchase error:', error);
+      sendError({ res, status: 500, message: 'Internal server error' });
+    }
+  }
+
+  static async getByUserWithStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const uid = req.user.uid;
+      const page = +(req.query.page as string) || 1;
+      const size = +(req.query.size as string) || 10;
+
+      const result = await PurchaseService.getByUserWithStatus(uid, page, size);
+
+      sendFromService({ res, status: 200, result, message: 'Purchases with status fetched' });
+    } catch (error) {
+      console.error('Get purchases with status error:', error);
       sendError({ res, status: 500, message: 'Internal server error' });
     }
   }

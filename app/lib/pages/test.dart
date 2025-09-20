@@ -1,41 +1,20 @@
-import 'package:app/components/Box_make_reward.dart';
-import 'package:app/pages/admin/home.dart';
-import 'package:app/pages/login.page.dart';
-import 'package:flutter/material.dart';
-import 'package:app/components/Exchanged_money.dart';
-import 'package:app/components/Usernavigator.dart';
-class TestPage extends StatelessWidget {
-  const TestPage({super.key});
+// import 'package:app/components/Box_make_reward.dart';
+// import 'package:flutter/material.dart';
+// import 'package:app/components/Exchanged_money.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-  body: Column(
-    children: [
-      Expanded(
-        child: Center(
-          child: Text("เนื้อหาของหน้านี้"),
-        ),
-      ),
-      UserNavigator(
-        currentPage: "Test Page",
-        confirmText: "ถัดไป",
-        centerColor: Colors.blue[100]!,
-        onConfirm: () {
-          // เวลากดปุ่ม confirm จะไปหน้าใหม่
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
-        },
-      ),
-    ],
-  ),
-);
-    
-  }
-}
-/*import 'package:app/components/Dialogue.dart';
+// class TestPage extends StatelessWidget {
+//   const TestPage({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Scaffold(
+//       body: Center(
+//         child: Exchanged_money(),
+//       ),
+//     );
+//   }
+// }
+import 'package:app/components/Dialogue.dart';
 import 'package:app/components/statusLottery.dart';
 import 'package:flutter/material.dart';
 
@@ -78,6 +57,4 @@ class TestPage extends StatelessWidget {
       ),
     );
   }
-}*/
-
-
+}

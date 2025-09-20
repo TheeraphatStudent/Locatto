@@ -6,6 +6,7 @@ const router = Router();
 router.post('/', PurchaseController.create);
 
 router.get('/', PurchaseController.getAll);
+router.get('/me', PurchaseController.getByUserWithStatus);
 router.get('/:id', PurchaseController.getById);
 
 router.put('/:id', PurchaseController.update);

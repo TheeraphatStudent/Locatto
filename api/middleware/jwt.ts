@@ -10,6 +10,13 @@ const handleRequestDecoding = (req: any): void => {
     console.group("Request");
     console.log("Body: ", req.body);
 
+    if (!req.body || !req.body.data) {
+      console.log("No body data to decode");
+      console.groupEnd();
+      req.body = {};
+      return;
+    }
+
     let decoded: any;
     if (IS_SIGN) {
       decoded = jwt.verify(req.body.data, JWT_SECRET, { algorithms: ['HS256'] });
@@ -54,6 +61,13 @@ const isContain = (content: string) => {
   return reject.some((item) => content.includes(item));
 } 
 
+// { samkfds } -> eyjlkdfsklnf
+// eyjlkdfsklnf -> { samkfds }
+
+// response -> endode -> jwt
+
+// api -> jwt -> app -> decode
+
 export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   console.log("Request Body: ", req.body)
   // console.log("Request Data: ", req.data)
@@ -76,7 +90,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
 
   const authHeader = req.headers.authorization;
 
-  // console.log("Auth header: ", authHeader)
+  console.log("Auth header: ", authHeader)
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ error: 'Authorization header missing or invalid' });

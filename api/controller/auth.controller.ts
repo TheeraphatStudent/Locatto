@@ -17,6 +17,8 @@ export class AuthController {
     }
   }
 
+  // app > route > controller > service > db
+
   static async login(req: Request, res: Response): Promise<void> {
     try {
       const { username, password } = req.body;

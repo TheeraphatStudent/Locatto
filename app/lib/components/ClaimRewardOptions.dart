@@ -45,7 +45,7 @@ class _ClaimRewardOptionsState extends State<ClaimRewardOptions> {
                   'วิธีรับรางวัล',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF45171D),
+                    color: Color(0xFF45171D),
                     fontSize: 20, // เพิ่มขนาดตัวอักษร
                   ),
                 ),
@@ -53,7 +53,7 @@ class _ClaimRewardOptionsState extends State<ClaimRewardOptions> {
                   'ค่าบริการ',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF45171D),
+                    color: Color(0xFF45171D),
                     fontSize: 20, // เพิ่มขนาดตัวอักษร
                   ),
                 ),

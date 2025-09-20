@@ -9,17 +9,39 @@ export interface PurchaseData {
 }
 
 export class PurchaseService {
-  static async create(data: PurchaseData): Promise<{ success: boolean; message: string; purchase?: any }> {
+  static async create(data: PurchaseData): Promise<{ success: boolean; message: string; purchase?: any, user?: any }> {
     try {
+      const [user_credit] = await queryAsync(
+        'SELECT credit FROM user where uid = ?',
+        [data.uid]
+      )
+
+      const [payment_revenue] = await queryAsync(
+        'SELECT revenue FROM payment WHERE payid = ?',
+        [data.payid]
+      )
+
+      if ((user_credit as any)[0].credit < ((payment_revenue as any) as any)[0].revenue) {
+        return { success: false, message: 'Insufficient credit' };
+      }
+
       const [result] = await queryAsync(
         'INSERT INTO purchase (uid, lid, lot_amount, payid) VALUES (?, ?, ?, ?)',
         [data.uid, data.lid, data.lot_amount, data.payid]
       );
 
+      const updatedCredit = (user_credit as any)[0].credit - (payment_revenue as any)[0].revenue;
+
+      await queryAsync(
+        'UPDATE user SET credit = ? WHERE uid = ?',
+        [updatedCredit, data.uid]
+      )
+
       return {
         success: true,
         message: 'Purchase created successfully',
-        purchase: { pid: (result as any).insertId, ...data }
+        purchase: { pid: (result as any).insertId, uid: data.uid, lid: data.lid, lot_amount: data.lot_amount, payid: data.payid },
+        user: { uid: data.uid, credit: updatedCredit }
       };
     } catch (error) {
       console.error('Database error:', error);
@@ -30,7 +52,7 @@ export class PurchaseService {
   static async getAll(): Promise<any[]> {
     try {
       const [result] = await queryAsync(
-        `SELECT p.*, u.name as user_name, l.lottery_number, pay.tier as payment_tier 
+        `SELECT p.*, u.name as user_name, l.lottery_number
          FROM purchase p 
          LEFT JOIN user u ON p.uid = u.uid 
          LEFT JOIN lottery l ON p.lid = l.lid 
@@ -47,7 +69,7 @@ export class PurchaseService {
   static async getById(pid: number): Promise<any> {
     try {
       const [result] = await queryAsync(
-        `SELECT p.*, u.name as user_name, l.lottery_number, pay.tier as payment_tier 
+        `SELECT p.*, u.name as user_name, l.lottery_number
          FROM purchase p 
          LEFT JOIN user u ON p.uid = u.uid 
          LEFT JOIN lottery l ON p.lid = l.lid 
@@ -65,7 +87,7 @@ export class PurchaseService {
   static async getByUserId(uid: number): Promise<any[]> {
     try {
       const [result] = await queryAsync(
-        `SELECT p.*, l.lottery_number, pay.tier as payment_tier 
+        `SELECT p.*, l.lottery_number
          FROM purchase p 
          LEFT JOIN lottery l ON p.lid = l.lid 
          LEFT JOIN payment pay ON p.payid = pay.payid 
@@ -136,6 +158,46 @@ export class PurchaseService {
     } catch (error) {
       console.error('Database error:', error);
       return { success: false, message: 'Internal server error' };
+    }
+  }
+
+  static async getByUserWithStatus(uid: number, page: number, size: number): Promise<{ purchases: any[], total: number }> {
+    try {
+      const offset = (page - 1) * size;
+
+      const purchases = (await queryAsync(
+        `SELECT p.created, l.* FROM purchase p LEFT JOIN lottery l ON p.lid = l.lid WHERE p.uid = ? ORDER BY p.created DESC LIMIT ? OFFSET ?`,
+        [uid, size, offset]
+      ))[0] as any[];
+
+      const [countResult] = await queryAsync('SELECT COUNT(*) as total FROM purchase WHERE uid = ?', [uid]);
+      const total = Array.isArray(countResult) ? (countResult[0] as any).total : 0;
+
+      const rewards = (await queryAsync('SELECT * FROM reward'))[0] as any[];
+
+      const result = purchases.map((purchase: any) => {
+        let status = 'pending';
+        const hasWinner = rewards.some((r: any) => r.winner != null);
+        if (hasWinner) {
+          const isWin = rewards.some((r: any) => {
+            if (r.winner == null) return false;
+            if (r.tier === 'T1L3' && purchase.lottery_number.endsWith(r.winner)) return true;
+            if (r.tier === 'R2' && purchase.lottery_number.endsWith(r.winner)) return true;
+            return false;
+          });
+          status = isWin ? 'win' : 'fail';
+        }
+        return {
+          created: purchase.created,
+          status,
+          lot_info: { ...purchase }
+        };
+      });
+
+      return { purchases: result, total };
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
     }
   }
 }

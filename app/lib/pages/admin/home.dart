@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
 
       if (response['success'] == true) {
         setState(() {
-          _successMessage = 'สร้างล็อตเตอรี่สำเร็จ ${count} ใบ';
+          _successMessage = 'สร้างล็อตเตอรี่สำเร็จ $count ใบ';
           _countController.text = '1000'; // Reset to default
         });
 
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('สร้างล็อตเตอรี่สำเร็จ ${count} ใบ'),
+              content: Text('สร้างล็อตเตอรี่สำเร็จ $count ใบ'),
               backgroundColor: Colors.green,
             ),
           );
@@ -361,4 +361,8 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+class AdminHomePage {
+  const AdminHomePage();
 }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:app/style/theme.dart';
 
@@ -17,6 +15,8 @@ class Input extends StatefulWidget {
   final bool obscureText;
   final String? Function(String?)? validator;
   final String? helperText;
+
+  final String? suffixText;
 
   final InputVariant variant;
   final Color? suffixColor;
@@ -60,6 +60,7 @@ class Input extends StatefulWidget {
     this.onActionsBadgePressed,
     this.actionBadgePosition = ActionBadgePosition.right,
     this.onChanged,
+    this.suffixText,
   });
 
   @override
@@ -194,15 +195,13 @@ class _InputState extends State<Input> {
         focusedErrorBorder: _buildBorder(isFocused: true, isError: true),
 
         // Text Styling
-        floatingLabelStyle: TextStyle(
-          color: hasError ? AppColors.error : AppColors.primary,
-          fontFamily: 'Kanit',
-          fontWeight: FontWeight.w500,
-        ),
-        labelStyle: TextStyle(
-          color: hasError ? AppColors.error : AppColors.primary,
-          fontFamily: 'Kanit',
-        ),
+        // floatingLabelStyle: TextStyle(
+        //   color: hasError ? AppColors.error : AppColors.primary,
+        //   fontFamily: 'Kanit',
+        //   fontWeight: FontWeight.w500,
+        // ),
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        labelStyle: TextStyle(color: AppColors.primary, fontFamily: 'Kanit'),
         hintStyle: const TextStyle(
           color: Color(0xFF666666),
           fontFamily: 'Kanit',
@@ -212,7 +211,7 @@ class _InputState extends State<Input> {
           fontFamily: 'Kanit',
         ),
         errorStyle: const TextStyle(
-          color: AppColors.error,
+          color: AppColors.secondaryDark,
           fontFamily: 'Kanit',
         ),
       ),
@@ -224,8 +223,8 @@ class _InputState extends State<Input> {
     if (widget.showActionsBadge) {
       final actionsBadgeBorderConfig =
           widget.actionBadgePosition == ActionBadgePosition.left
-          ? const {'tl': 16.0, 'tr': 8.0, 'bl': 16.0, 'br': 8.0}
-          : const {'tl': 8.0, 'tr': 16.0, 'bl': 8.0, 'br': 16.0};
+          ? const {'tl': 8.0, 'tr': 16.0, 'bl': 8.0, 'br': 16.0}
+          : const {'tl': 16.0, 'tr': 8.0, 'bl': 16.0, 'br': 8.0};
 
       final inputBorderRadius =
           widget.actionBadgePosition == ActionBadgePosition.left
@@ -285,10 +284,10 @@ class _InputState extends State<Input> {
       decoration: BoxDecoration(
         color: const Color(0xFFFFF7F7),
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(borderRadius['tl'] ?? 16),
-          topRight: Radius.circular(borderRadius['tr'] ?? 16),
-          bottomLeft: Radius.circular(borderRadius['bl'] ?? 16),
-          bottomRight: Radius.circular(borderRadius['br'] ?? 16),
+          topLeft: Radius.circular(borderRadius['tl'] ?? 16.0),
+          topRight: Radius.circular(borderRadius['tr'] ?? 16.0),
+          bottomLeft: Radius.circular(borderRadius['bl'] ?? 16.0),
+          bottomRight: Radius.circular(borderRadius['br'] ?? 16.0),
         ),
         border: Border.all(
           color: hasError
@@ -363,9 +362,7 @@ class ActionsBadge extends StatelessWidget {
           ),
           child: IconButton(
             icon: Icon(icon, color: iconColor, size: size * 0.5),
-            onPressed: () {
-              onPressed?.call();
-            },
+            onPressed: onPressed?.call,
           ),
         ),
         // Badge

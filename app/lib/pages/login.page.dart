@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   _LoginPageState() {
-    alert = new AlertMessage();
+    alert = AlertMessage();
   }
 
   @override
@@ -97,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
           final userData = response['data']?['user'] ?? response['user'];
           if (userData != null) {
             final credit = userData['credit']?.toString() ?? '0';
+
             await _userService.storeUserCredit(credit);
             await _userService.storeUserData(userData);
 
@@ -104,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
 
             switch (role) {
               case 'admin':
-                Navigator.pushReplacementNamed(context, '/admin');
+                Navigator.pushReplacementNamed(context, '/adminHome');
                 break;
               default:
                 Navigator.pushReplacementNamed(context, '/home');
@@ -118,7 +119,10 @@ class _LoginPageState extends State<LoginPage> {
         log('Login failed with response: $response');
 
         if (mounted) {
-          final errorMessage = response['message'] ?? response['data']?['message'] ?? 'เข้าสู่ระบบล้มเหลว';
+          final errorMessage =
+              response['message'] ??
+              response['data']?['message'] ??
+              'เข้าสู่ระบบล้มเหลว';
           alert.showError(context, errorMessage);
         }
       }
@@ -252,11 +256,15 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 16),
                           ButtonActions(
-                            text: _isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ',
-                            onPressed: _isLoading ? null : () {
-                              log('Button pressed, calling _handleLogin');
-                              _handleLogin();
-                            },
+                            text: _isLoading
+                                ? 'กำลังเข้าสู่ระบบ...'
+                                : 'เข้าสู่ระบบ',
+                            onPressed: _isLoading
+                                ? null
+                                : () {
+                                    log('Button pressed, calling _handleLogin');
+                                    _handleLogin();
+                                  },
                           ),
                         ],
                       ),

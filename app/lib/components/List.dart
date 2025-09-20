@@ -43,7 +43,7 @@ class LotteryList extends StatelessWidget {
                   data.lottery,
                   data.reward,
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),
@@ -52,7 +52,7 @@ class LotteryList extends StatelessWidget {
   }
 
   Widget _buildHeaderRow() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -60,7 +60,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   const Text(
                     "Lotto Coin",
                     style: TextStyle(
-                      color: const Color(0xFF45171D),
+                      color: Color(0xFF45171D),
                       // เพิ่มขนาดตัวอักษร
                     ),
                   ),

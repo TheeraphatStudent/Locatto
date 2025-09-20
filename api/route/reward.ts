@@ -23,4 +23,6 @@ router.get('/:id', RewardController.getById);
 router.put('/:id', RewardController.update);
 router.delete('/:id', RewardController.delete);
 
+// router.post('/winner/:lid')
+
 export { router };

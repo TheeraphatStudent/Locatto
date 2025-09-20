@@ -22,7 +22,7 @@ export class IndexController {
     try {
       const payload = req.body;
       const token = IS_SIGN ? jwt.sign(payload, JWT_SECRET) : jwt.sign(payload, '', { algorithm: 'none' });
-      sendFromService({ res, status: 200, result: { token }, message: 'Token generated' });
+      sendFromService({ res, status: 200, result: token, message: 'Token generated' });
     } catch (error) {
       console.error('To JWT error:', error);
       sendError({ res, status: 500, message: 'Internal server error' });

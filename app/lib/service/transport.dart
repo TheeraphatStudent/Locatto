@@ -45,16 +45,39 @@ class Transport {
     Object payload,
   ) async {
     final token = encodePayload(payload);
-    final url = Uri.http(config.getBaseUrl(), endpoint);
 
-    final accessToken = _storage.read(key: config.getTokenStoragename());
+    Uri url;
+
+    if (endpoint.contains('?')) {
+      final parts = endpoint.split('?');
+      final path = parts[0];
+      final queryString = parts[1];
+      final queryParams = Uri.splitQueryString(queryString);
+      url = Uri.http(config.getBaseUrl(), path, queryParams);
+    } else {
+      url = Uri.http(config.getBaseUrl(), endpoint);
+    }
+
+    final accessToken = await _storage.read(key: config.getTokenStoragename());
+
+    // log("Access token: $accessToken");
+    log("Target: ${url.toString()}");
 
     try {
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      };
+      final headers = <String, String>{};
+
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+
+      if (reqMethod != RequestMethod.get && reqMethod != RequestMethod.delete) {
+        headers['Content-Type'] = 'application/json';
+      }
+
       http.Response response;
+
+      // log("Request headers: $headers");
+
       switch (reqMethod) {
         case RequestMethod.get:
           response = await http.get(url, headers: headers);
@@ -78,10 +101,18 @@ class Transport {
           break;
       }
 
+      log("Actual response: ${response.body}");
+
+      if (response.headers['content-type']?.contains('text/html') == true) {
+        throw Exception(
+          'Server returned HTML error page. Status: ${response.statusCode}',
+        );
+      }
+
       final responseData = json.jsonDecode(response.body);
       Map<String, dynamic> payloadData;
       if (responseData.containsKey('data')) {
-        log(responseData.toString());
+        // log(responseData.toString());
         payloadData = decodePayload(responseData['data']);
       } else {
         payloadData = responseData as Map<String, dynamic>;

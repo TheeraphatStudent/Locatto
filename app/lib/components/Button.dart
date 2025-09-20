@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart' show StatelessWidget;
 import 'package:flutter/material.dart';
 
 enum ButtonVariant { primary, light, outline }
@@ -154,7 +153,7 @@ class _ButtonActionsState extends State<ButtonActions>
                   curve: Curves.easeInOut,
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 48,
+                    horizontal: 24,
                     vertical: 12,
                   ),
                   decoration: ShapeDecoration(
@@ -191,21 +190,21 @@ class _ButtonActionsState extends State<ButtonActions>
                             size: 24,
                             color: foregroundColor,
                           ),
-                        )
-                      else if (widget.variant == ButtonVariant.primary)
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          transform: Matrix4.translationValues(
-                            _isHovered ? 2 : 0,
-                            0,
-                            0,
-                          ),
-                          child: Icon(
-                            Icons.arrow_right,
-                            size: 24,
-                            color: foregroundColor,
-                          ),
                         ),
+                      // else if (widget.variant == ButtonVariant.primary)
+                      //   AnimatedContainer(
+                      //     duration: const Duration(milliseconds: 200),
+                      //     transform: Matrix4.translationValues(
+                      //       _isHovered ? 2 : 0,
+                      //       0,
+                      //       0,
+                      //     ),
+                      //     child: Icon(
+                      //       Icons.arrow_right,
+                      //       size: 24,
+                      //       color: foregroundColor,
+                      //     ),
+                      //   ),
                     ],
                   ),
                 ),

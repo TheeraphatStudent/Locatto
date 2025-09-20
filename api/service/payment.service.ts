@@ -3,22 +3,23 @@ import { conn, queryAsync } from '../db/connectiondb';
 export interface PaymentData {
   payid?: number;
   uid: number;
-  tier: string;
+  provider: string;
   revenue: number;
 }
 
 export class PaymentService {
   static async create(data: PaymentData): Promise<{ success: boolean; message: string; payment?: any }> {
     try {
+
       const [result] = await queryAsync(
-        'INSERT INTO payment (uid, tier, revenue) VALUES (?, ?, ?)',
-        [data.uid, data.tier, data.revenue]
+        'INSERT INTO payment (uid, provider, revenue) VALUES (?, ?, ?)',
+        [data.uid, data.provider, data.revenue]
       );
 
       return {
         success: true,
         message: 'Payment created successfully',
-        payment: { payid: (result as any).insertId, ...data }
+        payment: { payid: (result as any).insertId }
       };
     } catch (error) {
       console.error('Database error:', error);
@@ -79,9 +80,9 @@ export class PaymentService {
         fields.push('uid = ?');
         values.push(data.uid);
       }
-      if (data.tier) {
-        fields.push('tier = ?');
-        values.push(data.tier);
+      if (data.provider) {
+        fields.push('provider = ?');
+        values.push(data.provider);
       }
       if (data.revenue !== undefined) {
         fields.push('revenue = ?');

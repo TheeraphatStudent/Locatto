@@ -5,14 +5,14 @@ import { sendError, sendFromService } from '../utils/response.helper';
 export class PaymentController {
   static async create(req: Request, res: Response): Promise<void> {
     try {
-      const { uid, tier, revenue } = req.body;
+      const { uid, provider, revenue } = req.body;
 
-      if (!uid || !tier || revenue === undefined) {
-        sendError({ res, status: 400, message: 'uid, tier, and revenue are required' });
+      if (!uid || !provider || revenue === undefined) {
+        sendError({ res, status: 400, message: 'uid, provider, and revenue are required' });
         return;
       }
 
-      const result = await PaymentService.create({ uid, tier, revenue });
+      const result = await PaymentService.create({ uid, provider, revenue });
       const status = result.success ? 201 : 400;
       sendFromService({ res, status, result });
     } catch (error) {
@@ -67,7 +67,7 @@ export class PaymentController {
       const updateData: Partial<PaymentData> = {};
 
       if (req.body.uid) updateData.uid = req.body.uid;
-      if (req.body.tier) updateData.tier = req.body.tier;
+      if (req.body.provider) updateData.provider = req.body.provider;
       if (req.body.revenue !== undefined) updateData.revenue = req.body.revenue;
 
       const result = await PaymentService.update(id, updateData);
