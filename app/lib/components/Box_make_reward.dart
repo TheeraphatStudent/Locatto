@@ -182,7 +182,8 @@ class _Box_make_rewardState extends State<Box_make_reward> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context); // ยกเลิกและกลับไปหน้าก่อนหน้า
+                        numberController.clear();
+                        // Navigator.pop(context); // ยกเลิกและกลับไปหน้าก่อนหน้า
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
@@ -215,7 +216,9 @@ class _Box_make_rewardState extends State<Box_make_reward> {
                               LotteryService(); // สร้าง instance ของ LotteryService
                           final response = await lotteryService
                               .generateLotteries(count); // เรียก API
-                          log('Lotteries generated: $response');
+
+                          // log('Lotteries generated: $response');
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(

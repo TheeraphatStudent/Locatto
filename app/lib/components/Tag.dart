@@ -23,7 +23,7 @@ class Tag extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 64),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         decoration: ShapeDecoration(
           color: backgroundColor,
           shape: RoundedRectangleBorder(
