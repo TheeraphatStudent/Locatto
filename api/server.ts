@@ -1,9 +1,11 @@
 import http from "http";
 import { app } from "./app";
-import { initDbKeepAlive } from "./db/connectiondb";
+import { initDbKeepAlive, pingDatabase } from "./db/connectiondb";
 
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
+
+// pingDatabase();
 
 server.listen(port, () => {
   const timestamp = new Date().toISOString();
