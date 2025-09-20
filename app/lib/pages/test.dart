@@ -1,17 +1,38 @@
 import 'package:app/components/Box_make_reward.dart';
+import 'package:app/pages/admin/home.dart';
+import 'package:app/pages/login.page.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/Exchanged_money.dart';
-
+import 'package:app/components/Usernavigator.dart';
 class TestPage extends StatelessWidget {
   const TestPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Exchanged_money(),
+    return Scaffold(
+  body: Column(
+    children: [
+      Expanded(
+        child: Center(
+          child: Text("เนื้อหาของหน้านี้"),
+        ),
       ),
-    );
+      UserNavigator(
+        currentPage: "Test Page",
+        confirmText: "ถัดไป",
+        centerColor: Colors.blue[100]!,
+        onConfirm: () {
+          // เวลากดปุ่ม confirm จะไปหน้าใหม่
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        },
+      ),
+    ],
+  ),
+);
+    
   }
 }
 /*import 'package:app/components/Dialogue.dart';

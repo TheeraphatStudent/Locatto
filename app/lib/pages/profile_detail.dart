@@ -1,5 +1,8 @@
+import 'package:app/pages/home.page.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/mainlayout.dart';
+import 'package:app/components/Usernavigator.dart';
+import 'package:app/components/Avatar.dart';
 
 class Profile_Detail extends StatefulWidget {
   const Profile_Detail({super.key});
@@ -17,84 +20,42 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
       TextEditingController(text: "");
   final TextEditingController _emailController = TextEditingController();
 
-  @override
-  Widget build(BuildContext context) {
-    return MainLayout(
-      //ใช้MainLayoutไม่ได้
-      /*appBar: AppBar(
-        backgroundColor: const Color(0xFFFDEEEA),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+@override
+Widget build(BuildContext context) {
+  return MainLayout(
+    body: Column(
+      children: [
+        UserNavigator(
+          currentPage: "ข้อมูลส่วนตัว",
+          confirmText: "ยืนยัน",        
+          centerColor: const Color.fromARGB(255, 250, 204, 192)!,
+          onConfirm: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
         ),
-        title: const Text(
-          "ข้อมูลส่วนตัว",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              const SizedBox(height: 10),
+              const Avatar(),
+              const SizedBox(height: 30),
+              _buildTextField("ชื่อ - นามสกุล", _nameController),
+              _buildTextField("เลขบัตรประชาชน", _idController),
+              _buildTextField("เบอร์โทร", _phoneController),
+              _buildTextField("อีเมล", _emailController),
+            ],
           ),
         ),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () {
-              // TODO: save logic
-            },
-            child: const Text(
-              "ยืนยัน",
-              style: TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          )
-        ],
-      ),*/
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const SizedBox(height: 10),
-          Center(
-            child: Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                const CircleAvatar(
-                  radius: 60,
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, size: 70, color: Colors.white),
-                ),
-                Positioned(
-                  bottom: 5,
-                  right: 5,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.redAccent,
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(6),
-                    child: const Icon(Icons.edit, size: 20, color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 30),
+      ],
+    ),
+  );
+}
 
-          _buildTextField("ชื่อ - นามสกุล", _nameController),
-
-          _buildTextField("เลขบัตรประชาชน", _idController),
-
-          _buildTextField("เบอร์โทร", _phoneController),
-
-          _buildTextField("อีเมล", _emailController),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller) {
+Widget _buildTextField(String label, TextEditingController controller) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: TextField(
@@ -110,7 +71,7 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(30),
             borderSide: const BorderSide(color: Colors.redAccent),
           ),
           focusedBorder: OutlineInputBorder(
@@ -121,4 +82,5 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
       ),
     );
   }
-}
+ } 
+  

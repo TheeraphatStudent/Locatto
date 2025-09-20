@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,6 +44,7 @@ dependencies:
   qr_flutter: ^4.1.0
   flutter_popup_card: ^0.0.6
   infinite_scroll_pagination: ^5.1.1
+  image_picker: ^1.1.2 
 
 dev_dependencies:
   flutter_test:
