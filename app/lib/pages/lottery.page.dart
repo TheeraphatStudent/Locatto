@@ -224,84 +224,93 @@ class _LotteryPageState extends State<LotteryPage> {
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      // try {
-      final lotAmount = int.tryParse(amount) ?? 1;
-      final revenue = lotAmount * 80.0;
+      try {
+        final lotAmount = int.tryParse(amount) ?? 1;
+        final revenue = lotAmount * 80.0;
 
-      // Step 1: Create payment
-      final userCredit = await _userService.getUserCredit();
+        // Step 1: Create payment
+        final userCredit = await _userService.getUserCredit();
 
-      if (revenue > userCredit) {
-        throw Exception('ขออภัย คุณมีเงินไม่เพียงพอ!');
-      }
-
-      await _paymentService.createPayment(uid: _uid!, revenue: revenue).then((
-        response,
-      ) async {
-        log("Payment response: ${response.toString()}");
-        final paymentData = response['data'];
-
-        if (!paymentData['success']) {
-          throw Exception(paymentData['message'] ?? 'Payment failed');
+        if (revenue > userCredit) {
+          throw Exception('ขออภัย คุณมีเงินไม่เพียงพอ!');
         }
 
-        log("Payment create complete!");
+        await _paymentService.createPayment(uid: _uid!, revenue: revenue).then((
+          response,
+        ) async {
+          log("Payment response: ${response.toString()}");
+          final paymentData = response['data'];
 
-        log(lid);
-        log(lotteryNumber);
+          if (!paymentData['success']) {
+            throw Exception(paymentData['message'] ?? 'Payment failed');
+          }
 
-        final payid = paymentData['payment']['payid'];
+          log("Payment create complete!");
 
-        // Step 2: Create purchase
-        final purchaseResponse = await _purchaseService.createPurchase(
-          uid: _uid!,
-          lid: int.parse(lid),
-          lotAmount: lotAmount,
-          payid: payid!,
-        );
+          log(lid);
+          log(lotteryNumber);
 
-        log("Purchase response: ${purchaseResponse.toString()}");
+          final payid = paymentData['payment']['payid'];
 
-        final purchaseData = purchaseResponse['data'];
+          // Step 2: Create purchase
+          final purchaseResponse = await _purchaseService.createPurchase(
+            uid: _uid!,
+            lid: int.parse(lid),
+            lotAmount: lotAmount,
+            payid: payid!,
+          );
 
-        log("Purchase data: ${purchaseData.toString()}");
+          log("Purchase response: ${purchaseResponse.toString()}");
 
-        if (!purchaseData['success']) {
-          throw Exception(purchaseData['message'] ?? 'Purchase failed');
-        }
+          final purchaseData = purchaseResponse['data'];
 
-        log("Purchase create complete!");
+          log("Purchase data: ${purchaseData.toString()}");
 
-        await _userService.storeUserCredit(
-          purchaseData['user']['credit'].toString() ?? '0',
-        );
+          if (!purchaseData['success']) {
+            throw Exception(purchaseData['message'] ?? 'Purchase failed');
+          }
 
-        final newCredit = await _userService.getUserCredit();
-        Provider.of<UserProvider>(
-          context,
-          listen: false,
-        ).updateCredit(newCredit);
+          log("Purchase create complete!");
 
+          await _userService.storeUserCredit(
+            purchaseData['user']['credit'].toString() ?? '0',
+          );
+
+          final newCredit = await _userService.getUserCredit();
+          Provider.of<UserProvider>(
+            context,
+            listen: false,
+          ).updateCredit(newCredit);
+
+          Navigator.of(context).pop();
+
+          Navigator.pushNamed(
+            context,
+            '/success',
+            arguments: {
+              'purchase': purchaseData,
+              // 'payment': paymentApiResponse,
+              'lottery': lotteryNumber,
+            },
+          );
+        });
+      } catch (e) {
         Navigator.of(context).pop();
 
-        Navigator.pushNamed(
-          context,
-          '/success',
-          arguments: {
-            'purchase': purchaseData,
-            // 'payment': paymentApiResponse,
-            'lottery': lotteryNumber,
-          },
-        );
-      });
-      // } catch (e) {
-      //   Navigator.of(context).pop();
+        log('Purchase error: $e');
 
-      //   log('Purchase error: $e');
-      //   _showErrorSnackbar(
-      //     'เกิดข้อผิดพลาด: ${e.toString().replaceAll('Exception: ', '')}',
-      //   );
-      // }
+        if (e.toString().contains('Insufficient credit')) {
+          final newCredit = await _userService.getUserCredit();
+          Provider.of<UserProvider>(
+            context,
+            listen: false,
+          ).updateCredit(newCredit);
+        }
+
+        _showErrorSnackbar(
+          'เกิดข้อผิดพลาด: ${e.toString().replaceAll('Exception: ', '')}',
+        );
+      }
     });
   }
 

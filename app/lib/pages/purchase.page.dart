@@ -1,5 +1,5 @@
+import 'package:app/components/statusLottery.dart';
 import 'package:flutter/material.dart';
-import 'package:app/components/StatusLottery.dart';
 import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Dialogue.dart';
 import 'package:app/service/purchase/get.dart';

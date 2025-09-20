@@ -1,9 +1,11 @@
 // สำหรับเบลอพื้นหลัง
 
+import 'dart:ui';
+
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
+import 'package:app/components/statusLottery.dart';
 import 'package:flutter/material.dart';
-import 'package:app/components/StatusLottery.dart';
 
 enum DialogType { success, error, warning, info, custom }
 
