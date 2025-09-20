@@ -1,20 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:app/service/reward/get.dart';
 
-class RandomLotto extends StatelessWidget {
+class RandomLotto extends StatefulWidget {
   const RandomLotto({super.key});
+
+  @override
+  _RandomLottoState createState() => _RandomLottoState();
+}
+
+class _RandomLottoState extends State<RandomLotto> {
+  Map<String, String> rewards = {
+    'รางวัลที่ 1': '-',
+    'รางวัลที่ 2': '-',
+    'รางวัลที่ 3': '-',
+    'เลขท้าย 3 ตัว': '-',
+    'เลขท้าย 2 ตัว': '-',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRewards();
+  }
+
+  /// โหลดรางวัลปัจจุบัน
+  Future<void> fetchRewards() async {
+    try {
+      final rewardService = RewardService();
+      final rewardsData = await rewardService.getAll(); // คืนเป็น List<dynamic>
+
+      updateRewards(rewardsData);
+    } catch (e) {
+      print('Error fetching rewards: $e');
+    }
+  }
+
+  /// ฟังก์ชันที่ใช้ทั้งตอนสุ่มและตอนโหลดปกติ
+  void updateRewards(List<dynamic> rewardsData) {
+    setState(() {
+      rewards = {
+        'รางวัลที่ 1':
+            rewardsData.firstWhere(
+              (r) => r['tier'] == 'T1',
+              orElse: () => {'winner': '-'},
+            )['winner'] ??
+            '-',
+        'รางวัลที่ 2':
+            rewardsData.firstWhere(
+              (r) => r['tier'] == 'T2',
+              orElse: () => {'winner': '-'},
+            )['winner'] ??
+            '-',
+        'รางวัลที่ 3':
+            rewardsData.firstWhere(
+              (r) => r['tier'] == 'T3',
+              orElse: () => {'winner': '-'},
+            )['winner'] ??
+            '-',
+        'เลขท้าย 3 ตัว':
+            rewardsData.firstWhere(
+              (r) => r['tier'] == 'T1L3',
+              orElse: () => {'winner': '-'},
+            )['winner'] ??
+            '-',
+        'เลขท้าย 2 ตัว':
+            rewardsData.firstWhere(
+              (r) => r['tier'] == 'R2',
+              orElse: () => {'winner': '-'},
+            )['winner'] ??
+            '-',
+      };
+      print('setState called with rewards: $rewards');
+    });
+  }
+
+  /// ใช้ตอนกดปุ่มสุ่ม / ตามเลขที่ถูกขาย
+  Future<void> fetchRandomReward({required bool followed}) async {
+    try {
+      final rewardService = RewardService();
+      final response = followed
+          ? await rewardService.getRandomRewardFollowed()
+          : await rewardService.getRandomRewardUnfollowed();
+
+      print(
+        followed
+            ? 'Random Reward Followed: $response'
+            : 'Random Reward Unfollowed: $response',
+      );
+
+      // response['data'] เป็น List<dynamic>
+      fetchRewards();
+    } catch (e) {
+      print('Error fetching random reward: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:
-          MediaQuery.of(context).size.width *
-          0.9, // กำหนดความกว้าง 85% ของหน้าจอ
-      constraints: const BoxConstraints(
-        maxHeight: 100, // จำกัดความสูงไม่เกิน 400
-      ),
+      width: MediaQuery.of(context).size.width * 0.9,
+      constraints: const BoxConstraints(maxHeight: 400),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white, // สีพื้นหลัง
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -27,12 +115,12 @@ class RandomLotto extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // หัวข้อ
+          // หัวตาราง
           Row(
-            children: [
+            children: const [
               Expanded(
-                flex: 2, // กำหนด flex ให้เหมือนกับคอลัมน์ด้านล่าง
-                child: const Text(
+                flex: 2,
+                child: Text(
                   'ประเภทรางวัล',
                   style: TextStyle(
                     fontSize: 14,
@@ -42,8 +130,8 @@ class RandomLotto extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 3, // กำหนด flex ให้เหมือนกับคอลัมน์ด้านล่าง
-                child: const Text(
+                flex: 3,
+                child: Text(
                   'เลขรางวัล',
                   style: TextStyle(
                     fontSize: 14,
@@ -55,25 +143,21 @@ class RandomLotto extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
+
           // รายการรางวัล
           Column(
-            children: [
-              _buildRewardRow('รางวัลที่ 1', '-'),
-              _buildRewardRow('รางวัลที่ 2', '-'),
-              _buildRewardRow('รางวัลที่ 3', '-'),
-              _buildRewardRow('เลขท้าย 3 ตัว', '-'),
-              _buildRewardRow('เลขท้าย 2 ตัว', '-'),
-            ],
+            children: rewards.entries
+                .map((entry) => _buildRewardRow(entry.key, entry.value))
+                .toList(),
           ),
           const SizedBox(height: 16),
-          // ปุ่มสุ่มรางวัลทันทีและตามเลขที่ถูกขาย
+
+          // ปุ่ม
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  // Logic สำหรับสุ่มรางวัลทันที
-                },
+                onPressed: () => fetchRandomReward(followed: false),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
@@ -90,9 +174,7 @@ class RandomLotto extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {
-                  // Logic สำหรับตามเลขที่ถูกขาย
-                },
+                onPressed: () => fetchRandomReward(followed: true),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.yellow,
                   shape: RoundedRectangleBorder(
@@ -121,14 +203,14 @@ class RandomLotto extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            flex: 2, // กำหนด flex ให้เหมือนกับหัวข้อด้านบน
+            flex: 2,
             child: Text(
               rewardType,
               style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
           ),
           Expanded(
-            flex: 3, // กำหนด flex ให้เหมือนกับหัวข้อด้านบน
+            flex: 3,
             child: Container(
               height: 32,
               alignment: Alignment.center,

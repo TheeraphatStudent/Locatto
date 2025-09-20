@@ -44,6 +44,7 @@ dependencies:
   flutter_popup_card: ^0.0.6
   infinite_scroll_pagination: ^5.1.1
   provider: ^6.1.5+1
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:

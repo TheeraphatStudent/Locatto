@@ -30,14 +30,28 @@ export class RewardService {
   static async getAll(): Promise<any[]> {
     try {
       const [result] = await queryAsync(
-        `SELECT r.*, l.lottery_number
-         FROM reward r
-         LEFT JOIN lottery l ON r.lid = l.lid
-         ORDER BY r.created DESC`
+        `SELECT *
+         FROM reward
+         ORDER BY created DESC`
       );
       return Array.isArray(result) ? result : [];
     } catch (error) {
       console.error('Database error:', error);
+      throw error;
+    }
+  }
+
+  static async getAllRewards(): Promise<any[]> {
+    try {
+      console.log('>>> USING getAllRewards SQL <<<');
+      const [result] = await queryAsync(
+        `SELECT *
+         FROM reward
+         ORDER BY created DESC`
+      );
+      return Array.isArray(result) ? result : [];
+    } catch (error) {
+      console.error('Database error in getAllRewards:', error);
       throw error;
     }
   }
@@ -161,4 +175,5 @@ export class RewardService {
       throw error;
     }
   }
+  
 }

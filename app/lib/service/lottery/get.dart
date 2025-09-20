@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:app/service/transport.dart';
 import 'package:app/utils/response_helper.dart';
 
@@ -16,7 +14,7 @@ class Lotteryget {
       '/lottery?page=$page&size=$size',
       // /lottery?page=3&size=10
       {},
-    );  
+    );
 
     // log(response.toString());
 

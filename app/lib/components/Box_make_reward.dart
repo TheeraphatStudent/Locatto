@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:app/service/lottery/post.dart'; // Import LotteryService
 
 class Box_make_reward extends StatelessWidget {
-  const Box_make_reward({super.key});
+  final TextEditingController numberController =
+      TextEditingController(); // Controller สำหรับ TextField
+
+  Box_make_reward({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +37,9 @@ class Box_make_reward extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
+          // TextField สำหรับกรอกจำนวน
           TextField(
+            controller: numberController, // เชื่อมต่อกับ Controller
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: "จำนวน",
@@ -45,12 +51,15 @@ class Box_make_reward extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
+          // ปุ่มดำเนินการและยกเลิก
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context); // ยกเลิกและกลับไปหน้าก่อนหน้า
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.redAccent,
                     shape: RoundedRectangleBorder(
@@ -64,7 +73,37 @@ class Box_make_reward extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    try {
+                      if (numberController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('กรุณากรอกจำนวน')),
+                        );
+                        return;
+                      }
+                      final int count = int.parse(
+                        numberController.text,
+                      ); // ดึงค่าจาก TextField
+                      final lotteryService =
+                          LotteryService(); // สร้าง instance ของ LotteryService
+                      final response = await lotteryService.generateLotteries(
+                        count,
+                      ); // เรียก API
+                      print('Lotteries generated: $response');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'สร้างรางวัลสำเร็จ: ${response['message']}',
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      print('Failed to generate lotteries: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+                      );
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(

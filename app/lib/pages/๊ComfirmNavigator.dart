@@ -6,7 +6,8 @@ class UserNavigator extends StatelessWidget {
   final Color centerColor; // สีของส่วนตรงกลาง
   final VoidCallback onConfirm; // ฟังก์ชันที่เรียกเมื่อกดปุ่มยืนยัน
 
-  UserNavigator({
+  const UserNavigator({
+    super.key,
     required this.currentPage,
     required this.confirmText,
     this.centerColor = Colors.white, // สีเริ่มต้นของส่วนตรงกลาง

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
@@ -11,7 +9,7 @@ enum AvatarState { view, edit }
 class Avatar extends StatefulWidget {
   final String? initialImagePath;
   final Function(String?)? onImageChanged;
-  
+
   final AvatarState state;
   final double size;
   final Color backgroundColor;

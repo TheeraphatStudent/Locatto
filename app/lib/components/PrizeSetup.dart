@@ -23,7 +23,7 @@ class PrizesetupPage extends StatelessWidget {
           MediaQuery.of(context).size.width *
           0.9, // กำหนดความกว้าง 90% ของหน้าจอ
       constraints: const BoxConstraints(
-        maxHeight: 100, // จำกัดความสูงไม่เกิน 400
+        maxHeight: 100, // จำกัดความสูง
       ),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

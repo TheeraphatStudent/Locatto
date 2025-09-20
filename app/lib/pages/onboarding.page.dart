@@ -1,5 +1,4 @@
 import 'package:app/components/Button.dart';
-import 'package:app/components/Input.dart';
 import 'package:app/components/redcurve.dart';
 import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +69,7 @@ class OnBoardingPage extends StatelessWidget {
                               const SizedBox(
                                 height: 240,
                               ), // ขยับฟิลด์ลงมาจากโลโก้
-                              Container(
+                              SizedBox(
                                 width: double.infinity,
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,

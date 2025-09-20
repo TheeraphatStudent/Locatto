@@ -7,7 +7,6 @@ import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Dialogue.dart';
 import 'package:app/config.dart';
 import 'package:app/service/user.dart';
-import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:app/service/lottery/get.dart';
 import 'package:app/service/lottery/post.dart';
@@ -37,7 +36,7 @@ class _LotteryPageState extends State<LotteryPage> {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final AppConfig _config = AppConfig();
 
-  List<LotteryModel> _lotteries = [];
+  final List<LotteryModel> _lotteries = [];
   int _page = 1;
   bool _hasNextPage = true;
   bool _isFetching = false;
@@ -148,7 +147,7 @@ class _LotteryPageState extends State<LotteryPage> {
 
       // log("Lottery Fetch: ${response.toString()}");
 
-      if (response != null && response['data'] != null) {
+      if (response['data'] != null) {
         dynamic rawData = response['data'];
         List<dynamic> data;
 
@@ -278,7 +277,10 @@ class _LotteryPageState extends State<LotteryPage> {
         );
 
         final newCredit = await _userService.getUserCredit();
-        Provider.of<UserProvider>(context, listen: false).updateCredit(newCredit);
+        Provider.of<UserProvider>(
+          context,
+          listen: false,
+        ).updateCredit(newCredit);
 
         Navigator.of(context).pop();
 
@@ -331,7 +333,7 @@ class _LotteryPageState extends State<LotteryPage> {
           Text(
             _searchQuery.isEmpty
                 ? 'ไม่พบข้อมูลลอตเตอรี่'
-                : 'ไม่พบผลการค้นหาสำหรับ "${_searchQuery}"',
+                : 'ไม่พบผลการค้นหาสำหรับ "$_searchQuery"',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],

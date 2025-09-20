@@ -98,12 +98,9 @@ class AppTheme {
       errorContainer: Color(0xFFFFEBEE),
       onErrorContainer: AppColors.error,
 
-      background: Color(0xFFFFE3E2),
-      onBackground: AppColors.onBackground,
-
       surface: AppColors.surface,
       onSurface: AppColors.onSurface,
-      surfaceVariant: AppColors.surfaceVariant,
+      surfaceContainerHighest: AppColors.surfaceVariant,
       onSurfaceVariant: AppColors.textSecondary,
 
       outline: AppColors.outline,
@@ -464,8 +461,8 @@ class AppTheme {
       backgroundColor: AppColors.surface,
       elevation: 3.0,
       height: 80.0,
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return const TextStyle(
             fontSize: 12.0,
             fontWeight: FontWeight.w600,
@@ -478,8 +475,8 @@ class AppTheme {
           color: AppColors.textSecondary,
         );
       }),
-      iconTheme: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return const IconThemeData(color: AppColors.primary, size: 24.0);
         }
         return const IconThemeData(color: AppColors.textSecondary, size: 24.0);
@@ -523,14 +520,14 @@ class AppTheme {
 
     // Switch Theme
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
         return AppColors.outline;
       }),
-      trackColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary.withOpacity(0.5);
         }
         return AppColors.surfaceVariant;
@@ -539,13 +536,13 @@ class AppTheme {
 
     // Checkbox Theme
     checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
         return Colors.transparent;
       }),
-      checkColor: MaterialStateProperty.all(AppColors.onPrimary),
+      checkColor: WidgetStateProperty.all(AppColors.onPrimary),
       side: const BorderSide(color: AppColors.outline, width: 2.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadiusSmall),
@@ -554,8 +551,8 @@ class AppTheme {
 
     // Radio Theme
     radioTheme: RadioThemeData(
-      fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
         return AppColors.outline;

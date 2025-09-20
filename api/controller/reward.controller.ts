@@ -25,6 +25,7 @@ export class RewardController {
   }
 
   static async getAll(req: Request, res: Response): Promise<void> {
+    
     try {
       if (req.query.id) {
         const id = +req.query.id;
@@ -39,6 +40,7 @@ export class RewardController {
         const rewards = await RewardService.getByLotteryId(lid);
         sendFromService({ res, status: 200, result: rewards, message: 'Rewards fetched' });
       } else {
+        console.log('Calling getAllRewards');
         const rewards = await RewardService.getAll();
         sendFromService({ res, status: 200, result: rewards, message: 'Rewards fetched' });
       }
@@ -48,9 +50,24 @@ export class RewardController {
     }
   }
 
+  static async getAllRewards(req: Request, res: Response): Promise<void> {
+    try {
+      const rewards = await RewardService.getAllRewards();
+      sendFromService({ res, status: 200, result: rewards });
+    } catch (error) {
+      console.error('Get all rewards error:', error);
+      sendError({ res, status: 500, message: 'Internal server error' });
+    }
+  }
+
   static async getById(req: Request, res: Response): Promise<void> {
     try {
-      const id = +req.params.id;
+      console.log('Calling getById with ID:', req.params.id);
+      const id = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        sendError({ res, status: 400, message: 'Invalid reward ID' });
+        return;
+      }
       const reward = await RewardService.getById(id);
       
       if (reward) {
@@ -100,7 +117,9 @@ export class RewardController {
   }
 
   static async manageRewards(req: Request, res: Response): Promise<void> {
+    console.log('Test:', req.body);
     try {
+      console.log('xxxxDDDD:', req.body); // ตรวจสอบค่าของ req.body
       if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
         sendError({ res, status: 403, message: 'Admin access required' });
         return;
@@ -112,6 +131,7 @@ export class RewardController {
       delete tierData.exp;
 
       if (!tierData || Object.keys(tierData).length === 0) {
+        console.log('tierData received:', tierData);
         sendError({ res, status: 400, message: 'No tier data provided' });
         return;
       }
