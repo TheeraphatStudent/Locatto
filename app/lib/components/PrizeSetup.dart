@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:app/service/reward/post.dart' as RewardServicePost;
 import 'package:app/service/reward/get.dart' as RewardServiceGet;
 import 'package:app/components/Button.dart';
+import 'package:app/components/Input.dart';
 
 class PrizesetupPage extends StatefulWidget {
   const PrizesetupPage({super.key});
@@ -235,43 +236,17 @@ class _PrizesetupPageState extends State<PrizesetupPage> {
           ),
           Expanded(
             flex: 3,
-            child: TextField(
-              key: ValueKey('text_field_$index'),
+            child: Input(
+              key: ValueKey('input_field_$index'),
               controller: prizeFields[index],
               keyboardType: TextInputType.number,
-              style: const TextStyle(fontSize: 14),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(11),
-                  borderSide: const BorderSide(color: Colors.redAccent),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(11),
-                  borderSide: const BorderSide(color: Colors.redAccent),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(11),
-                  borderSide: const BorderSide(
-                    color: Colors.redAccent,
-                    width: 2,
-                  ),
-                ),
-                suffixText: "บาท",
-                suffixStyle: const TextStyle(fontSize: 14),
-              ),
+              suffixText: "บาท",
               onTap: () {
                 if (prizeFields[index].text == "0") {
                   prizeFields[index].clear();
                 }
               },
               onChanged: (value) {
-                // Optional: Add real-time validation here
                 setState(() {});
               },
             ),

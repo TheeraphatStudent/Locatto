@@ -34,6 +34,8 @@ class Input extends StatefulWidget {
   final VoidCallback? onActionsBadgePressed;
   final ActionBadgePosition actionBadgePosition;
   final ValueChanged<String>? onChanged;
+  final TextInputType? keyboardType;
+  final VoidCallback? onTap;
 
   const Input({
     super.key,
@@ -61,6 +63,8 @@ class Input extends StatefulWidget {
     this.actionBadgePosition = ActionBadgePosition.right,
     this.onChanged,
     this.suffixText,
+    this.keyboardType,
+    this.onTap,
   });
 
   @override
@@ -170,11 +174,14 @@ class _InputState extends State<Input> {
           setState(() {});
         }
       },
+      onTap: widget.onTap,
+      keyboardType: widget.keyboardType,
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.hintText,
         helperText: widget.helperText,
-        suffixIcon: _buildSuffixIcon(),
+        suffixText: widget.suffixText,
+        suffixIcon: widget.suffixText == null ? _buildSuffixIcon() : null,
 
         // Background Color
         filled: true,
