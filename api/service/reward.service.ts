@@ -2,7 +2,6 @@ import { conn, queryAsync } from '../db/connectiondb';
 
 export interface RewardData {
   rid?: number;
-  lid: number | null;
   tier: string;
   revenue: number;
   winner?: string;
@@ -12,8 +11,8 @@ export class RewardService {
   static async create(data: RewardData): Promise<{ success: boolean; message: string; reward?: any }> {
     try {
       const [result] = await queryAsync(
-        'INSERT INTO reward (lid, tier, revenue, winner) VALUES (?, ?, ?, ?)',
-        [data.lid, data.tier, data.revenue, data.winner || null]
+        'INSERT INTO reward (tier, revenue, winner) VALUES (?, ?, ?)',
+        [data.tier, data.revenue, data.winner || null]
       );
 
       return {
@@ -59,30 +58,12 @@ export class RewardService {
   static async getById(rid: number): Promise<any> {
     try {
       const [result] = await queryAsync(
-        `SELECT r.*, l.lottery_number
-         FROM reward r
-         LEFT JOIN lottery l ON r.lid = l.lid
-         WHERE r.rid = ?`,
+        `SELECT *
+         FROM reward
+         WHERE rid = ?`,
         [rid]
       );
       return Array.isArray(result) && result.length > 0 ? result[0] : null;
-    } catch (error) {
-      console.error('Database error:', error);
-      throw error;
-    }
-  }
-
-  static async getByLotteryId(lid: number): Promise<any[]> {
-    try {
-      const [result] = await queryAsync(
-        `SELECT r.*, l.lottery_number
-         FROM reward r
-         LEFT JOIN lottery l ON r.lid = l.lid
-         WHERE r.lid = ?
-         ORDER BY r.created DESC`,
-        [lid]
-      );
-      return Array.isArray(result) ? result : [];
     } catch (error) {
       console.error('Database error:', error);
       throw error;
@@ -94,10 +75,6 @@ export class RewardService {
       const fields = [];
       const values = [];
 
-      if (data.lid) {
-        fields.push('lid = ?');
-        values.push(data.lid);
-      }
       if (data.tier) {
         fields.push('tier = ?');
         values.push(data.tier);
@@ -134,6 +111,8 @@ export class RewardService {
   }
 
   static async updateOrCreate(data: { tier: string; revenue: number }): Promise<{ success: boolean; message: string; reward?: any }> {
+    console.log('Data:', data);
+
     try {
       const existingReward = await this.getByTier(data.tier);
 
@@ -154,7 +133,6 @@ export class RewardService {
         }
       } else {
         const createResult = await this.create({
-          lid: null,
           tier: data.tier,
           revenue: data.revenue
         });
@@ -175,5 +153,4 @@ export class RewardService {
       throw error;
     }
   }
-  
 }

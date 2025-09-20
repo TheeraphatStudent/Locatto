@@ -2,7 +2,7 @@ import mysql from "mysql2";
 import "dotenv/config";
 
 export const conn = mysql.createPool({
-  connectionLimit: 10,
+  connectionLimit: 100,
   // host: "202.28.34.197",
   // user: "tripbooking",
   // password: "tripbooking@csmsu",
@@ -20,6 +20,9 @@ export const conn = mysql.createPool({
   queueLimit: 0
 });
 
+// export const queryAsync = conn.promise().query.bind(conn.promise());
+// export const executeAsync = conn.promise().execute.bind(conn.promise());
+
 export const queryAsync = conn.promise().query.bind(conn.promise());
 export const executeAsync = conn.promise().execute.bind(conn.promise());
 
@@ -29,19 +32,16 @@ export async function pingDatabase(): Promise<void> {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] Database ping successful`);
   } catch (error: any) {
-    const timestamp = new Date().toISOString();
-    console.error(`[${timestamp}] Database ping failed:`, error?.message || error);
+    console.error(`[${new Date().toISOString()}] Database ping failed:`, error?.message || error);
   }
 }
 
 let keepAliveTimer: NodeJS.Timeout | null = null;
 
-export function initDbKeepAlive(intervalMs: number = 5 * 60 * 1000): void {
+export function initDbKeepAlive(intervalMs: number = 59 * 60 * 1000): void {
   void pingDatabase();
 
-  if (keepAliveTimer) {
-    clearInterval(keepAliveTimer);
-  }
+  if (keepAliveTimer) clearInterval(keepAliveTimer);
 
   keepAliveTimer = setInterval(() => {
     void pingDatabase();
