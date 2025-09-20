@@ -27,7 +27,7 @@ Widget build(BuildContext context) {
       children: [
         UserNavigator(
           currentPage: "ข้อมูลส่วนตัว",
-          confirmText: "ยืนยัน",        
+          confirmText: "ยืนยัน",       
           centerColor: const Color.fromARGB(255, 250, 204, 192)!,
           onConfirm: () {
             Navigator.push(
