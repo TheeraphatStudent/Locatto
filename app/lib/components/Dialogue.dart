@@ -3,6 +3,7 @@ import 'dart:ui'; // สำหรับเบลอพื้นหลัง
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:flutter/material.dart';
+import 'package:app/components/StatusLottery.dart';
 
 enum DialogType { success, error, warning, info, custom }
 
@@ -551,4 +552,311 @@ void showPurchaseDialogue(
       );
     },
   );
+}
+
+void showCustomStatusLotteryDialog(
+  BuildContext context,
+  StatusLottery statusLottery,
+) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Dialog(
+          insetPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.85,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _formatDate(statusLottery.period),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(statusLottery.status),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _getStatusText(statusLottery.status),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Table Header
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'เลขรางวัล',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'จำนวน',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'รางวัล',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Table Content
+                Column(
+                  children: statusLottery.rewards.map((reward) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.grey[200]!,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              reward['number']?.toString() ?? '-',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              'x${reward['amount']?.toString() ?? '1'}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              _getPrizeText(reward['prize']),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    reward['prize'] != null &&
+                                        reward['prize'].toString() != '-'
+                                    ? Colors.green[700]
+                                    : Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Footer Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: statusLottery.status == "win"
+                            ? () {
+                                // Logic for sending reward
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('กำลังดำเนินการนำส่งรางวัล'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            : null,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: BorderSide(
+                            color: statusLottery.status == "win"
+                                ? Colors.green
+                                : Colors.grey[300]!,
+                          ),
+                        ),
+                        child: Text(
+                          'นำส่งรางวัล',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: statusLottery.status == "win"
+                                ? Colors.green
+                                : Colors.grey[400],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[600],
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          'ปิด',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// Helper functions
+String _formatDate(String dateString) {
+  try {
+    final date = DateTime.parse(dateString);
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = date.year.toString();
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$day/$month/$year $hour:$minute';
+  } catch (e) {
+    return dateString;
+  }
+}
+
+Color _getStatusColor(String status) {
+  switch (status.toLowerCase()) {
+    case "win":
+      return Colors.green;
+    case "pending":
+      return Colors.orange;
+    case "fail":
+    case "lose":
+      return Colors.red;
+    default:
+      return Colors.grey;
+  }
+}
+
+String _getStatusText(String status) {
+  switch (status.toLowerCase()) {
+    case "win":
+      return "ถูกรางวัล";
+    case "pending":
+      return "รอประกาศ";
+    case "fail":
+    case "lose":
+      return "ไม่ถูกรางวัล";
+    default:
+      return "ไม่ทราบสถานะ";
+  }
+}
+
+String _getPrizeText(dynamic prize) {
+  if (prize == null || prize.toString() == '-' || prize.toString().isEmpty) {
+    return '-';
+  }
+
+  final prizeValue = prize.toString();
+  if (prizeValue.contains('฿') || prizeValue.contains('บาท')) {
+    return prizeValue;
+  }
+
+  // ถ้าเป็นตัวเลข ให้เพิ่ม ฿
+  try {
+    final number = double.parse(prizeValue);
+    if (number > 0) {
+      return '฿${number.toStringAsFixed(0)}';
+    }
+  } catch (e) {
+    // ไม่ใช่ตัวเลข
+  }
+
+  return prizeValue;
 }

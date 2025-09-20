@@ -1,7 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:app/components/statusLottery.dart'; // ✅ import component
+import 'package:app/components/StatusLottery.dart';
 import 'package:app/components/MainLayout.dart';
+import 'package:app/components/Dialogue.dart';
+import 'package:app/service/purchase/get.dart';
 
 class PurchasePage extends StatefulWidget {
   const PurchasePage({super.key});
@@ -20,44 +21,14 @@ class _PurchasePageState extends State<PurchasePage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadPurchases() async {
-    // จำลอง response ที่ได้จาก /purchase/me
-    const mockResponse = '''
-    {
-      "data": {
-        "purchases": [
-          {
-            "status": "pending",
-            "created": "2025-09-10 14:30",
-            "lot_info": { "lid": 5, "lottery_number": "594614" }
-          },
-          {
-            "status": "pending",
-            "created": "2025-09-11 09:45",
-            "lot_info": { "lid": 7, "lottery_number": "710441" }
-          },
-          {
-            "status": "pending",
-            "created": "2025-09-12 18:20",
-            "lot_info": { "lid": 12, "lottery_number": "935464" }
-          }
-        ],
-        "total": 3
-      }
+    try {
+      final purchaseService = PurchaseService();
+      final response = await purchaseService.getByUserWithStatus(1, 10);
+
+      return List<Map<String, dynamic>>.from(response['purchases'] ?? []);
+    } catch (e) {
+      return [];
     }
-    ''';
-
-    final response = json.decode(mockResponse);
-    final purchases = response['data']['purchases'] as List;
-
-    return purchases.map((p) {
-      return {
-        "number": p['lot_info']['lottery_number'],
-        "type": p['status'], // pending, success, fail
-        "amount": 1, // สมมติซื้อ 1 ใบ
-        "prize": "-", // ยังไม่ประกาศผล
-        "created": p['created'], // ✅ เวลา
-      };
-    }).toList();
   }
 
   @override
@@ -79,7 +50,6 @@ class _PurchasePageState extends State<PurchasePage> {
             return const Center(child: Text("ยังไม่มีการซื้อลอตเตอรี่"));
           }
 
-          // ✅ แสดง 1 การ์ด ต่อ 1 เลข
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: purchases.length,
@@ -87,19 +57,42 @@ class _PurchasePageState extends State<PurchasePage> {
               final purchase = purchases[index];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: StatusLottery(
-                  period: purchase["created"], // ✅ ใช้เวลาที่ซื้อแทน "งวด"
-                  status: purchase["type"],
-                  rewards: [
-                    {
-                      "number": purchase["number"],
-                      "type": purchase["type"],
-                      "amount": purchase["amount"],
-                      "prize": purchase["prize"],
-                    },
-                  ],
-                  backgroundColor: Colors.white,
-                  statusColor: Colors.yellow,
+                child: GestureDetector(
+                  onTap: () {
+                    final lotInfo =
+                        purchase['lot_info'] as Map<String, dynamic>? ?? {};
+                    showCustomStatusLotteryDialog(
+                      context,
+                      StatusLottery(
+                        period: purchase["created"] ?? "",
+                        status: purchase["status"] ?? "pending",
+                        rewards: [
+                          {
+                            "number": lotInfo['lottery_number'] ?? "-",
+                            "type": purchase["status"] ?? "pending",
+                            "amount": purchase["amount"] ?? 1,
+                            "prize": purchase["prize"] ?? "-",
+                          },
+                        ],
+                      ),
+                    );
+                  },
+                  child: StatusLottery(
+                    period: purchase["created"] ?? "",
+                    status: purchase["status"] ?? "pending",
+                    rewards: [
+                      {
+                        "number":
+                            (purchase['lot_info'] as Map<String, dynamic>? ??
+                                {})['lottery_number'] ??
+                            "-",
+                        "type": purchase["status"] ?? "pending",
+                        "amount": purchase["amount"] ?? 1,
+                        "prize": purchase["prize"] ?? "-",
+                      },
+                    ],
+                    backgroundColor: Colors.white,
+                  ),
                 ),
               );
             },
