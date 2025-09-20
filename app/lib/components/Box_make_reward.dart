@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:app/components/Input.dart';
 import 'package:app/components/List.dart';
 import 'package:flutter/material.dart';
 
@@ -162,16 +163,11 @@ class _Box_make_rewardState extends State<Box_make_reward> {
               const SizedBox(height: 12),
 
               // TextField สำหรับกรอกจำนวน
-              TextField(
-                controller: numberController, // เชื่อมต่อกับ Controller
+              Input(
+                controller: numberController,
+                labelText: "จำนวน",
+                suffixText: "ใบ",
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "จำนวน",
-                  suffixText: "ใบ",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
               ),
               const SizedBox(height: 16),
 

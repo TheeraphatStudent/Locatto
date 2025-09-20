@@ -2,7 +2,9 @@ import 'package:app/components/Input.dart';
 import 'package:app/components/Showcoins.dart';
 import 'package:app/components/Tag.dart';
 import 'package:app/components/Button.dart'; // Add this import for ButtonAction
+import 'package:app/pages/admin/adminHome.dart';
 import 'package:app/service/user.dart';
+import 'package:app/service/system-admin.dart';
 import 'package:app/style/theme.dart';
 import 'package:app/utils/date_time.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +30,10 @@ class _HeaderState extends State<Header> {
   String _userRole = 'user';
 
   final UserService _userService = UserService();
+  final SystemAdmin _systemAdmin = SystemAdmin();
   final TextEditingController _confirmToDelete = TextEditingController();
   bool _isConfirmationValid = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -139,6 +143,7 @@ class _HeaderState extends State<Header> {
     // Reset the confirmation state when dialog opens
     _confirmToDelete.clear();
     _isConfirmationValid = false;
+    _isLoading = false;
 
     showDialog(
       context: context,
@@ -187,18 +192,21 @@ class _HeaderState extends State<Header> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Input(
-                    controller: _confirmToDelete,
-                    labelText: 'พิมพ์ "delete_lottocat" เพื่อยืนยัน',
-                    materialIcon: Icons.security,
-                    validator: _validateConfirmToDelete,
-                    onChanged: (value) {
-                      setDialogState(() {
-                        _isConfirmationValid =
-                            value.trim() == 'delete_lottocat';
-                      });
-                    },
-                  ),
+                  if (_isLoading)
+                    const CircularProgressIndicator()
+                  else
+                    Input(
+                      controller: _confirmToDelete,
+                      labelText: 'พิมพ์ "delete_lottocat" เพื่อยืนยัน',
+                      materialIcon: Icons.security,
+                      validator: _validateConfirmToDelete,
+                      onChanged: (value) {
+                        setDialogState(() {
+                          _isConfirmationValid =
+                              value.trim() == 'delete_lottocat';
+                        });
+                      },
+                    ),
                 ],
               ),
               actions: [
@@ -207,7 +215,9 @@ class _HeaderState extends State<Header> {
                   children: [
                     Expanded(
                       child: ButtonActions(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.of(context).pop(),
                         text: "ยกเลิก",
                         variant: ButtonVariant.primary,
                         // backgroundColor: Colors.grey.shade300,
@@ -217,20 +227,24 @@ class _HeaderState extends State<Header> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ButtonActions(
-                        text: 'ยืนยัน',
-                        onPressed: () {
-                          if (_isConfirmationValid) {
-                            Navigator.of(context).pop();
-                            _handleSystemReset();
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('ข้อความยืนยันไม่ถูกต้อง'),
-                                backgroundColor: AppColors.error,
-                              ),
-                            );
-                          }
-                        },
+                        text: _isLoading ? 'กำลังรีเซ็ต...' : 'ยืนยัน',
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                if (_isConfirmationValid) {
+                                  setDialogState(() {
+                                    _isLoading = true;
+                                  });
+                                  _handleSystemReset(setDialogState);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('ข้อความยืนยันไม่ถูกต้อง'),
+                                      backgroundColor: AppColors.error,
+                                    ),
+                                  );
+                                }
+                              },
                       ),
                     ),
                   ],
@@ -243,16 +257,42 @@ class _HeaderState extends State<Header> {
     );
   }
 
-  void _handleSystemReset() {
+  Future<void> _handleSystemReset(StateSetter setDialogState) async {
     log('System reset initiated by admin');
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('System reset completed'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+    final result = await _systemAdmin.resetSystem();
+
+    if (result['success']) {
+      if (mounted) {
+        Navigator.of(context).pop();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('System reset completed'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, _, __) => const AdminHomePage(),
+            reverseTransitionDuration: Duration.zero,
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        setDialogState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${result['message']}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 }

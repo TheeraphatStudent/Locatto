@@ -1,3 +1,4 @@
+import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:app/service/user.dart';
@@ -150,7 +151,7 @@ class _FooterState extends State<Footer> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.onSurface.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
