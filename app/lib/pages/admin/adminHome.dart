@@ -40,41 +40,34 @@ class _AdminHomePageState extends State<AdminHomePage> {
     return MainLayout(
       body: Column(
         children: [
-          Container(
-            // padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ButtonTab(
-                  text: 'จัดการรางวัล',
-                  isActive: _selectedIndex == 0,
-                  onTap: () => _onButtonPressed(0),
-                ),
-                const SizedBox(width: 6),
-                ButtonTab(
-                  text: 'เงินรางวัล',
-                  isActive: _selectedIndex == 1,
-                  onTap: () => _onButtonPressed(1),
-                ),
-                const SizedBox(width: 6),
-                ButtonTab(
-                  text: 'สุ่มรางวัล',
-                  isActive: _selectedIndex == 2,
-                  onTap: () => _onButtonPressed(2),
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ButtonTab(
+                text: 'จัดการรางวัล',
+                isActive: _selectedIndex == 0,
+                onTap: () => _onButtonPressed(0),
+              ),
+              const SizedBox(width: 6),
+              ButtonTab(
+                text: 'เงินรางวัล',
+                isActive: _selectedIndex == 1,
+                onTap: () => _onButtonPressed(1),
+              ),
+              const SizedBox(width: 6),
+              ButtonTab(
+                text: 'สุ่มรางวัล',
+                isActive: _selectedIndex == 2,
+                onTap: () => _onButtonPressed(2),
+              ),
+            ],
           ),
-          // เนื้อหาด้านล่าง
+
           const SizedBox(height: 16),
 
-          _buildContent(),
+          Expanded(child: _buildContent()),
         ],
       ),
     );
   }
-}
-
-class HomePage {
-  const HomePage();
 }
