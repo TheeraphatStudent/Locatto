@@ -8,14 +8,14 @@ import { sendError, sendFromService } from '../utils/response.helper';
 export class RewardController {
   static async create(req: Request, res: Response): Promise<void> {
     try {
-      const { lid, tier, revenue, winner } = req.body;
+      const { tier, revenue, winner } = req.body;
 
-      if (!lid || !tier || revenue === undefined) {
-        sendError({ res, status: 400, message: 'lid, tier, and revenue are required' });
+      if (!tier || revenue === undefined) {
+        sendError({ res, status: 400, message: 'tier and revenue are required' });
         return;
       }
 
-      const result = await RewardService.create({ lid, tier, revenue, winner });
+      const result = await RewardService.create({ tier, revenue, winner });
       const status = result.success ? 201 : 400;
       sendFromService({ res, status, result });
     } catch (error) {
@@ -35,10 +35,6 @@ export class RewardController {
         } else {
           sendError({ res, status: 404, message: 'Reward not found' });
         }
-      } else if (req.query.lid) {
-        const lid = +req.query.lid;
-        const rewards = await RewardService.getByLotteryId(lid);
-        sendFromService({ res, status: 200, result: rewards, message: 'Rewards fetched' });
       } else {
         console.log('Calling getAllRewards');
         const rewards = await RewardService.getAll();
@@ -86,7 +82,6 @@ export class RewardController {
       const id = +req.params.id;
       const updateData: Partial<RewardData> = {};
 
-      if (req.body.lid) updateData.lid = req.body.lid;
       if (req.body.tier) updateData.tier = req.body.tier;
       if (req.body.revenue !== undefined) updateData.revenue = req.body.revenue;
       if (req.body.winner !== undefined) updateData.winner = req.body.winner;
@@ -117,9 +112,9 @@ export class RewardController {
   }
 
   static async manageRewards(req: Request, res: Response): Promise<void> {
-    console.log('Test:', req.body);
+    // console.log('Test:', req.body);
     try {
-      console.log('xxxxDDDD:', req.body); // ตรวจสอบค่าของ req.body
+      // console.log('xxxxDDDD:', req.body); // ตรวจสอบค่าของ req.body
       if (!req.user || !isRoleExst((req.user as any).role, 'admin')) {
         sendError({ res, status: 403, message: 'Admin access required' });
         return;
