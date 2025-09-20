@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/service/reward/post.dart';
 
 class PrizesetupPage extends StatelessWidget {
   PrizesetupPage({super.key});
@@ -15,6 +16,89 @@ class PrizesetupPage extends StatelessWidget {
     5,
     (index) => TextEditingController(text: "0"),
   );
+
+  void resetFields() {
+    for (var controller in controllers) {
+      controller.text = "0";
+    }
+  }
+
+  void sendDataToAPI(BuildContext context) async {
+    Map<String, dynamic> prizeData = {};
+
+    for (int i = 0; i < controllers.length; i++) {
+      final value = controllers[i].text;
+
+      // ตรวจสอบว่าเป็นตัวเลขหรือไม่
+      if (value.isEmpty || double.tryParse(value) == null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("ข้อผิดพลาด"),
+              content: Text("กรุณากรอกจำนวนเงินที่ถูกต้องในรางวัลที่ ${i + 1}"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // ปิด Dialog
+                  },
+                  child: const Text("ตกลง"),
+                ),
+              ],
+            );
+          },
+        );
+        return; // หยุดการทำงานหากพบข้อผิดพลาด
+      }
+
+      prizeData["${i + 1}"] = value;
+    }
+
+    try {
+      final response = await RewardService().manageRewards(prizeData);
+      print('Success: $response');
+
+      // แสดง Dialog เมื่อส่งข้อมูลสำเร็จ
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("สำเร็จ"),
+            content: const Text("ข้อมูลรางวัลถูกบันทึกเรียบร้อยแล้ว"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // ปิด Dialog
+                },
+                child: const Text("ตกลง"),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print('Error: $e');
+
+      // แสดง Dialog เมื่อเกิดข้อผิดพลาด
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("ข้อผิดพลาด"),
+            content: const Text("ไม่สามารถบันทึกข้อมูลได้ กรุณาลองอีกครั้ง"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // ปิด Dialog
+                },
+                child: const Text("ตกลง"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +192,11 @@ class PrizesetupPage extends StatelessWidget {
                         suffixText: "บาท",
                         suffixStyle: const TextStyle(fontSize: 14),
                       ),
+                      onTap: () {
+                        if (controllers[index].text == "0") {
+                          controllers[index].clear();
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -120,7 +209,7 @@ class PrizesetupPage extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // Cancel button logic
+                  resetFields();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -140,7 +229,7 @@ class PrizesetupPage extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Save button logic
+                  sendDataToAPI(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
