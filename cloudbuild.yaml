@@ -2,7 +2,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: Build
     dir: 'api'
-    args: ['build', '-f', 'dockerFile', '-t', 'gcr.io/$PROJECT_ID/api', '.']
+    args: ['build', '--no-cache', '-f', 'dockerFile', '-t', 'gcr.io/$PROJECT_ID/api', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Push
@@ -12,7 +12,7 @@ steps:
   - name: 'docker/compose:1.29.2'
     id: Deploy
     dir: 'api'
-    args: ['up', '-d']
+    args: ['up', '-d', '--build', '--remove-orphans']
     waitFor: ['Push']
     secretEnv:
       - DB_HOST
@@ -24,7 +24,6 @@ steps:
       - IS_SIGN
     env:
       - 'UPLOAD_TO_GCS=true'
-
 
 availableSecrets:
   secretManager:
