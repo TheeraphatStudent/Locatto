@@ -14,7 +14,7 @@ import 'package:app/pages/success.page.dart';
 import 'package:app/pages/test.dart';
 import 'package:app/service/auth.dart';
 import 'package:app/service/user.dart';
-import 'providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -124,6 +124,7 @@ class _MyAppState extends State<MyApp> {
 
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
+
         '/adminProfile': (context) => const AdminProfilePage(),
         '/adminHome': (context) => const AdminHomePage(),
       },

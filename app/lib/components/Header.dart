@@ -1,7 +1,14 @@
+import 'package:app/components/Input.dart';
 import 'package:app/components/Showcoins.dart';
+import 'package:app/components/Tag.dart';
+import 'package:app/components/Button.dart'; // Add this import for ButtonAction
+import 'package:app/pages/admin/adminHome.dart';
 import 'package:app/service/user.dart';
+import 'package:app/service/system-admin.dart';
+import 'package:app/style/theme.dart';
 import 'package:app/utils/date_time.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:developer';
@@ -23,6 +30,10 @@ class _HeaderState extends State<Header> {
   String _userRole = 'user';
 
   final UserService _userService = UserService();
+  final SystemAdmin _systemAdmin = SystemAdmin();
+  final TextEditingController _confirmToDelete = TextEditingController();
+  bool _isConfirmationValid = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -32,6 +43,8 @@ class _HeaderState extends State<Header> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _updateTime();
     });
+
+    _confirmToDelete.addListener(_validateConfirmation);
   }
 
   Future<void> _loadUserRole() async {
@@ -49,7 +62,25 @@ class _HeaderState extends State<Header> {
   @override
   void dispose() {
     _timer.cancel();
+    _confirmToDelete.removeListener(_validateConfirmation);
+    _confirmToDelete.dispose();
     super.dispose();
+  }
+
+  void _validateConfirmation() {
+    setState(() {
+      _isConfirmationValid = _confirmToDelete.text.trim() == 'delete_lottocat';
+    });
+  }
+
+  String? _validateConfirmToDelete(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'กรุณาพิมพ์ข้อความยืนยัน';
+    }
+    if (value.trim() != 'delete_lottocat') {
+      return 'ข้อความยืนยันไม่ถูกต้อง';
+    }
+    return null;
   }
 
   void _updateTime() {
@@ -79,36 +110,16 @@ class _HeaderState extends State<Header> {
                 onTap: () {
                   _showResetSystemDialog(context);
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFD700), // Gold color
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Text(
-                    'รีเซ็ตระบบ',
-                    style: TextStyle(
-                      color: Color(0xFF45171D),
-                      fontSize: 14,
-                      fontFamily: 'Kanit',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                child: Tag(
+                  text: 'รีเซ็ตระบบ',
+                  backgroundColor: AppColors.onPrimary,
+                  textColor: AppColors.primary,
                 ),
               )
             else
               Consumer<UserProvider>(
-                builder: (context, provider, child) => ShowCoins(coinCount: provider.credit),
+                builder: (context, provider, child) =>
+                    ShowCoins(coinCount: provider.credit),
               ),
             Flexible(
               child: Text(
@@ -129,46 +140,159 @@ class _HeaderState extends State<Header> {
   }
 
   void _showResetSystemDialog(BuildContext context) {
+    // Reset the confirmation state when dialog opens
+    _confirmToDelete.clear();
+    _isConfirmationValid = false;
+    _isLoading = false;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Reset System'),
-          content: const Text(
-            'Are you sure you want to reset the system? This action cannot be undone.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Handle reset system logic here
-                _handleSystemReset();
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Reset'),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('ยืนยันการีเซ็ตระบบ'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 325,
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'โปรดเข้าใจว่าหากคุณซีเซ็ตระบบ\n',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                              fontFamily: 'Kanit',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'ข้อมูลผู้ใช้ทั้งหมด จะหายไป',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                              fontFamily: 'Kanit',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' และไม่สามารถดู้คืนได้',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                              fontFamily: 'Kanit',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (_isLoading)
+                    const CircularProgressIndicator()
+                  else
+                    Input(
+                      controller: _confirmToDelete,
+                      labelText: 'พิมพ์ "delete_lottocat" เพื่อยืนยัน',
+                      materialIcon: Icons.security,
+                      validator: _validateConfirmToDelete,
+                      onChanged: (value) {
+                        setDialogState(() {
+                          _isConfirmationValid =
+                              value.trim() == 'delete_lottocat';
+                        });
+                      },
+                    ),
+                ],
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: ButtonActions(
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.of(context).pop(),
+                        text: "ยกเลิก",
+                        variant: ButtonVariant.primary,
+                        // backgroundColor: Colors.grey.shade300,
+                        // textColor: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ButtonActions(
+                        text: _isLoading ? 'กำลังรีเซ็ต...' : 'ยืนยัน',
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                if (_isConfirmationValid) {
+                                  setDialogState(() {
+                                    _isLoading = true;
+                                  });
+                                  _handleSystemReset(setDialogState);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('ข้อความยืนยันไม่ถูกต้อง'),
+                                      backgroundColor: AppColors.error,
+                                    ),
+                                  );
+                                }
+                              },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
-  void _handleSystemReset() {
-    // Implement system reset logic here
-    // This could include clearing data, resetting configurations, etc.
+  Future<void> _handleSystemReset(StateSetter setDialogState) async {
     log('System reset initiated by admin');
-    // For now, just show a success message
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('System reset completed'),
-          backgroundColor: Colors.green,
-        ),
-      );
+
+    final result = await _systemAdmin.resetSystem();
+
+    if (result['success']) {
+      if (mounted) {
+        Navigator.of(context).pop();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('System reset completed'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, _, __) => const AdminHomePage(),
+            reverseTransitionDuration: Duration.zero,
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        setDialogState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${result['message']}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 }

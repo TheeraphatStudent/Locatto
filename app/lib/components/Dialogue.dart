@@ -1,9 +1,11 @@
 // สำหรับเบลอพื้นหลัง
 
+import 'dart:ui';
+
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
+import 'package:app/components/StatusTags.dart';
 import 'package:flutter/material.dart';
-import 'package:app/components/StatusLottery.dart';
 
 enum DialogType { success, error, warning, info, custom }
 
@@ -554,10 +556,7 @@ void showPurchaseDialogue(
   );
 }
 
-void showCustomStatusLotteryDialog(
-  BuildContext context,
-  StatusLottery statusLottery,
-) {
+void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -584,7 +583,7 @@ void showCustomStatusLotteryDialog(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      _formatDate(statusLottery.period),
+                      _formatDate(StatusTags.period),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -597,11 +596,11 @@ void showCustomStatusLotteryDialog(
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(statusLottery.status),
+                        color: _getStatusColor(StatusTags.status),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        _getStatusText(statusLottery.status),
+                        _getStatusText(StatusTags.status),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -666,7 +665,7 @@ void showCustomStatusLotteryDialog(
 
                 // Table Content
                 Column(
-                  children: statusLottery.rewards.map((reward) {
+                  children: StatusTags.rewards.map((reward) {
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
@@ -732,7 +731,7 @@ void showCustomStatusLotteryDialog(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: statusLottery.status == "win"
+                        onPressed: StatusTags.status == "win"
                             ? () {
                                 // Logic for sending reward
                                 Navigator.of(context).pop();
@@ -747,7 +746,7 @@ void showCustomStatusLotteryDialog(
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: BorderSide(
-                            color: statusLottery.status == "win"
+                            color: StatusTags.status == "win"
                                 ? Colors.green
                                 : Colors.grey[300]!,
                           ),
@@ -757,7 +756,7 @@ void showCustomStatusLotteryDialog(
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: statusLottery.status == "win"
+                            color: StatusTags.status == "win"
                                 ? Colors.green
                                 : Colors.grey[400],
                           ),

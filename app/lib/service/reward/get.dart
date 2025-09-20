@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app/service/transport.dart';
 import 'package:app/utils/response_helper.dart';
 
@@ -40,7 +42,7 @@ class RewardService {
       {},
     );
 
-    //print('Raw Response from API: $response');
+    log('Raw Response from API: $response');
 
     if (_responseHelper.isSuccess(response['statusCode'] as int)) {
       return response['data']

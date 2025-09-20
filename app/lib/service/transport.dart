@@ -53,9 +53,9 @@ class Transport {
       final path = parts[0];
       final queryString = parts[1];
       final queryParams = Uri.splitQueryString(queryString);
-      url = Uri.http(config.getBaseUrl(), path, queryParams);
+      url = Uri.https(config.getBaseUrl(), path, queryParams);
     } else {
-      url = Uri.http(config.getBaseUrl(), endpoint);
+      url = Uri.https(config.getBaseUrl(), endpoint);
     }
 
     final accessToken = await _storage.read(key: config.getTokenStoragename());

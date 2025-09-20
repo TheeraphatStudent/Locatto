@@ -16,12 +16,19 @@ export class PurchaseService {
         [data.uid]
       )
 
+      console.log("User credit: ", user_credit)
+
       const [payment_revenue] = await queryAsync(
         'SELECT revenue FROM payment WHERE payid = ?',
         [data.payid]
       )
 
-      if ((user_credit as any)[0].credit < ((payment_revenue as any) as any)[0].revenue) {
+      console.log("Payment revenue: ", payment_revenue);
+
+      const userCredit = parseInt(((user_credit as any) as any)[0].credit ?? "0")
+      const paymentRevenue = parseInt(((payment_revenue as any) as any)[0].revenue ?? "80")
+
+      if (userCredit < paymentRevenue) {
         return { success: false, message: 'Insufficient credit' };
       }
 
@@ -30,7 +37,7 @@ export class PurchaseService {
         [data.uid, data.lid, data.lot_amount, data.payid]
       );
 
-      const updatedCredit = (user_credit as any)[0].credit - (payment_revenue as any)[0].revenue;
+      const updatedCredit = userCredit - paymentRevenue;
 
       await queryAsync(
         'UPDATE user SET credit = ? WHERE uid = ?',

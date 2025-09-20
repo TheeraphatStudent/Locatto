@@ -15,7 +15,7 @@
 //   }
 // }
 import 'package:app/components/Dialogue.dart';
-import 'package:app/components/statusLottery.dart';
+import 'package:app/components/StatusTags.dart';
 import 'package:flutter/material.dart';
 
 class TestPage extends StatelessWidget {
@@ -29,7 +29,7 @@ class TestPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            StatusLottery(
+            StatusTags(
               period: '31 สิงหาคม 2565',
               status: 'กำลังรอ...',
               rewards: [

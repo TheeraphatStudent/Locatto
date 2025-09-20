@@ -76,10 +76,11 @@ class Auth {
 
   Future<Map<String, dynamic>> logout() async {
     try {
+      final token = await _storage.read(key: config.getTokenStoragename());
       final response = await _transport.requestTransport(
         RequestMethod.post,
         '/auth/logout',
-        {},
+        {'token': token},
       );
       if ((response['statusCode'] as int?) == 200) {
         await _storage.delete(key: 'LottocatToken');
@@ -112,7 +113,9 @@ class Auth {
       return {
         'isValid': _responseHelper.isSuccess(response['statusCode'] as int),
         'role': response['data']['user']['role'],
-        'credit': double.parse(response['data']['user']['credit'].toString()).toInt(),
+        'credit': double.parse(
+          response['data']['user']['credit'].toString(),
+        ).toInt(),
       };
     } catch (e) {
       return {'isValid': false, 'role': null, 'credit': 0};

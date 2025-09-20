@@ -1,5 +1,10 @@
+import 'dart:developer';
+
+import 'package:app/components/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:app/service/reward/get.dart';
+import 'package:app/style/theme.dart';
+import 'package:app/components/Input.dart';
 
 class RandomLotto extends StatefulWidget {
   const RandomLotto({super.key});
@@ -17,6 +22,16 @@ class _RandomLottoState extends State<RandomLotto> {
     'เลขท้าย 2 ตัว': '-',
   };
 
+  final Map<String, TextEditingController> _rewardControllers = {
+    'รางวัลที่ 1': TextEditingController(),
+    'รางวัลที่ 2': TextEditingController(),
+    'รางวัลที่ 3': TextEditingController(),
+    'เลขท้าย 3 ตัว': TextEditingController(),
+    'เลขท้าย 2 ตัว': TextEditingController(),
+  };
+
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +46,7 @@ class _RandomLottoState extends State<RandomLotto> {
 
       updateRewards(rewardsData);
     } catch (e) {
-      print('Error fetching rewards: $e');
+      log('Error fetching rewards: $e');
     }
   }
 
@@ -70,19 +85,28 @@ class _RandomLottoState extends State<RandomLotto> {
             )['winner'] ??
             '-',
       };
-      print('setState called with rewards: $rewards');
+
+      // Update controllers with new values
+      _rewardControllers.forEach((key, controller) {
+        controller.text = rewards[key] ?? '-';
+      });
+
+      log('setState called with rewards: $rewards');
     });
   }
 
   /// ใช้ตอนกดปุ่มสุ่ม / ตามเลขที่ถูกขาย
   Future<void> fetchRandomReward({required bool followed}) async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
       final rewardService = RewardService();
       final response = followed
           ? await rewardService.getRandomRewardFollowed()
           : await rewardService.getRandomRewardUnfollowed();
 
-      print(
+      log(
         followed
             ? 'Random Reward Followed: $response'
             : 'Random Reward Unfollowed: $response',
@@ -91,28 +115,32 @@ class _RandomLottoState extends State<RandomLotto> {
       // response['data'] เป็น List<dynamic>
       fetchRewards();
     } catch (e) {
-      print('Error fetching random reward: $e');
+      log('Error fetching random reward: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.9,
-      constraints: const BoxConstraints(maxHeight: 400),
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.onBackground.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // หัวตาราง
@@ -156,38 +184,24 @@ class _RandomLottoState extends State<RandomLotto> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ElevatedButton(
-                onPressed: () => fetchRandomReward(followed: false),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 24,
-                  ),
-                ),
-                child: const Text(
-                  'สุ่มรางวัลทันที',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+              Expanded(
+                child: ButtonActions(
+                  text: "สุ่มรางวัลทันที",
+                  variant: ButtonVariant.primary,
+                  onPressed: _isLoading
+                      ? null
+                      : () => fetchRandomReward(followed: false),
                 ),
               ),
-              ElevatedButton(
-                onPressed: () => fetchRandomReward(followed: true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 24,
-                  ),
-                ),
-                child: const Text(
-                  'ตามเลขที่ถูกขาย',
-                  style: TextStyle(color: Colors.black, fontSize: 14),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ButtonActions(
+                  text: "ตามเลขที่ถูกขาย",
+                  variant: ButtonVariant.primary,
+                  theme: AppColors.secondary,
+                  onPressed: _isLoading
+                      ? null
+                      : () => fetchRandomReward(followed: true),
                 ),
               ),
             ],
@@ -211,17 +225,13 @@ class _RandomLottoState extends State<RandomLotto> {
           ),
           Expanded(
             flex: 3,
-            child: Container(
-              height: 32,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                rewardNumber,
-                style: const TextStyle(fontSize: 14, color: Colors.red),
-              ),
+            child: Input(
+              controller: _rewardControllers[rewardType],
+              onChanged: (value) {
+                setState(() {
+                  rewards[rewardType] = value.isEmpty ? '-' : value;
+                });
+              },
             ),
           ),
         ],

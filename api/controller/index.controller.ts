@@ -31,14 +31,16 @@ export class IndexController {
 
   static async resys(req: Request, res: Response): Promise<void> {
     try {
-      const [deleteResult] = await queryAsync('DELETE FROM user');
 
-      // await queryAsync('DELETE FROM lottery');
-      // await queryAsync('DELETE FROM payment');
-      // await queryAsync('DELETE FROM purchase');
-      // await queryAsync('DELETE FROM reward');
+      const deleteResult = await Promise.all([
+        queryAsync("DELETE FROM user WHERE role != ?", ['admin']),
+        queryAsync("DELETE FROM lottery"),
+        queryAsync("DELETE FROM payment"),
+        queryAsync("DELETE FROM purchase"),
+        queryAsync("DELETE FROM reward"),
+      ]);      
 
-      console.log(`System reset completed: ${(deleteResult as any).affectedRows} users removed`);
+      // console.log(`System reset completed: ${(deleteResult as any).affectedRows} users removed`);
 
       const result = {
         success: true,

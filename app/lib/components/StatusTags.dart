@@ -1,15 +1,16 @@
 import 'dart:ui'; // สำหรับเบลอพื้นหลัง
 import 'package:app/components/Tag.dart';
+import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 
-class StatusLottery extends StatelessWidget {
+class StatusTags extends StatelessWidget {
   final String period; // งวด
   final String status; // สถานะ
   final List<Map<String, dynamic>> rewards; // รายละเอียดรางวัล
   final Color backgroundColor; // สีพื้นหลัง
   final Color? statusColor; // สีของ status (optional เพราะจะใช้ auto color)
 
-  const StatusLottery({
+  const StatusTags({
     super.key,
     required this.period,
     required this.status,
@@ -39,12 +40,12 @@ class StatusLottery extends StatelessWidget {
 
     switch (status.toLowerCase()) {
       case "win":
-        return Colors.green;
+        return AppColors.success;
       case "pending":
-        return Colors.orange;
+        return AppColors.secondary;
       case "fail":
       case "lose":
-        return Colors.red;
+        return AppColors.primary;
       default:
         return Colors.grey;
     }

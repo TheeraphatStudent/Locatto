@@ -10,6 +10,8 @@ import 'package:app/style/theme.dart';
 import 'package:app/type/login.dart';
 import 'package:app/utils/response_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
