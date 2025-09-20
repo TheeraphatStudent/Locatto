@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 
 class MainLayout extends StatelessWidget {
   final Widget body;
+  final PreferredSizeWidget? appBar;
   final bool showHeader;
   final bool showFooter;
 
   const MainLayout({
     super.key,
     required this.body,
+    this.appBar,
     this.showHeader = true,
     this.showFooter = true,
   });
@@ -21,7 +23,7 @@ class MainLayout extends StatelessWidget {
       decoration: const BoxDecoration(gradient: AppColors.softGradientPrimary),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: showHeader ? const Header() : null,
+        appBar: appBar ?? (showHeader ? const Header() : null),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: body,
