@@ -5,6 +5,7 @@ import 'package:app/service/auth.dart';
 import 'package:app/service/user.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
+import 'package:app/pages/profile_detail.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -57,6 +58,33 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 20),
           Center(child: Avatar(state: AvatarState.view, size: 120)),
           const SizedBox(height: 32),
+
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const Profile_Detail()),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0,50,0,50),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 250, 206, 197),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              alignment: Alignment.center,
+              child: const Text(
+                "ข้อมูลส่วนตัว",
+                style: TextStyle(
+                  fontSize: 18, 
+                  //fontWeight: FontWeight.bold,                
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ),
+          
           const SizedBox(height: 48),
           ButtonActions(
             variant: ButtonVariant.primary,
