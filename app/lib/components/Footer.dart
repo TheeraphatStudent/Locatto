@@ -26,8 +26,8 @@ const List<NavItem> userNavItems = [
 
 /// Admin navigation configuration
 const List<NavItem> adminNavItems = [
-  NavItem(route: '/admin', iconName: 'logo', label: 'Home'),
-  NavItem(route: '/profile', iconName: 'profile', label: 'Profile'),
+  NavItem(route: '/adminHome', iconName: 'logo', label: 'Home'),
+  NavItem(route: '/adminProfile', iconName: 'profile', label: 'Profile'),
 ];
 
 class Footer extends StatefulWidget {

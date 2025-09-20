@@ -10,7 +10,7 @@ class Box_make_reward extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.9,
+      // width: MediaQuery.of(context).size.width * 0.9,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,

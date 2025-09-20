@@ -124,6 +124,7 @@ class _MyAppState extends State<MyApp> {
 
         '/debug': (context) => const DebugPage(),
         '/test': (context) => const TestPage(),
+
         '/adminProfile': (context) => const AdminProfilePage(),
         '/adminHome': (context) => const AdminHomePage(),
       },

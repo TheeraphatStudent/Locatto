@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:app/service/reward/get.dart';
+import 'package:app/style/theme.dart';
 
 class RandomLotto extends StatefulWidget {
   const RandomLotto({super.key});
@@ -31,7 +34,7 @@ class _RandomLottoState extends State<RandomLotto> {
 
       updateRewards(rewardsData);
     } catch (e) {
-      print('Error fetching rewards: $e');
+      log('Error fetching rewards: $e');
     }
   }
 
@@ -70,7 +73,7 @@ class _RandomLottoState extends State<RandomLotto> {
             )['winner'] ??
             '-',
       };
-      print('setState called with rewards: $rewards');
+      log('setState called with rewards: $rewards');
     });
   }
 
@@ -82,7 +85,7 @@ class _RandomLottoState extends State<RandomLotto> {
           ? await rewardService.getRandomRewardFollowed()
           : await rewardService.getRandomRewardUnfollowed();
 
-      print(
+      log(
         followed
             ? 'Random Reward Followed: $response'
             : 'Random Reward Unfollowed: $response',
@@ -91,28 +94,28 @@ class _RandomLottoState extends State<RandomLotto> {
       // response['data'] เป็น List<dynamic>
       fetchRewards();
     } catch (e) {
-      print('Error fetching random reward: $e');
+      log('Error fetching random reward: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.9,
-      constraints: const BoxConstraints(maxHeight: 400),
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.onBackground.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // หัวตาราง

@@ -261,8 +261,8 @@ class ButtonTab extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 32,
-          margin: const EdgeInsets.symmetric(horizontal: 2),
+          height: 48,
+          // margin: const EdgeInsets.symmetric(horizontal: 2),
           decoration: ShapeDecoration(
             color: const Color(0xFFFFF7F7),
             shape: RoundedRectangleBorder(
@@ -285,7 +285,7 @@ class ButtonTab extends StatelessWidget {
                 color: isActive
                     ? const Color(0xFF840100)
                     : const Color(0xFFAE9DA0),
-                fontSize: 10,
+                fontSize: 14,
                 fontFamily: 'Kanit',
                 fontWeight: FontWeight.w700,
               ),
