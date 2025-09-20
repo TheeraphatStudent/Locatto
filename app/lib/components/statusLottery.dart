@@ -2,38 +2,12 @@ import 'dart:ui'; // สำหรับเบลอพื้นหลัง
 import 'package:app/components/Tag.dart';
 import 'package:flutter/material.dart';
 
-void showStatusLotteryDialog(
-  BuildContext context,
-  StatusLottery statusLottery,
-) {
-  showDialog(
-    context: context,
-    barrierDismissible: true, // กดพื้นที่นอก dialog เพื่อปิดได้
-    builder: (BuildContext context) {
-      return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // เบลอพื้นหลัง
-        child: Dialog(
-          insetPadding: EdgeInsets.zero, // ลบ padding รอบ Dialog
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width, // กว้าง
-            height: MediaQuery.of(context).size.height * 0.4, //สูง
-            child: statusLottery,
-          ),
-        ),
-      );
-    },
-  );
-}
-
 class StatusLottery extends StatelessWidget {
   final String period; // งวด
   final String status; // สถานะ
   final List<Map<String, dynamic>> rewards; // รายละเอียดรางวัล
   final Color backgroundColor; // สีพื้นหลัง
-  final Color statusColor; // สีของ status
+  final Color? statusColor; // สีของ status (optional เพราะจะใช้ auto color)
 
   const StatusLottery({
     super.key,
@@ -41,8 +15,55 @@ class StatusLottery extends StatelessWidget {
     required this.status,
     required this.rewards,
     this.backgroundColor = Colors.white, // ค่าเริ่มต้นเป็นสีขาว
-    this.statusColor = Colors.yellow, // ค่าเริ่มต้นเป็นสีเหลือง
+    this.statusColor, // ไม่ต้องกำหนดค่าเริ่มต้น จะใช้ auto color
   });
+
+  // Helper function สำหรับแปลง status text
+  String _getStatusText(String status) {
+    switch (status.toLowerCase()) {
+      case "win":
+        return "ถูกรางวัล";
+      case "pending":
+        return "กำลังรอ";
+      case "fail":
+      case "lose":
+        return "ไม่ถูกรางวัล";
+      default:
+        return status;
+    }
+  }
+
+  // Helper function สำหรับกำหนดสี status
+  Color _getStatusColor(String status) {
+    if (statusColor != null) return statusColor!; // ถ้าส่งสีมาให้ใช้สีนั้น
+
+    switch (status.toLowerCase()) {
+      case "win":
+        return Colors.green;
+      case "pending":
+        return Colors.orange;
+      case "fail":
+      case "lose":
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Helper function สำหรับจัดรูปแบบวันที่
+  String _formatDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      final day = date.day.toString().padLeft(2, '0');
+      final month = date.month.toString().padLeft(2, '0');
+      final year = date.year.toString();
+      final hour = date.hour.toString().padLeft(2, '0');
+      final minute = date.minute.toString().padLeft(2, '0');
+      return '$day/$month/$year $hour:$minute';
+    } catch (e) {
+      return dateString;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +89,7 @@ class StatusLottery extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                period,
+                _formatDate(period), // ใช้ _formatDate เพื่อจัดรูปแบบวันที่
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -76,25 +97,19 @@ class StatusLottery extends StatelessWidget {
                 ),
               ),
               Tag(
-                text: status,
-                textColor: Colors.black,
-                backgroundColor: statusColor,
+                text: _getStatusText(status), // ใช้ text ที่แปลงแล้ว
+                textColor: Colors.white, // ใช้ตัวอักษรสีขาว
+                backgroundColor: _getStatusColor(
+                  status,
+                ), // ใช้สีที่เหมาะสมกับ status
               ),
             ],
           ),
           const SizedBox(height: 8),
           InkWell(
             onTap: () {
-              showStatusLotteryDialog(
-                context,
-                StatusLottery(
-                  period: period,
-                  status: status,
-                  rewards: rewards,
-                  backgroundColor: backgroundColor,
-                  statusColor: statusColor,
-                ),
-              );
+              // Replace or remove the undefined method call
+              print("Show status lottery dialog logic here");
             },
             child: const Text(
               'รายละเอียด',
@@ -114,7 +129,7 @@ class StatusLottery extends StatelessWidget {
                 child: const Text(
                   'เลขรางวัล',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -125,7 +140,7 @@ class StatusLottery extends StatelessWidget {
                 child: const Text(
                   'ประเภทรางวัล',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -136,7 +151,7 @@ class StatusLottery extends StatelessWidget {
                 child: const Text(
                   'จำนวน',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -147,7 +162,7 @@ class StatusLottery extends StatelessWidget {
                 child: const Text(
                   'รางวัล',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -173,7 +188,9 @@ class StatusLottery extends StatelessWidget {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        reward['type'] ?? '-',
+                        _getStatusText(
+                          reward['type'] ?? '-',
+                        ), // แปลง status ในรายการด้วย
                         style: const TextStyle(fontSize: 14, color: Colors.red),
                       ),
                     ),
