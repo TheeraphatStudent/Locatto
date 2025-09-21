@@ -68,9 +68,12 @@ jobs:
           region: '${{ env.REGION }}'
           # NOTE: If using a different source folder, update the image name below:
           source: './'
+          flags: |
+            --add-volume type=cloud-storage,bucket=lottocat_bucket
+            --add-volume-mount volume=lottocat_bucket,mount-path=/usr/src/app/api/uploads
           env_vars: |
             GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}
-            UPLOAD_TO_GCS=true
+            UPLOAD_TO_GCS=false
 
       # If required, use the Cloud Run URL output in later steps
       - name: 'Show output'
