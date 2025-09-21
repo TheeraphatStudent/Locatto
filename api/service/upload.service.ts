@@ -24,6 +24,11 @@ export class UploadService {
     const options: any = {
       bucket: 'lottocat_bucket',
       projectId: process.env.GOOGLE_CLOUD_PROJECT,
+      filename: (_req: any, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+        const uniqueSuffix = uuidv4();
+        const filename = uniqueSuffix + '.' + file.originalname.split('.').pop();
+        cb(null, filename);
+      },
     };
 
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
