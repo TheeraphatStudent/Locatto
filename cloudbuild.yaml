@@ -24,7 +24,7 @@ steps:
       - GOOGLE_CLOUD_PROJECT
       # - IS_SIGN
     env:
-      - 'UPLOAD_TO_GCS=true'
+      - 'UPLOAD_TO_GCS=false'
 
 
 availableSecrets:
