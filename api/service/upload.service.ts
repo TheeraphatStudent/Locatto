@@ -21,19 +21,21 @@ export class UploadService {
   }
 
   private static getGCSMulterConfig(): { upload: multer.Multer; storage: any } {
-    const storage = new MulterGoogleCloudStorage({
+    const options: any = {
       bucket: 'lottocat_bucket',
       projectId: process.env.GOOGLE_CLOUD_PROJECT,
-      keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
       filename: (_req: any, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
         const uniqueSuffix = uuidv4();
         const filename = uniqueSuffix + '.' + file.originalname.split('.').pop();
-        cb(null, `uploads/${filename}`);
+        cb(null, filename);
       },
-      metadata: {
-        cacheControl: 'public, max-age=31536000',
-      },
-    });
+    };
+
+    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      options.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    }
+
+    const storage = new MulterGoogleCloudStorage(options);
 
     const upload = multer({
       storage,
