@@ -29,7 +29,7 @@ class TestPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            StatusTags(
+            PurchaseLotteryCard(
               period: '31 สิงหาคม 2565',
               status: 'กำลังรอ...',
               rewards: [

@@ -1,3 +1,4 @@
+import 'package:app/components/StatusTags.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Dialogue.dart' as Dialogue;
@@ -97,6 +98,8 @@ class _PurchasePageState extends State<PurchasePage> {
       case "fail":
       case "lose":
         return "ไม่ถูกรางวัล";
+      case "claimed":
+        return "ได้รับรางวัลแล้ว";
       default:
         return "ไม่ทราบสถานะ";
     }
@@ -130,7 +133,7 @@ class _PurchasePageState extends State<PurchasePage> {
                   purchase['lot_info'] as Map<String, dynamic>? ?? {};
 
               // ✅ สร้าง StatusTags object เพียงครั้งเดียว
-              final statusTagData = Dialogue.StatusTags(
+              final statusTagData = PurchaseLotteryCard(
                 period: purchase["created"] ?? "",
                 status: purchase["status"] ?? "pending",
                 rewards: [
@@ -141,8 +144,7 @@ class _PurchasePageState extends State<PurchasePage> {
                     "prize": purchase["prize"] ?? "-",
                   },
                 ],
-                rewardId: purchase["rewardId"] ?? 0,
-                onClaim: (rid) => _claimReward(rid, context),
+                onClaim: () => _claimReward(purchase["rewardId"] ?? 0, context),
               );
 
               return Padding(

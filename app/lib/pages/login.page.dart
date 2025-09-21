@@ -99,8 +99,9 @@ class _LoginPageState extends State<LoginPage> {
           final userData = response['data']?['user'] ?? response['user'];
           if (userData != null) {
             final credit = userData['credit']?.toString() ?? '0';
+            final creditInt = int.tryParse(credit) ?? 0;
 
-            await _userService.storeUserCredit(credit);
+            await context.read<UserProvider>().setCredit(creditInt);
             await _userService.storeUserData(userData);
 
             final role = userData['role'];

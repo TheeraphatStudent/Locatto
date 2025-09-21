@@ -24,6 +24,6 @@ router.put('/:id', RewardController.update);
 router.delete('/:id', RewardController.delete);
 router.post('/claim',  RewardController.claim);
 
-// router.post('/winner/:lid')
+router.post('/winner/:lottery_number', RewardController.winner);
 
 export { router };

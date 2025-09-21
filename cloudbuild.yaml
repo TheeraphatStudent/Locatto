@@ -2,45 +2,29 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: Build
     dir: 'api'
-    args: ['build', '--no-cache', '-f', 'dockerFile', '-t', 'gcr.io/$PROJECT_ID/api', '.']
+    args: ['build', '-f', 'dockerFile', '-t', 'gcr.io/$PROJECT_ID/api', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Push
     args: ['push', 'gcr.io/$PROJECT_ID/api']
     waitFor: ['Build']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'docker/compose:1.29.2'
     id: Deploy
-    args:
-      - 'run'
-      - 'deploy'
-      - 'lottocat'
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/api'
-      - '--platform'
-      - 'managed'
-      - '--region'
-      - 'us-central1'
-      - '--allow-unauthenticated'
-      - '--port'
-      - '3000'
-      - '--set-secrets'
-      - 'DB_HOST=projects/$PROJECT_ID/secrets/db-host/versions/latest'
-      - '--set-secrets'
-      - 'DB_USERNAME=projects/$PROJECT_ID/secrets/db-username/versions/latest'
-      - '--set-secrets'
-      - 'DB_PASSWORD=projects/$PROJECT_ID/secrets/db-password/versions/latest'
-      - '--set-secrets'
-      - 'DB_NAME=projects/$PROJECT_ID/secrets/db-name/versions/latest'
-      - '--set-secrets'
-      - 'JWT_SECRET=projects/$PROJECT_ID/secrets/JWT_SECRET/versions/latest'
-      - '--set-secrets'
-      - 'JWT_EXPIRE_IN=projects/$PROJECT_ID/secrets/JWT_EXPIRE_IN/versions/latest'
-      - '--set-secrets'
-      - 'IS_SIGN=projects/$PROJECT_ID/secrets/IS_SIGN/versions/latest'
-      - '--set-env-vars'
-      - 'UPLOAD_TO_GCS=true'
+    dir: 'api'
+    args: ['up', '-d']
     waitFor: ['Push']
+    secretEnv:
+      - DB_HOST
+      - DB_USERNAME
+      - DB_PASSWORD
+      - DB_NAME
+      - JWT_SECRET
+      - JWT_EXPIRE_IN
+      # - IS_SIGN
+    env:
+      - 'UPLOAD_TO_GCS=true'
+
 
 availableSecrets:
   secretManager:
@@ -56,7 +40,7 @@ availableSecrets:
     env: 'JWT_SECRET'
   - versionName: projects/$PROJECT_ID/secrets/JWT_EXPIRE_IN/versions/latest
     env: 'JWT_EXPIRE_IN'
-  - versionName: projects/$PROJECT_ID/secrets/IS_SIGN/versions/latest
-    env: 'IS_SIGN'
+  # - versionName: projects/$PROJECT_ID/secrets/IS_SIGN/versions/latest
+  #   env: 'IS_SIGN'
 
 logsBucket: 'gs://lottocat_bucket/logs'

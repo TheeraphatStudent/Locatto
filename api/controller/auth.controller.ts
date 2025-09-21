@@ -66,6 +66,25 @@ export class AuthController {
     }
   }
 
+  static async updateMe(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError({ res, status: 401, message: 'User not authenticated' });
+        return;
+      }
+
+      const user = req.user as any;
+      const { fullname, telno, cardId, email } = req.body;
+
+      const result = await AuthService.updateMe({ uid: user.uid, fullname, telno, cardId, email });
+      const status = result.success ? 200 : 500;
+      sendFromService({ res, status, result });
+    } catch (error) {
+      console.error('Update me error:', error);
+      sendError({ res, status: 500, message: 'Internal server error' });
+    }
+  }
+
   static async logout(req: Request, res: Response): Promise<void> {
     try {
       // console.log("Logout Request Body: ", req.body)

@@ -3,20 +3,22 @@ import 'package:app/components/Tag.dart';
 import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 
-class StatusTags extends StatelessWidget {
+class PurchaseLotteryCard extends StatelessWidget {
   final String period; // งวด
   final String status; // สถานะ
   final List<Map<String, dynamic>> rewards; // รายละเอียดรางวัล
   final Color backgroundColor; // สีพื้นหลัง
   final Color? statusColor; // สีของ status (optional เพราะจะใช้ auto color)
+  final VoidCallback? onClaim; // ฟังก์ชันสำหรับเคลมรางวัล
 
-  const StatusTags({
+  const PurchaseLotteryCard({
     super.key,
     required this.period,
     required this.status,
     required this.rewards,
     this.backgroundColor = Colors.white, // ค่าเริ่มต้นเป็นสีขาว
     this.statusColor, // ไม่ต้องกำหนดค่าเริ่มต้น จะใช้ auto color
+    this.onClaim,
   });
 
   // Helper function สำหรับแปลง status text

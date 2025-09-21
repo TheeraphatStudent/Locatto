@@ -153,7 +153,7 @@ export class AuthService {
   static async me(data: { uid: number }): Promise<{ success: boolean; message: string; user?: any }> {
     try {
       const [users] = await queryAsync(
-        'SELECT name, telno, email, credit, role FROM user WHERE uid = ?',
+        'SELECT name, telno, card_id, email, credit, role FROM user WHERE uid = ?',
         [data.uid]
       );
 
@@ -194,6 +194,44 @@ export class AuthService {
     }
   }
 
+  static async updateMe(data: { uid: number; fullname?: string; telno?: string; cardId?: string; email?: string }): Promise<{ success: boolean; message: string }> {
+    try {
+      const updates = [];
+      const values = [];
+
+      if (data.fullname) {
+        updates.push('name = ?');
+        values.push(data.fullname);
+      }
+      if (data.telno) {
+        updates.push('telno = ?');
+        values.push(data.telno);
+      }
+      if (data.cardId) {
+        updates.push('card_id = ?');
+        values.push(data.cardId);
+      }
+      if (data.email) {
+        updates.push('email = ?');
+        values.push(data.email);
+      }
+
+      if (updates.length === 0) {
+        return { success: false, message: 'No fields to update' };
+      }
+
+      values.push(data.uid);
+
+      const query = `UPDATE user SET ${updates.join(', ')} WHERE uid = ?`;
+      await queryAsync(query, values);
+
+      return { success: true, message: 'Profile updated successfully' };
+    } catch (error) {
+      console.error('Update me error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
+  }
+
   static async logout(data: { uid: number, token: string }): Promise<{ success: boolean; message: string }> {
     try {
       const [result] = await queryAsync(
@@ -208,6 +246,24 @@ export class AuthService {
       return { success: true, message: 'Logged out successfully' };
     } catch (error) {
       console.error('Database error:', error);
+      return { success: false, message: 'Internal server error' };
+    }
+  }
+
+  static async updateCredit(data: { uid: number; credit: number }): Promise<{ success: boolean; message: string }> {
+    try {
+      const [result] = await queryAsync(
+        'UPDATE user SET credit = credit + ? WHERE uid = ?',
+        [data.credit, data.uid]
+      );
+
+      if ((result as any).affectedRows === 0) {
+        return { success: false, message: 'User not found' };
+      }
+
+      return { success: true, message: 'Credit updated successfully' };
+    } catch (error) {
+      console.error('Update credit error:', error);
       return { success: false, message: 'Internal server error' };
     }
   }

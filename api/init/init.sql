@@ -47,13 +47,13 @@ CREATE TABLE IF NOT EXISTS reward (
     updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T1', 0, NULL);
-INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T2', 0, NULL);
-INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T3', 0, NULL);
+INSERT INTO reward (tier, revenue, winner) VALUES ('T1', 0, NULL);
+INSERT INTO reward (tier, revenue, winner) VALUES ('T2', 0, NULL);
+INSERT INTO reward (tier, revenue, winner) VALUES ('T3', 0, NULL);
 
 -- L: Last, R: Random
-INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'T1L3', 0, NULL);
-INSERT INTO reward (lid, tier, revenue, winner) VALUES (null, 'R2', 0, NULL);
+INSERT INTO reward (tier, revenue, winner) VALUES ('T1L3', 0, NULL);
+INSERT INTO reward (tier, revenue, winner) VALUES ('R2', 0, NULL);
 
 CREATE TABLE IF NOT EXISTS payment (
     payid INT AUTO_INCREMENT PRIMARY KEY,

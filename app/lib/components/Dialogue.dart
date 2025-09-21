@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
+import 'package:app/components/StatusTags.dart' show PurchaseLotteryCard;
 import 'package:app/service/lottery/reward.dart';
 import 'package:flutter/material.dart';
 
@@ -544,25 +545,7 @@ void showPurchaseDialogue(
   );
 }
 
-// ✅ Data class for StatusTags
-class StatusTags {
-  final String period;
-  final String status;
-  final List<Map<String, dynamic>> rewards;
-  final int rewardId;
-  final void Function(int rewardId)? onClaim; // ✅ callback
-
-  StatusTags({
-    required this.period,
-    required this.status,
-    required this.rewards,
-    required this.rewardId,
-    this.onClaim,
-  });
-}
-
-// ✅ แก้ไข showCustomStatusTagsDialog
-void showCustomStatusTagsDialog(BuildContext context, StatusTags statusTags) {
+void showCustomStatusTagsDialog(BuildContext context, PurchaseLotteryCard purchaseLotteryCard, {VoidCallback? onWin}) {
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -589,7 +572,7 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags statusTags) {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      _formatDate(statusTags.period),
+                      _formatDate(purchaseLotteryCard.period),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -602,11 +585,11 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags statusTags) {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(statusTags.status),
+                        color: _getStatusColor(purchaseLotteryCard.status),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        _getStatusText(statusTags.status),
+                        _getStatusText(purchaseLotteryCard.status),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -671,7 +654,7 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags statusTags) {
 
                 // Table Content
                 Column(
-                  children: statusTags.rewards.map((reward) {
+                  children: purchaseLotteryCard.rewards.map((reward) {
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
@@ -738,19 +721,22 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags statusTags) {
                     Expanded(
                       child: OutlinedButton(
                         onPressed:
-                            statusTags.status == "win" &&
-                                statusTags.onClaim != null
+                            purchaseLotteryCard.status == "win" &&
+                                purchaseLotteryCard.onClaim != null
                             ? () {
-                                // ปิด dialog ก่อน
-                                Navigator.of(context).pop();
-                                // เรียก callback function
-                                statusTags.onClaim!(statusTags.rewardId);
+                                purchaseLotteryCard.onClaim!();
+                                if (onWin != null) {
+                                  onWin();
+
+                                } else {
+                                  Navigator.of(context).pop();
+                                }
                               }
                             : null,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: BorderSide(
-                            color: statusTags.status == "win"
+                            color: purchaseLotteryCard.status == "win"
                                 ? Colors.green
                                 : Colors.grey[300]!,
                           ),
@@ -760,7 +746,7 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags statusTags) {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: statusTags.status == "win"
+                            color: purchaseLotteryCard.status == "win"
                                 ? Colors.green
                                 : Colors.grey[400],
                           ),
@@ -836,6 +822,8 @@ String _getStatusText(String status) {
     case "fail":
     case "lose":
       return "ไม่ถูกรางวัล";
+    case "claimed":
+      return "ได้รับรางวัลแล้ว";
     default:
       return "ไม่ทราบสถานะ";
   }
