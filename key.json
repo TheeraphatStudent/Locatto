@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "lottocat",
+  "private_key_id": "70b3d8f95351fcbe1a9b617069ed22e01c7ca8d3",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDeno5h6oxgfRcy\n2yhVc1ZDBEWHugRPQw50VZ9pUwqS/+AWQD3RjEc1hriO1MGTHSEt0NQAG/JTlPZq\nkDEY/1fYrM01BS9kisaoJjSmyUdLqa4+Xi1Rg+QFwtRLF9HdLl3/S9KhVNAlP4nE\nMt3LnVNcFBRtPCMAY+LjlCjxA0j/mp3Ou3g6LphY6d0NUdO2VwdGudQ02yc7Qg0e\ng06anUKQTF7ZjOONFhmzt23fFUWoPTdVeGxUxJdJk+kRYh8xblZkuugjXFY9C0UN\n9Ziu9J6nwEVtsbUmaFAn3Rb3fpwkBBuahnRpIZtek09PBkn+tDtB+EZLR7myR5Iv\nk569YvwRAgMBAAECggEAASHKxQ4xhQsVy10obRjPSztyFBDa1UFYyTgnPZydvOYe\nsFZGyjI9qXTEKvvDeTlIcihx74c02f5zq1KM4VzpCDHGwFqEpWz8Oh4pneB/o4+b\nEnedoOC8D9hwBmq6VzbVZQcwbMAW592VGIGOtaqY4iq6+Nw5rFaVsIUQGTukSyJu\ndWQg0hCtq6kbRqvBUW91Fop0CPFkl/ToGrhcgu0GxgbxH6oRw7lZnLPnuGyDBv7t\nb1VETTGh6TxOdC2AnCS7mII76E4BkGvqtfKWLbu2D6ZexBAcRtw7cGFmHa+vFMZQ\nCIQJz4AmORAp8Bv6udKSya7tZI7UxiDZ9pJBcknN0QKBgQD5OK7inu+zlAMlLKdA\nH/tqlbDc6CbJXL+a8x9DCVInpB7rDZSPuL6c3MbFrIiX0AElnc/k/CBzWcZyj4o/\nSN1AVG4YxG4AmXrEXxdgB+26eljFKDcu5zVEdIHiJPRaWnAft5ZlYUepvoo4bzHX\nKMzpNI67MAfE7HvzEdFntVIUqQKBgQDkrKTobDHYaOOxtgH3f3wM2VVXyZdW4QGI\n7QBi67gJBVzFuDuZUUbnxRD66NEV7cdbdKuwqrJFdFc1ORc4tvJ2enD6vnH89+Nd\npHYIx2Ao2GE6atS30VdOEAxHAGa29/F3gVKFTWdPwexIBVe+dmr7DKu90YX9o1KP\nnqWWD79lKQKBgQDkmGKJicFSFZSg94ldnzhMdotoxSQ2lPVHGnP1WEpcBAU8ExPO\nlGV6mmNUk8Iihe9XYp57aewWAiWtlQ34qEwRIqBt5VcFA8KA9rwJIJyk7G4aQZ4E\nTp0kcj1kggMEEWpBHXM9AHLsNtKvmwa7VThHPCcjeZXWwhebSB+sobttKQKBgQCV\nMWZuFZj3voc/vKXP2icPIwShP+8zSZ38vdQQtgXeLNd4UFjiELsYH+SSLy+rBPWa\nX6ZcnyGsWtlC6jqSUBok3oGztmkcSIbY46H23E2KmJHm0ShzvWsejS3VbReWrHGo\nLIGwYu3ShY0o+ANlSlFF9eBe+cJX1yTYewNBwoh28QKBgQCB+WmWwvDxdY8NxmAy\n1SKHQ9bLpBUOnqZgYOuRTi5EB2//f58OdvpY1R46MnvCci1Kkv5ViKHrMHIXLSPU\nNIEv4QguTcb1XzIpWU9g4B5g5RwcoYLjmHirJVH+67Z3JAVw0VtpoHlzNzQriA9R\n4YSZF9q9ykeiZdfLKKzoSqqhqw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "github-actions@lottocat.iam.gserviceaccount.com",
+  "client_id": "111767567679196190744",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/github-actions%40lottocat.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
