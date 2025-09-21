@@ -3,14 +3,14 @@ import 'package:app/components/Tag.dart';
 import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 
-class StatusTags extends StatelessWidget {
+class PurchaseLotteryCard extends StatelessWidget {
   final String period; // งวด
   final String status; // สถานะ
   final List<Map<String, dynamic>> rewards; // รายละเอียดรางวัล
   final Color backgroundColor; // สีพื้นหลัง
   final Color? statusColor; // สีของ status (optional เพราะจะใช้ auto color)
 
-  const StatusTags({
+  const PurchaseLotteryCard({
     super.key,
     required this.period,
     required this.status,

@@ -17,4 +17,17 @@ class RewardService {
       throw Exception('Failed to manage rewards: $e');
     }
   }
+
+  Future<Map<String, dynamic>> winner(String lotteryNumber) async {
+    try {
+      final response = await _transport.requestTransport(
+        RequestMethod.post,
+        '/reward/winner/$lotteryNumber',
+        {},
+      );
+      return response;
+    } catch (e) {
+      throw Exception('Failed to claim reward: $e');
+    }
+  }
 }

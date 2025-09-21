@@ -556,7 +556,7 @@ void showPurchaseDialogue(
   );
 }
 
-void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
+void showCustomStatusTagsDialog(BuildContext context, PurchaseLotteryCard StatusTags, {VoidCallback? onWin}) {
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -733,14 +733,18 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
                       child: OutlinedButton(
                         onPressed: StatusTags.status == "win"
                             ? () {
-                                // Logic for sending reward
-                                Navigator.of(context).pop();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('กำลังดำเนินการนำส่งรางวัล'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
+                                if (onWin != null) {
+                                  onWin();
+
+                                } else {
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('กำลังดำเนินการนำส่งรางวัล'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
                               }
                             : null,
                         style: OutlinedButton.styleFrom(

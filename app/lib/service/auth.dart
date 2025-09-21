@@ -104,6 +104,19 @@ class Auth {
     }
   }
 
+  Future<Map<String, dynamic>> updateMe(Map<String, dynamic> data) async {
+    try {
+      final response = await _transport.requestTransport(
+        RequestMethod.put,
+        '/auth/me',
+        data,
+      );
+      return response;
+    } catch (e) {
+      throw Exception('Update profile failed: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> checkAuth() async {
     try {
       final response = await getMe();

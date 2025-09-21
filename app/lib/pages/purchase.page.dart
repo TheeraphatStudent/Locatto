@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Dialogue.dart';
 import 'package:app/service/purchase/get.dart';
+import 'package:app/service/reward/post.dart';
 
 class PurchasePage extends StatefulWidget {
   const PurchasePage({super.key});
@@ -63,7 +64,7 @@ class _PurchasePageState extends State<PurchasePage> {
                         purchase['lot_info'] as Map<String, dynamic>? ?? {};
                     showCustomStatusTagsDialog(
                       context,
-                      StatusTags(
+                      PurchaseLotteryCard(
                         period: purchase["created"] ?? "",
                         status: purchase["status"] ?? "pending",
                         rewards: [
@@ -75,9 +76,42 @@ class _PurchasePageState extends State<PurchasePage> {
                           },
                         ],
                       ),
+                      onWin: () async {
+                        try {
+                          final rewardService = RewardService();
+                          final lotteryNumber = lotInfo['lottery_number']?.toString() ?? "";
+                          if (lotteryNumber.isNotEmpty) {
+                            final response = await rewardService.winner(lotteryNumber);
+                            if (response['success'] == true) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('นำส่งรางวัลสำเร็จ'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('เกิดข้อผิดพลาดในการนำส่งรางวัล'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                          Navigator.of(context).pop();
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('เกิดข้อผิดพลาดในการนำส่งรางวัล'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          Navigator.of(context).pop();
+                        }
+                      },
                     );
                   },
-                  child: StatusTags(
+                  child: PurchaseLotteryCard(
                     period: purchase["created"] ?? "",
                     status: purchase["status"] ?? "pending",
                     rewards: [

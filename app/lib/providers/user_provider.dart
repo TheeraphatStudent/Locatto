@@ -12,6 +12,12 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setCredit(int credit) async {
+    _credit = credit;
+    await _userService.storeUserCredit(credit.toString());
+    notifyListeners();
+  }
+
   void updateCredit(int newCredit) {
     _credit = newCredit;
     notifyListeners();
