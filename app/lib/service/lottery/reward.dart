@@ -46,4 +46,22 @@ class RewardService {
       throw Exception('Failed to load rewards');
     }
   }
+
+  Future<Map<String, dynamic>> claimReward(int rewardId) async {
+    try {
+      final response = await _transport.requestTransport(
+        RequestMethod.post,
+        '/reward/claim',
+        {'rewardId': rewardId},
+      );
+
+      if (_responseHelper.isSuccess(response['statusCode'] as int)) {
+        return response['data'];
+      } else {
+        throw Exception('Failed to claim reward');
+      }
+    } catch (e) {
+      throw Exception('Error claiming reward: $e');
+    }
+  }
 }

@@ -153,4 +153,36 @@ export class RewardService {
       throw error;
     }
   }
+
+  static async claimReward(uid: number, rid: number): Promise<{ success: boolean; message: string; user?: any }> {
+  try {
+    // 1. หา reward
+    const reward = await this.getById(rid);
+    if (!reward) {
+      return { success: false, message: 'Reward not found' };
+    }
+    if (!reward.winner || reward.winner != uid.toString()) {
+      return { success: false, message: 'You are not eligible to claim this reward' };
+    }
+
+    // 2. เพิ่มเครดิตเข้า user
+    await queryAsync('UPDATE user SET credit = credit + ? WHERE uid = ?', [
+      reward.revenue,
+      uid,
+    ]);
+
+    // 3. กันเคลมซ้ำ  mark ว่า claim แล้ว
+    await queryAsync('UPDATE reward SET winner = NULL WHERE rid = ?', [rid]);
+
+    // 4. return user ใหม่
+    const [userResult] = await queryAsync('SELECT uid, credit FROM user WHERE uid = ?', [uid]);
+    const user = Array.isArray(userResult) && userResult.length > 0 ? userResult[0] : null;
+
+    return { success: true, message: 'Reward claimed successfully', user };
+  } catch (error) {
+    console.error('Claim reward error:', error);
+    return { success: false, message: 'Internal server error' };
+  }
 }
+}
+

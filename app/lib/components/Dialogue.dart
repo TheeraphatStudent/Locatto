@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
-import 'package:app/components/StatusTags.dart';
+import 'package:app/service/lottery/reward.dart';
 import 'package:flutter/material.dart';
 
 enum DialogType { success, error, warning, info, custom }
@@ -500,20 +500,8 @@ void showPurchaseDialogue(
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
               const SizedBox(height: 16),
-              // TextField(
-              //   controller: _lotteryAmountController,
-              //   keyboardType: TextInputType.number,
-              //   decoration: InputDecoration(
-              //     hintText: '1',
-              //     suffixText: 'ใบ',
-              //     border: OutlineInputBorder(
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //   ),
-              // ),
               Input(
                 controller: lotteryAmountController,
-                // keyboardType: TextInputType.number,
                 hintText: '1',
                 suffixText: 'ใบ',
               ),
@@ -556,7 +544,25 @@ void showPurchaseDialogue(
   );
 }
 
-void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
+// ✅ Data class for StatusTags
+class StatusTags {
+  final String period;
+  final String status;
+  final List<Map<String, dynamic>> rewards;
+  final int rewardId;
+  final void Function(int rewardId)? onClaim; // ✅ callback
+
+  StatusTags({
+    required this.period,
+    required this.status,
+    required this.rewards,
+    required this.rewardId,
+    this.onClaim,
+  });
+}
+
+// ✅ แก้ไข showCustomStatusTagsDialog
+void showCustomStatusTagsDialog(BuildContext context, StatusTags statusTags) {
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -583,7 +589,7 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      _formatDate(StatusTags.period),
+                      _formatDate(statusTags.period),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -596,11 +602,11 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(StatusTags.status),
+                        color: _getStatusColor(statusTags.status),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        _getStatusText(StatusTags.status),
+                        _getStatusText(statusTags.status),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -665,7 +671,7 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
 
                 // Table Content
                 Column(
-                  children: StatusTags.rewards.map((reward) {
+                  children: statusTags.rewards.map((reward) {
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
@@ -731,22 +737,20 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: StatusTags.status == "win"
+                        onPressed:
+                            statusTags.status == "win" &&
+                                statusTags.onClaim != null
                             ? () {
-                                // Logic for sending reward
+                                // ปิด dialog ก่อน
                                 Navigator.of(context).pop();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('กำลังดำเนินการนำส่งรางวัล'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
+                                // เรียก callback function
+                                statusTags.onClaim!(statusTags.rewardId);
                               }
                             : null,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: BorderSide(
-                            color: StatusTags.status == "win"
+                            color: statusTags.status == "win"
                                 ? Colors.green
                                 : Colors.grey[300]!,
                           ),
@@ -756,7 +760,7 @@ void showCustomStatusTagsDialog(BuildContext context, StatusTags StatusTags) {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: StatusTags.status == "win"
+                            color: statusTags.status == "win"
                                 ? Colors.green
                                 : Colors.grey[400],
                           ),
