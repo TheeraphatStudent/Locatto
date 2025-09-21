@@ -14,17 +14,18 @@ services:
       - IS_SIGN=${IS_SIGN}
       - UPLOAD_TO_GCS=true
       - GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json
-    # volumes:
-    #   - ./gcs-key.json:/app/gcs-key.json:ro
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
     volumes:
-      - uploads:/app/uploads
+      - ./gcs-key.json:/app/gcs-key.json:ro
+    # volumes:
+    #   - uploads:/app/uploads
     ports:
       - "3000:3000"
     networks:
       - lotcatto
 
-volumes:
-  uploads:
+# volumes:
+#   uploads:
 
 networks:
   lotcatto:

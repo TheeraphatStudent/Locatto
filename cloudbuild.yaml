@@ -22,6 +22,7 @@ steps:
       - JWT_SECRET
       - JWT_EXPIRE_IN
       - IS_SIGN
+      - GOOGLE_CLOUD_PROJECT
     env:
       - 'UPLOAD_TO_GCS=true'
 
@@ -41,5 +42,10 @@ availableSecrets:
     env: 'JWT_EXPIRE_IN'
   - versionName: projects/$PROJECT_ID/secrets/IS_SIGN/versions/latest
     env: 'IS_SIGN'
+  - versionName: projects/$PROJECT_ID/secrets/GOOGLE_CLOUD_PROJECT/versions/latest
+    env: 'GOOGLE_CLOUD_PROJECT'
 
 logsBucket: 'gs://lottocat_bucket/logs'
+
+images:
+  - gcr.io/$PROJECT_ID/api
