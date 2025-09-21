@@ -1,6 +1,6 @@
 import http from "http";
 import { app } from "./app";
-import { initDbKeepAlive, pingDatabase } from "./db/connectiondb";
+// import { initDbKeepAlive, pingDatabase } from "./db/connectiondb";
 
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
@@ -12,7 +12,7 @@ server.listen(port, () => {
   console.log(`[${timestamp}] Server started successfully on port ${port}`);
   console.log(`[${timestamp}] Listening for incoming requests...`);
 
-  initDbKeepAlive();
+  // initDbKeepAlive();
 
 })
 .on('request', (req, res) => {

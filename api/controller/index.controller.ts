@@ -37,7 +37,9 @@ export class IndexController {
         queryAsync("DELETE FROM lottery"),
         queryAsync("DELETE FROM payment"),
         queryAsync("DELETE FROM purchase"),
-        queryAsync("DELETE FROM reward"),
+
+        // Change to update set null
+        queryAsync("UPDATE FROM reward SET revenue = 0, winner = NULL"),
       ]);      
 
       // console.log(`System reset completed: ${(deleteResult as any).affectedRows} users removed`);

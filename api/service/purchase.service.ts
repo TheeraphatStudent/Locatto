@@ -181,22 +181,39 @@ export class PurchaseService {
       const total = Array.isArray(countResult) ? (countResult[0] as any).total : 0;
 
       const rewards = (await queryAsync('SELECT * FROM reward'))[0] as any[];
+      const [userClaims] = await queryAsync('SELECT rid FROM winner WHERE uid = ?', [uid]);
+      const claimedRids = new Set(Array.isArray(userClaims) ? userClaims.map((c: any) => c.rid) : []);
 
       const result = purchases.map((purchase: any) => {
         let status = 'pending';
+        let rewardId = null;
+        let prize = '-';
+
         const hasWinner = rewards.some((r: any) => r.winner != null);
         if (hasWinner) {
-          const isWin = rewards.some((r: any) => {
+          const winningReward = rewards.find((r: any) => {
             if (r.winner == null) return false;
             if (r.tier === 'T1L3' && purchase.lottery_number.endsWith(r.winner)) return true;
             if (r.tier === 'R2' && purchase.lottery_number.endsWith(r.winner)) return true;
             return false;
           });
-          status = isWin ? 'win' : 'fail';
+          if (winningReward) {
+            rewardId = winningReward.rid;
+            prize = winningReward.revenue.toString();
+            if (claimedRids.has(winningReward.rid)) {
+              status = 'claimed';
+            } else {
+              status = 'win';
+            }
+          } else {
+            status = 'fail';
+          }
         }
         return {
           created: purchase.created,
           status,
+          rewardId,
+          prize,
           lot_info: { ...purchase }
         };
       });

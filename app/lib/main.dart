@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:app/pages/admin/adminHome.dart' hide HomePage;
 import 'package:app/pages/admin/adminProfile.dart';
@@ -51,7 +52,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkAuth() async {
     try {
-      final result = await _auth.checkAuth();
+      final result = await _auth.checkAuth().timeout(const Duration(seconds: 10));
       final isValid = result['isValid'] as bool;
       final role = result['role'] as String?;
       final credit = result['credit'] as int;
@@ -73,6 +74,17 @@ class _MyAppState extends State<MyApp> {
         if (!isValid) {
           await _storage.deleteAll();
         }
+      }
+    } on TimeoutException catch (e) {
+      log("Auth check timed out: $e");
+      await _storage.deleteAll();
+
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = false;
+          _isCheckingAuth = false;
+          _userRole = null;
+        });
       }
     } catch (e) {
       log("Auth check error: $e");

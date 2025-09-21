@@ -9,6 +9,7 @@ class PurchaseLotteryCard extends StatelessWidget {
   final List<Map<String, dynamic>> rewards; // รายละเอียดรางวัล
   final Color backgroundColor; // สีพื้นหลัง
   final Color? statusColor; // สีของ status (optional เพราะจะใช้ auto color)
+  final VoidCallback? onClaim; // ฟังก์ชันสำหรับเคลมรางวัล
 
   const PurchaseLotteryCard({
     super.key,
@@ -17,6 +18,7 @@ class PurchaseLotteryCard extends StatelessWidget {
     required this.rewards,
     this.backgroundColor = Colors.white, // ค่าเริ่มต้นเป็นสีขาว
     this.statusColor, // ไม่ต้องกำหนดค่าเริ่มต้น จะใช้ auto color
+    this.onClaim,
   });
 
   // Helper function สำหรับแปลง status text

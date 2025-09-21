@@ -241,4 +241,22 @@ export class RewardController {
       sendError({ res, status: 500, message: 'Internal server error' });
     }
   }
+
+  static async claim(req: Request, res: Response): Promise<void> {
+    try {
+      const uid = req.user?.uid; 
+      const { rid } = req.body;
+
+      if (!uid || !rid) {
+        res.status(400).json({ success: false, message: 'Missing uid or rid' });
+        return;
+      }
+
+      const result = await RewardService.claimReward(uid, rid);
+      res.status(result.success ? 200 : 400).json(result);
+    } catch (error) {
+      console.error('Claim reward controller error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  }
 }
