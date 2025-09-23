@@ -3,7 +3,9 @@ import 'package:app/components/Button.dart';
 import 'package:app/service/auth.dart';
 import 'package:app/service/user.dart';
 import 'package:flutter/material.dart';
+import 'package:app/components/Avatar.dart';
 import 'dart:developer';
+import 'package:app/pages/admin/adminProfile_detail.dart';
 
 class AdminProfilePage extends StatefulWidget {
   const AdminProfilePage({super.key});
@@ -50,41 +52,45 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'ข้อมูลโปรไฟล์ผู้ดูแลระบบ',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          const SizedBox(height: 20),
+          Center(child: Avatar(state: AvatarState.view, size: 120)),
+          const SizedBox(height: 32),
+
+          GestureDetector(
+            onTap: () {
+              log('Navigating to AdminProfileDetail'); // เพิ่ม log เพื่อตรวจสอบ
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminProfileDetail()),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 50, 0, 50),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 250, 206, 197),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              alignment: Alignment.center,
+              child: const Text(
+                "ข้อมูลส่วนตัว",
+                style: TextStyle(fontSize: 18, color: Colors.black87),
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'ชื่อ: Admin',
-              style: TextStyle(fontSize: 14, color: Colors.black54),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'อีเมล: admin@locatto.com',
-              style: TextStyle(fontSize: 14, color: Colors.black54),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'บทบาท: ผู้ดูแลระบบ',
-              style: TextStyle(fontSize: 14, color: Colors.black54),
-            ),
-            const SizedBox(height: 48),
-            ButtonActions(
-              variant: ButtonVariant.primary,
-              hasShadow: true,
-              text: _isLoggingOut ? 'กำลังออกจากระบบ...' : 'ออกจากระบบ',
-              icon: Icons.logout,
-              onPressed: _isLoggingOut ? null : _handleLogout,
-            ),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 48),
+          ButtonActions(
+            variant: ButtonVariant.primary,
+            hasShadow: true,
+            text: _isLoggingOut ? 'กำลังออกจากระบบ...' : 'ออกจากระบบ',
+            icon: Icons.logout,
+            onPressed: _isLoggingOut ? null : _handleLogout,
+          ),
+        ],
       ),
     );
   }
