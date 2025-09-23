@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       theme: AppTheme.lightTheme,
       home: _homeWidget,
-      // initialRoute: '/test',
+       initialRoute: '/profile',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),

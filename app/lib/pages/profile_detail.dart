@@ -7,6 +7,7 @@ import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Usernavigator.dart';
 import 'package:app/components/Avatar.dart';
 import 'package:app/service/auth.dart';
+import 'package:app/components/Input.dart';
 
 class Profile_Detail extends StatefulWidget {
   const Profile_Detail({super.key});
@@ -116,44 +117,70 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
                 const SizedBox(height: 10),
                 const Avatar(),
                 const SizedBox(height: 30),
-                _buildTextField("ชื่อ - นามสกุล", _nameController),
-                _buildTextField("เลขบัตรประชาชน", _idController),
-                _buildTextField("เบอร์โทร", _phoneController),
-                _buildTextField("อีเมล", _emailController),
+                
+                ///ชื่อ - นามสกุล
+                const Text(
+                  "ชื่อ - นามสกุล",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                Input(
+                  controller: _nameController,                  
+                ),
+                  const SizedBox(height: 12),
+
+                  ///เลขบัตรประชานชน
+                  const Text(
+                  "เลขบัตรประชาชน",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                Input(
+                  controller: _idController,
+                ),
+                  const SizedBox(height: 12),
+
+                  ///เบอร์โทร
+                  const Text(
+                  "เบอร์โทร",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                Input(
+                  controller: _phoneController,
+                ),
+                  const SizedBox(height: 12),
+
+                  ///Email
+                  const Text(
+                  "อีเมลล์",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                Input(
+                  controller: _emailController,
+                ),
+                  const SizedBox(height: 12),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(
-            color: Colors.red,
-            fontWeight: FontWeight.w500,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(color: Colors.redAccent),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.red, width: 2),
-          ),
-        ),
       ),
     );
   }
