@@ -12,7 +12,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRE_IN=${JWT_EXPIRE_IN}
       - IS_SIGN=${IS_SIGN}
-      - UPLOAD_TO_GCS=true
+      - UPLOAD_TO_GCS=false
       - GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json
     # volumes:
     #   - ./gcs-key.json:/app/gcs-key.json:ro
