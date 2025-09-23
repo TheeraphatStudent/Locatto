@@ -53,18 +53,7 @@ export class UploadController {
 
       fs.renameSync(oldPath, newPath);
 
-      let gcsUrl: string | null = null;
-      try {
-        gcsUrl = await UploadService.uploadToGCS(newPath, newFilename);
-      } catch (gcsError) {
-        console.error('GCS upload failed:', gcsError);
-      }
-
       const result: any = { filename: newFilename };
-
-      if (gcsUrl) {
-        result.gcsUrl = gcsUrl;
-      }
 
       sendFromService({ res, status: 201, result, message: 'File uploaded' });
     } catch (error) {
@@ -83,29 +72,16 @@ export class UploadController {
 
       const result = await UploadService.handleFileUpload(file);
 
-      if (result.gcsUrl) {
-        sendFromService({ 
-          res, 
-          status: 201, 
-          result: { 
-            filename: result.filename, 
-            gcsUrl: result.gcsUrl,
-            provider: 'gcloud'
-          }, 
-          message: 'File uploaded successfully to GCS' 
-        });
-      } else if (result.localPath) {
-        sendFromService({ 
-          res, 
-          status: 201, 
-          result: { 
-            filename: result.filename, 
-            localPath: result.localPath,
-            provider: 'local'
-          }, 
-          message: 'File uploaded successfully locally' 
-        });
-      }
+      sendFromService({ 
+        res, 
+        status: 201, 
+        result: { 
+          filename: result.filename, 
+          localPath: result.localPath,
+          provider: 'local'
+        }, 
+        message: 'File uploaded successfully locally' 
+      });
     } catch (error) {
       console.error('Upload error:', error);
       sendError({ res, status: 500, message: 'Internal server error' });
