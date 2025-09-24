@@ -42,7 +42,7 @@ export class RewardService {
 
   static async getAllRewards(): Promise<any[]> {
     try {
-      console.log('>>> USING getAllRewards SQL <<<');
+      // console.log('>>> USING getAllRewards SQL <<<');
       const [result] = await queryAsync(
         `SELECT *
          FROM reward
@@ -111,7 +111,7 @@ export class RewardService {
   }
 
   static async updateOrCreate(data: { tier: string; revenue: number }): Promise<{ success: boolean; message: string; reward?: any }> {
-    console.log('Data:', data);
+    // console.log('Data:', data);
 
     try {
       const existingReward = await this.getByTier(data.tier);

@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- Prod -->
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">locatto-67775182631.europe-west1.run.app</domain>
         <trust-anchors>
             <certificates src="system"/>
         </trust-anchors>
+    </domain-config>
+
+    <!-- Dev -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
     </domain-config>
 </network-security-config>
