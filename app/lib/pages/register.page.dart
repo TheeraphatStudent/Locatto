@@ -208,7 +208,7 @@ class _RegisterPageState extends State<RegisterPage> {
             await _userService.storeUserCredit(credit);
           }
 
-          Future.delayed(const Duration(seconds: 2), () {
+          Future.delayed(const Duration(milliseconds: 500), () {
             if (mounted) {
               log('Navigating to login page');
               Navigator.pushNamed(context, '/login');

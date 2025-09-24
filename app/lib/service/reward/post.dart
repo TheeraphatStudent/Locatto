@@ -1,7 +1,9 @@
 import 'package:app/service/transport.dart';
+import 'package:app/utils/response_helper.dart';
 
 class RewardService {
   final Transport _transport = Transport();
+  final ResponseHelper _responseHelper = ResponseHelper();
 
   Future<Map<String, dynamic>> manageRewards(
     Map<String, dynamic> prizeData,
@@ -18,16 +20,17 @@ class RewardService {
     }
   }
 
-  Future<Map<String, dynamic>> winner(String lotteryNumber) async {
+  Future<Map<String, dynamic>> claimReward(int rewardId) async {
     try {
       final response = await _transport.requestTransport(
         RequestMethod.post,
-        '/reward/winner/$lotteryNumber',
-        {},
+        '/reward/claim',
+        {'rid': rewardId},
       );
+
       return response;
     } catch (e) {
-      throw Exception('Failed to claim reward: $e');
+      return {'success': false};
     }
   }
 }

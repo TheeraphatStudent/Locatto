@@ -1,43 +1,12 @@
-{data: [
-    {lid: 1, lottery_number: 533357, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 2, lottery_number: 368698, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 3, lottery_number: 932225, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 4, lottery_number: 402960, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 5, lottery_number: 594614, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 6, lottery_number: 711770, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 7, lottery_number: 710441, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 8, lottery_number: 304182, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 9, lottery_number: 261563, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 10, lottery_number: 800104, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 11, lottery_number: 666299, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 12, lottery_number: 935464, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 13, lottery_number: 384000, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 14, lottery_number: 525747, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 15, lottery_number: 987991, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 16, lottery_number: 227857, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 17, lottery_number: 441095, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 18, lottery_number: 201890, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 19, lottery_number: 222940, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    },
-    {lid: 20, lottery_number: 375035, created: 2025-09-17T02: 13: 03.000Z, updated: 2025-09-17T02: 13: 03.000Z
-    }
-  ], totalPages: 8, currentPage: 1
-}
+[
+  {rid: 14, tier: T1L3, revenue: 5000.00, winner: 339, created: 2025-09-21T11: 56: 32.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 15, tier: R2, revenue: 2000.00, winner: 31, created: 2025-09-21T11: 56: 32.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 11, tier: T1, revenue: 50000.00, winner: 305339, created: 2025-09-21T11: 56: 31.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 12, tier: T2, revenue: 30000.00, winner: 830599, created: 2025-09-21T11: 56: 31.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 13, tier: T3, revenue: 10000.00, winner: 866094, created: 2025-09-21T11: 56: 31.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  }
+]

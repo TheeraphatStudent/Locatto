@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import '../service/user.dart';
 
@@ -8,18 +10,22 @@ class UserProvider extends ChangeNotifier {
   int get credit => _credit;
 
   Future<void> loadCredit() async {
+    log("Load credit work!");
+
     _credit = await _userService.getUserCredit();
     notifyListeners();
   }
 
-  Future<void> setCredit(int credit) async {
+  void setCredit(int credit) {
     _credit = credit;
-    await _userService.storeUserCredit(credit.toString());
+
+    _userService.storeUserCredit(credit.toString());
     notifyListeners();
   }
 
   void updateCredit(int newCredit) {
     _credit = newCredit;
+
     notifyListeners();
   }
 }

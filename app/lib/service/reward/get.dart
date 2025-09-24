@@ -38,15 +38,29 @@ class RewardService {
   Future<List<dynamic>> getAll() async {
     final response = await _transport.requestTransport(
       RequestMethod.get,
-      '/reward',
+      '/reward?view=admin',
       {},
     );
 
-    log('Raw Response from API: $response');
+    // log('Raw Response from API: $response');
 
     if (_responseHelper.isSuccess(response['statusCode'] as int)) {
       return response['data']
           as List<dynamic>; // ส่งข้อมูลในรูปแบบ List<dynamic>
+    } else {
+      throw Exception('Failed to load rewards');
+    }
+  }
+
+  Future<List<dynamic>> getRewardsHome() async {
+    final response = await _transport.requestTransport(
+      RequestMethod.get,
+      '/reward?view=home',
+      {},
+    );
+
+    if (_responseHelper.isSuccess(response['statusCode'] as int)) {
+      return response['data'] as List<dynamic>;
     } else {
       throw Exception('Failed to load rewards');
     }

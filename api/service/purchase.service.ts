@@ -173,12 +173,14 @@ export class PurchaseService {
       const offset = (page - 1) * size;
 
       const purchases = (await queryAsync(
-        `SELECT p.created, l.* FROM purchase p LEFT JOIN lottery l ON p.lid = l.lid WHERE p.uid = ? ORDER BY p.created DESC LIMIT ? OFFSET ?`,
+        `SELECT p.created, p.lot_amount, l.* FROM purchase p LEFT JOIN lottery l ON p.lid = l.lid WHERE p.uid = ? ORDER BY p.created DESC LIMIT ? OFFSET ?`,
         [uid, size, offset]
       ))[0] as any[];
 
-      const [countResult] = await queryAsync('SELECT COUNT(*) as total FROM purchase WHERE uid = ?', [uid]);
-      const total = Array.isArray(countResult) ? (countResult[0] as any).total : 0;
+      // console.log("Purchase: ", purchases)
+
+      // const [countResult] = await queryAsync('SELECT COUNT(*) as total FROM purchase WHERE uid = ?', [uid]);
+      // const total = Array.isArray(countResult) ? (countResult[0] as any).total : 0;
 
       const rewards = (await queryAsync('SELECT * FROM reward'))[0] as any[];
       const [userClaims] = await queryAsync('SELECT rid FROM winner WHERE uid = ?', [uid]);
@@ -197,6 +199,7 @@ export class PurchaseService {
             if (r.tier === 'R2' && purchase.lottery_number.endsWith(r.winner)) return true;
             return false;
           });
+
           if (winningReward) {
             rewardId = winningReward.rid;
             prize = winningReward.revenue.toString();
@@ -218,7 +221,9 @@ export class PurchaseService {
         };
       });
 
-      return { purchases: result, total };
+      const filteredPurchases = result.filter((purchase: any) => purchase.status !== 'claimed');
+
+      return { purchases: filteredPurchases, total: filteredPurchases.length };
     } catch (error) {
       console.error('Database error:', error);
       throw error;

@@ -97,12 +97,20 @@ class _LoginPageState extends State<LoginPage> {
           alert.showSuccess(context, 'เข้าสู่ระบบสำเร็จ');
 
           final userData = response['data']?['user'] ?? response['user'];
+
           if (userData != null) {
             final credit = userData['credit']?.toString() ?? '0';
-            final creditInt = int.tryParse(credit) ?? 0;
+            final creditDouble = double.tryParse(credit) ?? 0.0;
+            final creditInt = creditDouble.toInt();
 
-            await context.read<UserProvider>().setCredit(creditInt);
+            context.read<UserProvider>().setCredit(creditInt);
+            // context.read<UserProvider>().updateCredit(creditInt);
+
             await _userService.storeUserData(userData);
+
+            log(
+              "Set credit successful -> ${context.read<UserProvider>().credit}",
+            );
 
             final role = userData['role'];
 

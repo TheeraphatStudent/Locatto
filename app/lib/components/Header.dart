@@ -28,6 +28,7 @@ class _HeaderState extends State<Header> {
   late Timer _timer;
   String _currentTime = '';
   String _userRole = 'user';
+  bool _creditLoaded = false;
 
   final UserService _userService = UserService();
   final SystemAdmin _systemAdmin = SystemAdmin();
@@ -47,10 +48,19 @@ class _HeaderState extends State<Header> {
     _confirmToDelete.addListener(_validateConfirmation);
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_creditLoaded) {
+      _creditLoaded = true;
+      context.read<UserProvider>().loadCredit();
+    }
+  }
+
   Future<void> _loadUserRole() async {
     final role = await _userService.getUserRole();
 
-    log("Role: ${role.toString()}");
+    // log("Role: ${role.toString()}");
 
     if (role != null && mounted) {
       setState(() {

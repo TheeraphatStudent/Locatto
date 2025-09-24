@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:app/components/StatusTags.dart';
+import 'package:app/service/reward/post.dart' show RewardService;
 import 'package:flutter/material.dart';
 import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Dialogue.dart' as Dialogue;
 import 'package:app/service/purchase/get.dart';
-import 'package:app/service/lottery/reward.dart';
 import 'package:app/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -30,130 +32,6 @@ class _PurchasePageState extends State<PurchasePage> {
       return List<Map<String, dynamic>>.from(response['purchases'] ?? []);
     } catch (e) {
       return [];
-    }
-  }
-
-  Future<void> _claimReward(int? rewardId, BuildContext context) async {
-    if (rewardId == null || rewardId == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('ไม่พบข้อมูล reward ID'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    // แสดงไดอะล็อกยืนยันการเคลมรางวัล
-    bool? shouldClaim = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.celebration, color: Colors.amber),
-              SizedBox(width: 8),
-              Text('ยืนยันการรับรางวัล'),
-            ],
-          ),
-          content: const Text('คุณต้องการรับรางวัลนี้ใช่หรือไม่?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('ยกเลิก'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('รับรางวัล'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (shouldClaim != true) return;
-
-    try {
-      // แสดง loading
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            content: Row(
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 16),
-                Text('กำลังนำส่งรางวัล...'),
-              ],
-            ),
-          );
-        },
-      );
-
-      final rewardService = RewardService();
-      final response = await rewardService.claimReward(rewardId);
-
-      // ปิด loading dialog
-      Navigator.of(context).pop();
-
-      if (response['success'] == true) {
-        // อัพเดทเครดิตใน UserProvider
-        if (response['data'] != null && response['data']['credit'] != null) {
-          final userProvider = Provider.of<UserProvider>(
-            context,
-            listen: false,
-          );
-          String creditString = response['data']['credit'].toString().trim();
-          creditString = creditString.replaceAll(',', '');
-
-          try {
-            final creditDouble = double.parse(creditString);
-            final newCredit = creditDouble.toInt();
-            await userProvider.setCredit(newCredit);
-            await userProvider.loadCredit(); // รีโหลดเพื่อยืนยันค่า
-          } catch (e) {
-            print("Error parsing credit: $e");
-          }
-        }
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('นำส่งรางวัลสำเร็จ 🎉'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-
-        // reload purchases หลังจากเคลมเสร็จ
-        setState(() {
-          _purchasesFuture = _loadPurchases();
-        });
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(response['message'] ?? 'ไม่สามารถนำส่งรางวัลได้'),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      print("Error claiming reward: $e");
-      if (mounted) {
-        Navigator.of(context).pop(); // ปิด loading dialog ถ้ายังแสดงอยู่
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'เกิดข้อผิดพลาดในการนำส่งรางวัล กรุณาลองใหม่อีกครั้ง',
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     }
   }
 
@@ -231,9 +109,6 @@ class _PurchasePageState extends State<PurchasePage> {
 
           final purchases = snapshot.data ?? [];
 
-          // ใส่ print ตรงนี้เพื่อตรวจสอบข้อมูล
-          print(purchases);
-
           if (purchases.isEmpty) {
             return const Center(child: Text("ยังไม่มีการซื้อลอตเตอรี่"));
           }
@@ -254,18 +129,137 @@ class _PurchasePageState extends State<PurchasePage> {
                   {
                     "number": lotInfo['lottery_number'] ?? "-",
                     "type": purchase["status"] ?? "pending",
-                    "amount": purchase["amount"] ?? 1,
+                    "amount": lotInfo["lot_amount"] ?? 1,
                     "prize": purchase["prize"] ?? "-",
                   },
                 ],
-                onClaim: () {
-                  // กด claim แล้วรีโหลดข้อมูลทั้งหน้า
-                  _claimReward(purchase["rewardId"] ?? 0, context).then((_) {
-                    // รีโหลดข้อมูลหลังจาก claim สำเร็จ
-                    setState(() {
-                      _purchasesFuture = _loadPurchases();
-                    });
-                  });
+                onClaim: () async {
+                  final rewardId = purchase["rewardId"] ?? 0;
+
+                  if (rewardId == null || rewardId == 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('ไม่พบข้อมูล reward ID'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+
+                  bool? shouldClaim = await showDialog<bool>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Row(
+                          children: [
+                            // Icon(Icons.celebration, color: Colors.amber),
+                            // SizedBox(width: 8),
+                            Text('ยืนยันการรับรางวัล'),
+                          ],
+                        ),
+                        content: const Text(
+                          'คุณต้องการรับรางวัลนี้ใช่หรือไม่?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text('ยกเลิก'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text('รับรางวัล'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                  if (shouldClaim != true) return;
+
+                  Navigator.of(context).pop();
+
+                  try {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return const AlertDialog(
+                          content: Row(
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 16),
+                              Text('กำลังนำส่งรางวัล...'),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+
+                    final rewardService = RewardService();
+                    final response = await rewardService.claimReward(purchase["rewardId"]);
+
+                    Navigator.of(context).pop();
+
+                    if (response['success'] == true) {
+                      if (response['user'] != null && response['user']['credit'] != null) {
+                        final userProvider = Provider.of<UserProvider>(
+                          context,
+                          listen: false,
+                        );
+                        String creditString = response['user']['credit'].toString().trim();
+                        creditString = creditString.replaceAll(',', '');
+
+                        try {
+                          final creditDouble = double.parse(creditString);
+                          final newCredit = creditDouble.toInt();
+                          userProvider.setCredit(newCredit);
+
+                          await userProvider.loadCredit();
+                        } catch (e) {
+                          log("Error parsing credit: $e");
+                        }
+                      }
+
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('นำส่งรางวัลสำเร็จ'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+
+                      // Reload purchases after successful claim
+                      setState(() {
+                        _purchasesFuture = _loadPurchases();
+                      });
+                    } else {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              response['message'] ?? 'ไม่สามารถนำส่งรางวัลได้',
+                            ),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      }
+                    }
+                  } catch (e) {
+                    log("Error claiming reward: $e");
+                    if (mounted) {
+                      Navigator.of(context).pop(); // Close loading dialog if still showing
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'เกิดข้อผิดพลาดในการนำส่งรางวัล กรุณาลองอีกครั้ง',
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
                 },
               );
 
@@ -332,7 +326,7 @@ class _PurchasePageState extends State<PurchasePage> {
                           ),
                         ),
                         Text(
-                          'จำนวน: ${purchase["amount"] ?? 1} ใบ',
+                          'จำนวน: ${lotInfo["lot_amount"] ?? 1} ใบ',
                           style: const TextStyle(fontSize: 14),
                         ),
                         if (purchase["prize"] != null &&

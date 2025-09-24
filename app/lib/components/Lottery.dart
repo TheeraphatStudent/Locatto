@@ -264,45 +264,4 @@ class _LotteryState extends State<Lottery> {
       ],
     );
   }
-
-  void _showPopup(BuildContext context) {
-    DynamicDialog.show(
-      context,
-      title: 'QR Code',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Cache QR widget to avoid regeneration
-          RepaintBoundary(child: QrWidget(data: widget.qrData)),
-          const SizedBox(height: 20),
-          Text(
-            'หมายเลข: ${widget.lotteryNumber}',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF45171D),
-              fontFamily: 'Kanit',
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'ราคา: 80 บาท',
-            style: TextStyle(
-              fontSize: 16,
-              color: Color(0xFF666666),
-              fontFamily: 'Kanit',
-            ),
-          ),
-        ],
-      ),
-      type: DialogType.custom,
-      actions: [
-        DialogButton(
-          text: 'ปิด',
-          onPressed: () => Navigator.of(context).pop(),
-          backgroundColor: const Color(0xFFFF4745),
-        ),
-      ],
-    );
-  }
 }

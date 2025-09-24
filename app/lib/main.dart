@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
+
 import 'package:app/pages/admin/adminHome.dart' hide HomePage;
 import 'package:app/pages/admin/adminProfile.dart';
 import 'package:app/pages/debug.page.dart';
@@ -15,18 +17,37 @@ import 'package:app/pages/success.page.dart';
 import 'package:app/pages/test.dart';
 import 'package:app/service/auth.dart';
 import 'package:app/service/user.dart';
-import 'package:provider/provider.dart';
-import 'providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/user_provider.dart';
 import 'style/theme.dart';
 
-void main() => runApp(
-  ChangeNotifierProvider<UserProvider>(
-    create: (_) => UserProvider(),
-    child: const MyApp(),
-  ),
-);
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // HttpOverrides.global = MyHttpOverrides();
+
+  final userProvider = UserProvider();
+  await userProvider.loadCredit();
+
+  runApp(
+    ChangeNotifierProvider<UserProvider>(
+      create: (_) => userProvider,
+      child: const MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -52,7 +73,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkAuth() async {
     try {
-      final result = await _auth.checkAuth().timeout(const Duration(seconds: 10));
+      final result = await _auth.checkAuth().timeout(
+        const Duration(seconds: 10),
+      );
       final isValid = result['isValid'] as bool;
       final role = result['role'] as String?;
       final credit = result['credit'] as int;

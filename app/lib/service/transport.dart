@@ -53,11 +53,11 @@ class Transport {
       final path = parts[0];
       final queryString = parts[1];
       final queryParams = Uri.splitQueryString(queryString);
-      // url = Uri.https(config.getBaseUrl(), path, queryParams);
-      url = Uri.http(config.getBaseUrl(), path, queryParams);
+      url = Uri.https(config.getBaseUrl(), path, queryParams);
+      // url = Uri.http(config.getBaseUrl(), path, queryParams);
     } else {
-      // url = Uri.https(config.getBaseUrl(), endpoint);
-      url = Uri.http(config.getBaseUrl(), endpoint);
+      url = Uri.https(config.getBaseUrl(), endpoint);
+      // url = Uri.http(config.getBaseUrl(), endpoint);
     }
 
     final accessToken = await _storage.read(key: config.getTokenStoragename());
@@ -103,7 +103,7 @@ class Transport {
           break;
       }
 
-      log("Actual response: ${response.body}");
+      // log("Actual response: ${response.body}");
 
       if (response.headers['content-type']?.contains('text/html') == true) {
         throw Exception(

@@ -176,74 +176,10 @@ export class RewardController {
     }
   }
 
-  static async winner(req: Request, res: Response): Promise<void> {
-    try {
-      const { lottery_number } = req.params;
-      const uid = (req.user as any)?.uid;
-
-      if (!uid) {
-        sendError({ res, status: 401, message: 'Unauthorized' });
-        return;
-      }
-
-      if (!lottery_number) {
-        sendError({ res, status: 400, message: 'Lottery number is required' });
-        return;
-      }
-
-      const rewards = await RewardService.getAll();
-
-      let winningTier = null;
-      let revenue = 0;
-
-      for (const reward of rewards) {
-        if (reward.winner) {
-          if (reward.tier === 'T1' && lottery_number === reward.winner) {
-            winningTier = reward.tier;
-            revenue = reward.revenue;
-            break;
-          } else if (reward.tier === 'T2' && lottery_number === reward.winner) {
-            winningTier = reward.tier;
-            revenue = reward.revenue;
-            break;
-          } else if (reward.tier === 'T3' && lottery_number === reward.winner) {
-            winningTier = reward.tier;
-            revenue = reward.revenue;
-            break;
-          } else if (reward.tier === 'T1L3' && lottery_number.endsWith(reward.winner)) {
-            winningTier = reward.tier;
-            revenue = reward.revenue;
-            break;
-          } else if (reward.tier === 'R2' && lottery_number.endsWith(reward.winner)) {
-            winningTier = reward.tier;
-            revenue = reward.revenue;
-            break;
-          }
-        }
-      }
-
-      if (!winningTier || revenue <= 0) {
-        sendError({ res, status: 400, message: 'No winning reward found for this lottery number' });
-        return;
-      }
-
-      const { AuthService } = await import('../service/auth.service');
-      const updateResult = await AuthService.updateCredit({ uid, credit: revenue });
-
-      if (!updateResult.success) {
-        sendError({ res, status: 500, message: updateResult.message });
-        return;
-      }
-
-      sendFromService({ res, status: 200, result: { revenue, tier: winningTier }, message: 'Reward claimed successfully' });
-    } catch (error) {
-      console.error('Winner error:', error);
-      sendError({ res, status: 500, message: 'Internal server error' });
-    }
-  }
-
   static async claim(req: Request, res: Response): Promise<void> {
     try {
+      console.log("Request: ", req.body)
+
       const uid = req.user?.uid; 
       const { rid } = req.body;
 

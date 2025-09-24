@@ -154,53 +154,87 @@ export class RewardService {
     }
   }
 
-  static async claimReward(uid: number, rid: number): Promise<{ success: boolean; message: string; user?: any }> {
-  try {
-    // 1. หา reward
-    const reward = await this.getById(rid);
-    if (!reward) {
-      return { success: false, message: 'Reward not found' };
-    }
+  static async claimReward(uid: number, rid: number): Promise<{ success: boolean; message: string; user?: any; lotteryNumber?: string }> {
+    try {
+      // 1. หา reward
+      const reward = await this.getById(rid);
+      if (!reward) {
+        return { success: false, message: 'Reward not found' };
+      }
 
-    // 2. ตรวจสอบว่าผู้ใช้มีสิทธิ์เคลมหรือไม่ (มีเลขที่ถูกรางวัล)
-    // ตรวจสอบจาก purchase ที่มี lottery_number ตรงกับ winner
-    const [purchaseResult] = await queryAsync(
-      `SELECT p.pid FROM purchase p 
+      // 2. ตรวจสอบว่าผู้ใช้มีสิทธิ์เคลมหรือไม่ (มีเลขที่ถูกรางวัล)
+      // ตรวจสอบจาก purchase ที่มี lottery_number ตรงกับ winner โดยใช้ logic จาก winner endpoint
+      const [purchaseResult] = await queryAsync(
+        `SELECT p.pid, l.lottery_number FROM purchase p 
        INNER JOIN lottery l ON p.lid = l.lid 
-       WHERE p.uid = ? AND (
-         (reward.tier = 'T1L3' AND l.lottery_number LIKE CONCAT('%', reward.winner)) OR
-         (reward.tier = 'R2' AND l.lottery_number LIKE CONCAT('%', reward.winner))
-       )`,
-      [uid]
-    );
-    if (!Array.isArray(purchaseResult) || purchaseResult.length === 0) {
-      return { success: false, message: 'You are not eligible to claim this reward' };
+       WHERE p.uid = ?`,
+        [uid]
+      );
+
+      if (!Array.isArray(purchaseResult) || purchaseResult.length === 0) {
+        return { success: false, message: 'No lottery purchases found for this user' };
+      }
+
+      // ตรวจสอบว่ามี lottery number ที่ถูกรางวัลหรือไม่
+      let hasWinningTicket = false;
+      let winningLotteryNumber = '';
+
+      for (const purchase of purchaseResult as any[]) {
+        const lotteryNumber = (purchase as any).lottery_number;
+
+        // ตรวจสอบตาม tier เหมือนใน winner endpoint
+        if (reward.tier === 'T1' && lotteryNumber === reward.winner) {
+          hasWinningTicket = true;
+          winningLotteryNumber = lotteryNumber;
+          break;
+        } else if (reward.tier === 'T2' && lotteryNumber === reward.winner) {
+          hasWinningTicket = true;
+          winningLotteryNumber = lotteryNumber;
+          break;
+        } else if (reward.tier === 'T3' && lotteryNumber === reward.winner) {
+          hasWinningTicket = true;
+          winningLotteryNumber = lotteryNumber;
+          break;
+        } else if (reward.tier === 'T1L3' && lotteryNumber.endsWith(reward.winner)) {
+          hasWinningTicket = true;
+          winningLotteryNumber = lotteryNumber;
+          break;
+        } else if (reward.tier === 'R2' && lotteryNumber.endsWith(reward.winner)) {
+          hasWinningTicket = true;
+          winningLotteryNumber = lotteryNumber;
+          break;
+        }
+      }
+
+      if (!hasWinningTicket) {
+        return { success: false, message: 'You are not eligible to claim this reward - no winning lottery number found' };
+      }
+
+      // 3. ตรวจสอบว่าเคลมไปแล้วหรือไม่
+      const [claimResult] = await queryAsync('SELECT * FROM winner WHERE uid = ? AND rid = ?', [uid, rid]);
+      if (Array.isArray(claimResult) && claimResult.length > 0) {
+        return { success: false, message: 'Reward already claimed' };
+      }
+
+      // 4. เพิ่มเครดิตเข้า user
+      await queryAsync('UPDATE user SET credit = credit + ? WHERE uid = ?', [
+        reward.revenue,
+        uid,
+      ]);
+
+      // // 5. บันทึกการเคลมใน winner table
+      // await queryAsync('INSERT INTO winner (uid, rid, payid, amount) VALUES (?, ?, NULL, ?)', 
+      //   [uid, rid, reward.revenue]);
+
+      // 6. return user ใหม่
+      const [userResult] = await queryAsync('SELECT uid, credit FROM user WHERE uid = ?', [uid]);
+      const user = Array.isArray(userResult) && userResult.length > 0 ? userResult[0] : null;
+
+      return { success: true, message: 'Reward claimed successfully', user, lotteryNumber: winningLotteryNumber };
+    } catch (error) {
+      console.error('Claim reward error:', error);
+      return { success: false, message: 'Internal server error' };
     }
-
-    // 3. ตรวจสอบว่าเคลมไปแล้วหรือไม่
-    const [claimResult] = await queryAsync('SELECT * FROM winner WHERE uid = ? AND rid = ?', [uid, rid]);
-    if (Array.isArray(claimResult) && claimResult.length > 0) {
-      return { success: false, message: 'Reward already claimed' };
-    }
-
-    // 4. เพิ่มเครดิตเข้า user
-    await queryAsync('UPDATE user SET credit = credit + ? WHERE uid = ?', [
-      reward.revenue,
-      uid,
-    ]);
-
-    // 5. บันทึกการเคลมใน winner table
-    await queryAsync('INSERT INTO winner (uid, rid, payid, amount) VALUES (?, ?, NULL, ?)', [uid, rid, reward.revenue]);
-
-    // 6. return user ใหม่
-    const [userResult] = await queryAsync('SELECT uid, credit FROM user WHERE uid = ?', [uid]);
-    const user = Array.isArray(userResult) && userResult.length > 0 ? userResult[0] : null;
-
-    return { success: true, message: 'Reward claimed successfully', user };
-  } catch (error) {
-    console.error('Claim reward error:', error);
-    return { success: false, message: 'Internal server error' };
   }
-}
 }
 
