@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:app/style/theme.dart';
+import 'package:app/utils/tier_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:app/service/reward/post.dart' as RewardServicePost;
 import 'package:app/service/reward/get.dart' as RewardServiceGet;
@@ -20,14 +21,6 @@ class _PrizesetupPageState extends State<PrizesetupPage> {
   final RewardServicePost.RewardService _rewardServicePost =
       RewardServicePost.RewardService();
 
-  final List<String> prizeTypes = [
-    "รางวัลที่ 1", // T1
-    "รางวัลที่ 2", // T2
-    "รางวัลที่ 3", // T3
-    "เลขท้าย 3 ตัว", // T1L3
-    "เลขท้าย 2 ตัว", // R2
-  ];
-
   final List<TextEditingController> prizeFields = List.generate(
     5,
     (index) => TextEditingController(text: "0"),
@@ -35,15 +28,6 @@ class _PrizesetupPageState extends State<PrizesetupPage> {
 
   final Map<int, String> _originalValues = {};
   bool _isLoading = true;
-
-  // Mapping from tier to prize field index
-  final Map<String, int> _tierMapping = {
-    'T1': 0, // รางวัลที่ 1
-    'T2': 1, // รางวัลที่ 2
-    'T3': 2, // รางวัลที่ 3
-    'T1L3': 3, // เลขท้าย 3 ตัว
-    'R2': 4, // เลขท้าย 2 ตัว
-  };
 
   @override
   void initState() {
@@ -83,8 +67,8 @@ class _PrizesetupPageState extends State<PrizesetupPage> {
         final tier = reward['tier'] as String?;
         final revenue = reward['revenue']?.toString() ?? "0";
 
-        if (tier != null && _tierMapping.containsKey(tier)) {
-          final index = _tierMapping[tier]!;
+        if (tier != null && TierHelper.tierMapping.containsKey(tier)) {
+          final index = TierHelper.tierMapping[tier]!;
           log("Mapping tier '$tier' to index $index with revenue: $revenue");
 
           // Update the specific field
@@ -144,7 +128,7 @@ class _PrizesetupPageState extends State<PrizesetupPage> {
         _showErrorDialog(
           context,
           "ข้อผิดพลาด",
-          "กรุณากรอกจำนวนเงินที่ถูกต้องใน${prizeTypes[i]}",
+          "กรุณากรอกจำนวนเงินที่ถูกต้องใน${TierHelper.prizeTypes[i]}",
         );
         return;
       }
@@ -312,8 +296,8 @@ class _PrizesetupPageState extends State<PrizesetupPage> {
           else
             // Render each field individually
             ...List.generate(
-              prizeTypes.length,
-              (index) => _buildPrizeField(index, prizeTypes[index]),
+              TierHelper.prizeTypes.length,
+              (index) => _buildPrizeField(index, TierHelper.prizeTypes[index]),
             ),
           const SizedBox(height: 16),
           Row(
