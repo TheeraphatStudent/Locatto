@@ -1,0 +1,15 @@
+{
+  "message": "Login successful",
+  "data": {
+    "success": true,
+    "message": "Login successful",
+    "token": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1aWQiOjE3LCJyb2xlIjoidXNlciIsIm5hbWUiOiJUaGVlcmFwaGF0IENodWVhbW9ra2h1bSIsImlhdCI6MTc1ODY5ODgzMiwiZXhwIjoxNzU5MzAzNjMyfQ.",
+    "user": {
+      "uid": 17,
+      "name": "Theeraphat Chueamokkhum",
+      "credit": 8960.00,
+      "role": "user"
+    }
+  },
+  "statusCode": 200
+}

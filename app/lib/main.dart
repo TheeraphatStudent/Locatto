@@ -21,12 +21,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'style/theme.dart';
 
-void main() => runApp(
-  ChangeNotifierProvider<UserProvider>(
-    create: (_) => UserProvider(),
-    child: const MyApp(),
-  ),
-);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final userProvider = UserProvider();
+  await userProvider.loadCredit();
+
+  runApp(
+    ChangeNotifierProvider<UserProvider>(
+      create: (_) => userProvider,
+      child: const MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -52,7 +59,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkAuth() async {
     try {
-      final result = await _auth.checkAuth().timeout(const Duration(seconds: 10));
+      final result = await _auth.checkAuth().timeout(
+        const Duration(seconds: 10),
+      );
       final isValid = result['isValid'] as bool;
       final role = result['role'] as String?;
       final credit = result['credit'] as int;

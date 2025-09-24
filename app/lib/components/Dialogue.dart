@@ -507,6 +507,11 @@ void showPurchaseDialogue(
                 suffixText: 'ใบ',
               ),
               const SizedBox(height: 16),
+              // const Text(
+              //   'ยอดสุทธิ: $totalPrice',
+              //   style: TextStyle(fontSize: 14, color: Colors.red),
+              // ),
+              // const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -545,7 +550,11 @@ void showPurchaseDialogue(
   );
 }
 
-void showCustomStatusTagsDialog(BuildContext context, PurchaseLotteryCard purchaseLotteryCard, {VoidCallback? onWin}) {
+void showCustomStatusTagsDialog(
+  BuildContext context,
+  PurchaseLotteryCard purchaseLotteryCard, {
+  VoidCallback? onWin,
+}) {
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -727,7 +736,6 @@ void showCustomStatusTagsDialog(BuildContext context, PurchaseLotteryCard purcha
                                 purchaseLotteryCard.onClaim!();
                                 if (onWin != null) {
                                   onWin();
-
                                 } else {
                                   Navigator.of(context).pop();
                                 }

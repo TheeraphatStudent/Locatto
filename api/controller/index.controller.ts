@@ -39,7 +39,7 @@ export class IndexController {
         queryAsync("DELETE FROM purchase"),
 
         // Change to update set null
-        queryAsync("UPDATE FROM reward SET revenue = 0, winner = NULL"),
+        queryAsync("UPDATE reward SET revenue = ?, winner = ?", [0, null]),
       ]);      
 
       // console.log(`System reset completed: ${(deleteResult as any).affectedRows} users removed`);

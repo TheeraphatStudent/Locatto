@@ -111,7 +111,8 @@ class _PurchasePageState extends State<PurchasePage> {
           try {
             final creditDouble = double.parse(creditString);
             final newCredit = creditDouble.toInt();
-            await userProvider.setCredit(newCredit);
+            userProvider.setCredit(newCredit);
+
             await userProvider.loadCredit(); // รีโหลดเพื่อยืนยันค่า
           } catch (e) {
             print("Error parsing credit: $e");
@@ -254,7 +255,7 @@ class _PurchasePageState extends State<PurchasePage> {
                   {
                     "number": lotInfo['lottery_number'] ?? "-",
                     "type": purchase["status"] ?? "pending",
-                    "amount": purchase["amount"] ?? 1,
+                    "amount": lotInfo["lot_amount"] ?? 1,
                     "prize": purchase["prize"] ?? "-",
                   },
                 ],
@@ -332,7 +333,7 @@ class _PurchasePageState extends State<PurchasePage> {
                           ),
                         ),
                         Text(
-                          'จำนวน: ${purchase["amount"] ?? 1} ใบ',
+                          'จำนวน: ${lotInfo["lot_amount"] ?? 1} ใบ',
                           style: const TextStyle(fontSize: 14),
                         ),
                         if (purchase["prize"] != null &&
