@@ -16,14 +16,14 @@ export class PurchaseService {
         [data.uid]
       )
 
-      console.log("User credit: ", user_credit)
+      // console.log("User credit: ", user_credit)
 
       const [payment_revenue] = await queryAsync(
         'SELECT revenue FROM payment WHERE payid = ?',
         [data.payid]
       )
 
-      console.log("Payment revenue: ", payment_revenue);
+      // console.log("Payment revenue: ", payment_revenue);
 
       const userCredit = parseInt(((user_credit as any) as any)[0].credit ?? "0")
       const paymentRevenue = parseInt(((payment_revenue as any) as any)[0].revenue ?? "80")

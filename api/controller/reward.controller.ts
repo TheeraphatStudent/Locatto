@@ -36,7 +36,7 @@ export class RewardController {
           sendError({ res, status: 404, message: 'Reward not found' });
         }
       } else {
-        console.log('Calling getAllRewards');
+        // console.log('Calling getAllRewards');
         const rewards = await RewardService.getAll();
         sendFromService({ res, status: 200, result: rewards, message: 'Rewards fetched' });
       }
@@ -58,7 +58,7 @@ export class RewardController {
 
   static async getById(req: Request, res: Response): Promise<void> {
     try {
-      console.log('Calling getById with ID:', req.params.id);
+      // console.log('Calling getById with ID:', req.params.id);
       const id = parseInt(req.params.id, 10);
       if (isNaN(id)) {
         sendError({ res, status: 400, message: 'Invalid reward ID' });
@@ -126,7 +126,7 @@ export class RewardController {
       delete tierData.exp;
 
       if (!tierData || Object.keys(tierData).length === 0) {
-        console.log('tierData received:', tierData);
+        // console.log('tierData received:', tierData);
         sendError({ res, status: 400, message: 'No tier data provided' });
         return;
       }
@@ -178,7 +178,7 @@ export class RewardController {
 
   static async claim(req: Request, res: Response): Promise<void> {
     try {
-      console.log("Request: ", req.body)
+      // console.log("Request: ", req.body)
 
       const uid = req.user?.uid; 
       const { rid } = req.body;

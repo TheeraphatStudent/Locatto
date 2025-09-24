@@ -22,7 +22,7 @@ export class AuthService {
       const emailLower = userData.email.toLowerCase();
       const role = emailLower.includes('admin') ? 'admin' : 'user';
 
-      console.log(`User email: ${userData.email}, Lowercase: ${emailLower}, Assigned role: ${role}`);
+      // console.log(`User email: ${userData.email}, Lowercase: ${emailLower}, Assigned role: ${role}`);
 
       const [result] = await queryAsync(
         'INSERT INTO user (name, telno, card_id, email, img, username, password, credit, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -98,7 +98,7 @@ export class AuthService {
         [token, user.uid]
       );
 
-      console.log('Token updated successfully');
+      // console.log('Token updated successfully');
 
       return {
         success: true,
@@ -121,14 +121,14 @@ export class AuthService {
 
   static async resetPassword(data: LoginRequest): Promise<{ success: boolean; message: string }> {
     try {
-      console.log("Reset password data:", data);
+      // console.log("Reset password data:", data);
 
       const [users] = await queryAsync(
         'SELECT uid FROM user WHERE username = ?',
         [data.username]
       );
 
-      console.log("Users found:", users);
+      // console.log("Users found:", users);
 
       if (!Array.isArray(users) || users.length === 0) {
         return { success: false, message: 'User not found' };
@@ -141,7 +141,7 @@ export class AuthService {
         [hashedPassword, data.username]
       );
 
-      console.log('Password reset successful for user:', data.username);
+      // console.log('Password reset successful for user:', data.username);
 
       return { success: true, message: 'Password reset successful' };
     } catch (error) {

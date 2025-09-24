@@ -7,7 +7,6 @@ export class LotteryController {
   static async create(req: Request, res: Response): Promise<void> {
     try {
       // console.log("Request Body: ", req.body)
-      console.log('Decoded User:', req.user);
 
       const { n } = req.body;
 
@@ -33,7 +32,7 @@ export class LotteryController {
 
   static async getAll(req: Request, res: Response): Promise<void> {
     try {
-      console.log('Calling getAllRewards');
+      // console.log('Calling getAllRewards');
 
       const page = parseInt(req.query.page as string) || 1;
       const size = parseInt(req.query.size as string) || 10;
@@ -85,7 +84,7 @@ export class LotteryController {
 
   static async getById(req: Request, res: Response): Promise<void> {
     try {
-      console.log('Calling getById with ID:', req.params.id);
+      // console.log('Calling getById with ID:', req.params.id);
 
       const id = +req.params.id;
       const lottery = await LotteryService.getById(id);

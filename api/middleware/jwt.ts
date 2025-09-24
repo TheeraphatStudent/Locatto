@@ -7,12 +7,12 @@ const IS_SIGN = process.env.IS_SIGN === 'true';
 
 const handleRequestDecoding = (req: any): void => {
   try {
-    console.group("Request");
-    console.log("Body: ", req.body);
+    // console.group("Request");
+    // console.log("Body: ", req.body);
 
     if (!req.body || !req.body.data) {
-      console.log("No body data to decode");
-      console.groupEnd();
+      // console.log("No body data to decode");
+      // console.groupEnd();
       req.body = {};
       return;
     }
@@ -24,8 +24,8 @@ const handleRequestDecoding = (req: any): void => {
       decoded = jwt.decode(req.body.data);
     }
 
-    console.log("Decoded: ", decoded);
-    console.groupEnd();
+    // console.log("Decoded: ", decoded);
+    // console.groupEnd();
 
     if (decoded && typeof decoded === 'object') {
       req.body = decoded;
@@ -69,7 +69,7 @@ const isContain = (content: string) => {
 // api -> jwt -> app -> decode
 
 export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  console.log("Request Body: ", req.body)
+  // console.log("Request Body: ", req.body)
   // console.log("Request Data: ", req.data)
   // console.log("File: ", req)
 
@@ -90,7 +90,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
 
   const authHeader = req.headers.authorization;
 
-  console.log("Auth header: ", authHeader)
+  // console.log("Auth header: ", authHeader)
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ error: 'Authorization header missing or invalid' });
@@ -101,7 +101,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
     const token = authHeader.split('Bearer ')[1];
     const tokenDecoded = IS_SIGN ? jwt.verify(token, JWT_SECRET) : jwt.decode(token);
 
-    console.log("Token decoded: ", tokenDecoded)
+    // console.log("Token decoded: ", tokenDecoded)
 
     if (tokenDecoded && typeof tokenDecoded === 'object' && 'uid' in tokenDecoded) {
 
@@ -111,7 +111,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
       });
 
       if (!userCheck.success) {
-        console.log('Token validation failed: ', userCheck.message);
+        // console.log('Token validation failed: ', userCheck.message);
         res.status(401).json({ error: userCheck.message });
         return;
       }
