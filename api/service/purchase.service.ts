@@ -186,6 +186,11 @@ export class PurchaseService {
       const [userClaims] = await queryAsync('SELECT rid FROM winner WHERE uid = ?', [uid]);
       const claimedRids = new Set(Array.isArray(userClaims) ? userClaims.map((c: any) => c.rid) : []);
 
+      const winningConditions = [
+        { tiers: ['T1', 'T2', 'T3'], matcher: (lotteryNumber: string, winner: string) => lotteryNumber === winner },
+        { tiers: ['T1L3', 'R2'], matcher: (lotteryNumber: string, winner: string) => lotteryNumber.endsWith(winner) }
+      ];
+
       const result = purchases.map((purchase: any) => {
         let status = 'pending';
         let rewardId = null;
@@ -195,9 +200,9 @@ export class PurchaseService {
         if (hasWinner) {
           const winningReward = rewards.find((r: any) => {
             if (r.winner == null) return false;
-            if (r.tier === 'T1L3' && purchase.lottery_number.endsWith(r.winner)) return true;
-            if (r.tier === 'R2' && purchase.lottery_number.endsWith(r.winner)) return true;
-            return false;
+
+            const condition = winningConditions.find(cond => cond.tiers.includes(r.tier));
+            return condition ? condition.matcher(purchase.lottery_number, r.winner) : false;
           });
 
           if (winningReward) {

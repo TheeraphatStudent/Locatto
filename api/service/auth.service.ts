@@ -170,14 +170,14 @@ export class AuthService {
 
   static async validateUserToken(data: { uid: number; token: string }): Promise<{ success: boolean; message: string; user?: any }> {
     try {
-      console.log("Data: ", data)
+      // console.log("Data: ", data)
 
       const [users] = await queryAsync(
         'SELECT uid, name, telno, email, credit, role FROM user WHERE uid = ? AND token = ?',
         [data.uid, data.token]
       );
 
-      console.log("Users: ", users)
+      // console.log("Users: ", users)
 
       if (!Array.isArray(users) || users.length === 0) {
         return { success: false, message: 'User not found or token mismatch' };
