@@ -179,8 +179,8 @@ export class PurchaseService {
 
       // console.log("Purchase: ", purchases)
 
-      const [countResult] = await queryAsync('SELECT COUNT(*) as total FROM purchase WHERE uid = ?', [uid]);
-      const total = Array.isArray(countResult) ? (countResult[0] as any).total : 0;
+      // const [countResult] = await queryAsync('SELECT COUNT(*) as total FROM purchase WHERE uid = ?', [uid]);
+      // const total = Array.isArray(countResult) ? (countResult[0] as any).total : 0;
 
       const rewards = (await queryAsync('SELECT * FROM reward'))[0] as any[];
       const [userClaims] = await queryAsync('SELECT rid FROM winner WHERE uid = ?', [uid]);
@@ -221,7 +221,9 @@ export class PurchaseService {
         };
       });
 
-      return { purchases: result, total };
+      const filteredPurchases = result.filter((purchase: any) => purchase.status !== 'claimed');
+
+      return { purchases: filteredPurchases, total: filteredPurchases.length };
     } catch (error) {
       console.error('Database error:', error);
       throw error;

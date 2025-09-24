@@ -1,11 +1,8 @@
-// สำหรับเบลอพื้นหลัง
-
 import 'dart:ui';
 
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/StatusTags.dart' show PurchaseLotteryCard;
-import 'package:app/service/lottery/reward.dart';
 import 'package:flutter/material.dart';
 
 enum DialogType { success, error, warning, info, custom }
@@ -728,57 +725,29 @@ void showCustomStatusTagsDialog(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
-                      child: OutlinedButton(
+                      child: ButtonActions(
+                        text: 'นำส่งรางวัล',
+                        variant: ButtonVariant.outline,
+                        theme: purchaseLotteryCard.status == "win"
+                            ? Colors.green
+                            : Colors.grey,
                         onPressed:
                             purchaseLotteryCard.status == "win" &&
                                 purchaseLotteryCard.onClaim != null
                             ? () {
                                 purchaseLotteryCard.onClaim!();
-                                if (onWin != null) {
-                                  onWin();
-                                } else {
-                                  Navigator.of(context).pop();
-                                }
                               }
                             : null,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: BorderSide(
-                            color: purchaseLotteryCard.status == "win"
-                                ? Colors.green
-                                : Colors.grey[300]!,
-                          ),
-                        ),
-                        child: Text(
-                          'นำส่งรางวัล',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: purchaseLotteryCard.status == "win"
-                                ? Colors.green
-                                : Colors.grey[400],
-                          ),
-                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
+                      child: ButtonActions(
+                        text: 'ปิด',
+                        variant: ButtonVariant.outline,
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[600],
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        child: const Text(
-                          'ปิด',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
                       ),
                     ),
                   ],

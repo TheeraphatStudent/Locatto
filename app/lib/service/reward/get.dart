@@ -42,7 +42,7 @@ class RewardService {
       {},
     );
 
-    log('Raw Response from API: $response');
+    // log('Raw Response from API: $response');
 
     if (_responseHelper.isSuccess(response['statusCode'] as int)) {
       return response['data']

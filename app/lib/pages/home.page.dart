@@ -48,14 +48,18 @@ class _HomePageState extends State<HomePage> {
               return indexA.compareTo(indexB);
             });
 
-      setState(() {
-        _rewards = sortedRewards;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _rewards = sortedRewards;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
