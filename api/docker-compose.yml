@@ -23,8 +23,29 @@ services:
     networks:
       - lotcatto
 
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-container
+    restart: always
+    environment:
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=root_u4_1irZU^yFl
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql:Z
+    networks:
+      - lotcatto
+
 volumes:
   uploads:
+  mysql_data:
 
 networks:
   lotcatto:
