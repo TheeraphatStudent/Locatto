@@ -165,7 +165,7 @@ export class RewardService {
       // 2. ตรวจสอบว่าผู้ใช้มีสิทธิ์เคลมหรือไม่ (มีเลขที่ถูกรางวัล)
       // ตรวจสอบจาก purchase ที่มี lottery_number ตรงกับ winner โดยใช้ logic จาก winner endpoint
       const [purchaseResult] = await queryAsync(
-        `SELECT p.pid, l.lottery_number FROM purchase p 
+        `SELECT p.pid, p.payid, l.lottery_number FROM purchase p 
        INNER JOIN lottery l ON p.lid = l.lid 
        WHERE p.uid = ?`,
         [uid]
@@ -178,30 +178,37 @@ export class RewardService {
       // ตรวจสอบว่ามี lottery number ที่ถูกรางวัลหรือไม่
       let hasWinningTicket = false;
       let winningLotteryNumber = '';
+      let winningPayId: number | null = null;
 
       for (const purchase of purchaseResult as any[]) {
         const lotteryNumber = (purchase as any).lottery_number;
+        const payId = (purchase as any).payid;
 
         // ตรวจสอบตาม tier เหมือนใน winner endpoint
         if (reward.tier === 'T1' && lotteryNumber === reward.winner) {
           hasWinningTicket = true;
           winningLotteryNumber = lotteryNumber;
+          winningPayId = payId;
           break;
         } else if (reward.tier === 'T2' && lotteryNumber === reward.winner) {
           hasWinningTicket = true;
           winningLotteryNumber = lotteryNumber;
+          winningPayId = payId;
           break;
         } else if (reward.tier === 'T3' && lotteryNumber === reward.winner) {
           hasWinningTicket = true;
           winningLotteryNumber = lotteryNumber;
+          winningPayId = payId;
           break;
         } else if (reward.tier === 'T1L3' && lotteryNumber.endsWith(reward.winner)) {
           hasWinningTicket = true;
           winningLotteryNumber = lotteryNumber;
+          winningPayId = payId;
           break;
         } else if (reward.tier === 'R2' && lotteryNumber.endsWith(reward.winner)) {
           hasWinningTicket = true;
           winningLotteryNumber = lotteryNumber;
+          winningPayId = payId;
           break;
         }
       }
@@ -223,8 +230,8 @@ export class RewardService {
       ]);
 
       // // 5. บันทึกการเคลมใน winner table
-      // await queryAsync('INSERT INTO winner (uid, rid, payid, amount) VALUES (?, ?, NULL, ?)', 
-      //   [uid, rid, reward.revenue]);
+      await queryAsync('INSERT INTO winner (uid, rid, payid, amount) VALUES (?, ?, ?, ?)', 
+        [uid, rid, winningPayId, reward.revenue]);
 
       // 6. return user ใหม่
       const [userResult] = await queryAsync('SELECT uid, credit FROM user WHERE uid = ?', [uid]);
