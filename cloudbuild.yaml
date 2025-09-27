@@ -22,7 +22,7 @@ steps:
       - JWT_SECRET
       - JWT_EXPIRE_IN
     env:
-      - 'UPLOAD_TO_GCS=false'
+      - 'UPLOAD_TO_GCS=true'
 
 availableSecrets:
   secretManager:

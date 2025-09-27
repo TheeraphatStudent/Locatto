@@ -77,10 +77,11 @@ export class UploadController {
         status: 201, 
         result: { 
           filename: result.filename, 
+          url: result.url,
           localPath: result.localPath,
-          provider: 'local'
+          provider: result.url ? 'gcs' : 'local'
         }, 
-        message: 'File uploaded successfully locally' 
+        message: `File uploaded successfully ${result.url ? 'to Google Cloud Storage' : 'locally'}` 
       });
     } catch (error) {
       console.error('Upload error:', error);
