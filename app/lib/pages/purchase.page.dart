@@ -197,17 +197,22 @@ class _PurchasePageState extends State<PurchasePage> {
                     );
 
                     final rewardService = RewardService();
-                    final response = await rewardService.claimReward(purchase["rewardId"]);
+                    final response = await rewardService.claimReward(
+                      purchase["rewardId"],
+                    );
 
                     Navigator.of(context).pop();
 
                     if (response['success'] == true) {
-                      if (response['user'] != null && response['user']['credit'] != null) {
+                      if (response['user'] != null &&
+                          response['user']['credit'] != null) {
                         final userProvider = Provider.of<UserProvider>(
                           context,
                           listen: false,
                         );
-                        String creditString = response['user']['credit'].toString().trim();
+                        String creditString = response['user']['credit']
+                            .toString()
+                            .trim();
                         creditString = creditString.replaceAll(',', '');
 
                         try {
@@ -249,7 +254,9 @@ class _PurchasePageState extends State<PurchasePage> {
                   } catch (e) {
                     log("Error claiming reward: $e");
                     if (mounted) {
-                      Navigator.of(context).pop(); // Close loading dialog if still showing
+                      Navigator.of(
+                        context,
+                      ).pop(); // Close loading dialog if still showing
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
@@ -284,65 +291,74 @@ class _PurchasePageState extends State<PurchasePage> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _formatDate(statusTagData.period),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _getStatusColor(statusTagData.status),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                _getStatusText(statusTagData.status),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _formatDate(statusTagData.period),
                                 style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _getStatusColor(statusTagData.status),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  child: Text(
+                                    _getStatusText(statusTagData.status),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'หมายเลข: ${lotInfo['lottery_number'] ?? "-"}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'จำนวน: ${lotInfo["lot_amount"] ?? 1} ใบ',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          if (purchase["prize"] != null &&
+                              purchase["prize"].toString() != "-")
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                'รางวัล: ${purchase["prize"]}',
+                                style: TextStyle(
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.green[700],
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'หมายเลข: ${lotInfo['lottery_number'] ?? "-"}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'จำนวน: ${lotInfo["lot_amount"] ?? 1} ใบ',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        if (purchase["prize"] != null &&
-                            purchase["prize"].toString() != "-")
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              'รางวัล: ${purchase["prize"]}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green[700],
-                              ),
-                            ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

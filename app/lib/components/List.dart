@@ -53,37 +53,40 @@ class LotteryList extends StatelessWidget {
   Widget _buildHeaderRow() {
     return SizedBox(
       width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 50,
-            child: Text(
-              'รหัส',
-              style: TextStyle(
-                color: const Color(0xFF45171D),
-                /* Lottocat-Black */
-                fontSize: 28,
-                fontFamily: 'Kanit',
-                fontWeight: FontWeight.w600,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 50,
+              child: Text(
+                'รหัส',
+                style: TextStyle(
+                  color: const Color(0xFF45171D),
+                  /* Lottocat-Black */
+                  fontSize: 24,
+                  fontFamily: 'Kanit',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 32),
-          Expanded(
-            child: Text(
-              'เลขรางวัล',
-              style: TextStyle(
-                color: const Color(0xFF45171D),
-                /* Lottocat-Black */
-                fontSize: 28,
-                fontFamily: 'Kanit',
-                fontWeight: FontWeight.w600,
+            const SizedBox(width: 32),
+            Expanded(
+              child: Text(
+                'เลขรางวัล',
+                style: TextStyle(
+                  color: const Color(0xFF45171D),
+                  /* Lottocat-Black */
+                  fontSize: 24,
+                  fontFamily: 'Kanit',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -97,9 +100,10 @@ class LotteryList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 50,
+            width: 60,
             child: Text(
               index,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: const Color(0xFFFD5553),
                 /* Lottocat-Primary */

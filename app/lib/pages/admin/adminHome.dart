@@ -65,7 +65,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
           const SizedBox(height: 16),
 
-          Expanded(child: _buildContent()),
+          _buildContent(),
+
+          // Expanded(child: _buildContent()),
         ],
       ),
     );

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:app/components/Button.dart';
 import 'package:app/components/Input.dart';
 import 'package:app/components/StatusTags.dart' show PurchaseLotteryCard;
+import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 
 enum DialogType { success, error, warning, info, custom }
@@ -468,80 +469,121 @@ void showPurchaseDialogue(
   BuildContext context,
   Function(String) onConfirm, {
   String? initialValue,
+  VoidCallback? onSuccess,
 }) {
   final TextEditingController lotteryAmountController = TextEditingController(
     text: (initialValue == null || initialValue.isEmpty) ? '1' : initialValue,
   );
+
+  bool isLoading = false;
+
   showDialog(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                'จำนวนหวยที่ต้องการซื้อ',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '1 ใบ = ราคา 80 บาท',
-                style: TextStyle(fontSize: 14, color: Colors.red),
-              ),
-              const SizedBox(height: 16),
-              Input(
-                controller: lotteryAmountController,
-                hintText: '1',
-                suffixText: 'ใบ',
-              ),
-              const SizedBox(height: 16),
-              // const Text(
-              //   'ยอดสุทธิ: $totalPrice',
-              //   style: TextStyle(fontSize: 14, color: Colors.red),
-              // ),
-              // const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Flexible(
-                    child: ButtonActions(
-                      text: 'ยกเลิก',
-                      variant: ButtonVariant.light,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                  const Text(
+                    'จำนวน Lottocat ที่ต้องการซื้อ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.onSurface,
                     ),
                   ),
-                  Flexible(
-                    child: ButtonActions(
-                      text: 'ยืนยัน',
-                      variant: ButtonVariant.primary,
-                      onPressed: () {
-                        final value =
-                            lotteryAmountController.text.trim().isEmpty
-                            ? ((initialValue == null || initialValue.isEmpty)
-                                  ? '1'
-                                  : initialValue)
-                            : lotteryAmountController.text.trim();
-                        onConfirm(value);
-                        Navigator.pop(context);
-                      },
-                    ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '1 ใบ = ราคา 80 บาท',
+                    style: TextStyle(fontSize: 14, color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  Input(
+                    controller: lotteryAmountController,
+                    hintText: '1',
+                    suffixText: 'ใบ',
+                  ),
+                  const SizedBox(height: 16),
+                  // const Text(
+                  //   'ยอดสุทธิ: $totalPrice',
+                  //   style: TextStyle(fontSize: 14, color: Colors.red),
+                  // ),
+                  // const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: ButtonActions(
+                          text: 'ยกเลิก',
+                          variant: ButtonVariant.light,
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  Navigator.pop(context);
+                                },
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Flexible(
+                        child: ButtonActions(
+                          text: isLoading ? 'กำลังโหลด...' : 'ยืนยัน',
+                          variant: ButtonVariant.primary,
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  final value =
+                                      lotteryAmountController.text
+                                          .trim()
+                                          .isEmpty
+                                      ? ((initialValue == null ||
+                                                initialValue.isEmpty)
+                                            ? '1'
+                                            : initialValue)
+                                      : lotteryAmountController.text.trim();
+
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+
+                                  try {
+                                    await onConfirm(value);
+                                  } catch (e) {
+                                    rethrow;
+                                  } finally {
+                                    if (context.mounted) {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                      Navigator.pop(context);
+                                      if (onSuccess != null) {
+                                        onSuccess();
+                                      } else {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/success',
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
     },
   );
@@ -570,189 +612,198 @@ void showCustomStatusTagsDialog(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _formatDate(purchaseLotteryCard.period),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(purchaseLotteryCard.status),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        _getStatusText(purchaseLotteryCard.status),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Table Header
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          'เลขรางวัล',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+                      Text(
+                        _formatDate(purchaseLotteryCard.period),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          'จำนวน',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          'รางวัล',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(purchaseLotteryCard.status),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6.0,
+                            vertical: 2.0,
+                          ),
+                          child: Text(
+                            _getStatusText(purchaseLotteryCard.status),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 20),
 
-                const SizedBox(height: 8),
-
-                // Table Content
-                Column(
-                  children: purchaseLotteryCard.rewards.map((reward) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.grey[200]!,
-                            width: 1,
+                  // Table Header
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            'เลขรางวัล',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
                           ),
                         ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Text(
-                              reward['number']?.toString() ?? '-',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'จำนวน',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
                             ),
                           ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              'x${reward['amount']?.toString() ?? '1'}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                              ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'รางวัล',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
                             ),
                           ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              _getPrizeText(reward['prize']),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    reward['prize'] != null &&
-                                        reward['prize'].toString() != '-'
-                                    ? Colors.green[700]
-                                    : Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Footer Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: ButtonActions(
-                        text: 'นำส่งรางวัล',
-                        variant: ButtonVariant.outline,
-                        theme: purchaseLotteryCard.status == "win"
-                            ? Colors.green
-                            : Colors.grey,
-                        onPressed:
-                            purchaseLotteryCard.status == "win" &&
-                                purchaseLotteryCard.onClaim != null
-                            ? () {
-                                purchaseLotteryCard.onClaim!();
-                              }
-                            : null,
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ButtonActions(
-                        text: 'ปิด',
-                        variant: ButtonVariant.outline,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Table Content
+                  Column(
+                    children: purchaseLotteryCard.rewards.map((reward) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.grey[200]!,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                reward['number']?.toString() ?? '-',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'x${reward['amount']?.toString() ?? '1'}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                _getPrizeText(reward['prize']),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      reward['prize'] != null &&
+                                          reward['prize'].toString() != '-'
+                                      ? Colors.green[700]
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Footer Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: ButtonActions(
+                          text: 'นำส่งรางวัล',
+                          variant: ButtonVariant.outline,
+                          theme: purchaseLotteryCard.status == "win"
+                              ? Colors.green
+                              : Colors.grey,
+                          onPressed:
+                              purchaseLotteryCard.status == "win" &&
+                                  purchaseLotteryCard.onClaim != null
+                              ? () {
+                                  purchaseLotteryCard.onClaim!();
+                                }
+                              : null,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ButtonActions(
+                          text: 'ปิด',
+                          variant: ButtonVariant.outline,
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

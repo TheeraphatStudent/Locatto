@@ -20,7 +20,7 @@ class Lottery extends StatefulWidget {
     this.isSelected = false,
     this.onTap,
     this.onLongPress,
-    this.qrData = "Hello world",
+    this.qrData = "https://cataas.com/cat/gif",
   });
 
   @override
@@ -60,13 +60,15 @@ class _LotteryState extends State<Lottery> {
         //   }
         // },
         // onLongPressDown: (details) {
-        //   _showPopup(context);
         // },
         // onTertiaryLongPress: () {
         //   _showPopup(context);
         // },
         child: Container(
-          // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ), // Increased padding for better spacing
           decoration: ShapeDecoration(
             gradient: AppColors.softGradientPrimary,
             shape: RoundedRectangleBorder(
@@ -112,121 +114,129 @@ class _LotteryState extends State<Lottery> {
                     ),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(
-                                  "assets/images/logo_primary.png",
-                                ),
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 1),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '80',
-                                  style: TextStyle(
-                                    color: Color(0xFF45171D),
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                WidgetSpan(child: SizedBox(width: 4)),
-                                TextSpan(
-                                  text: 'บาท',
-                                  style: TextStyle(
-                                    color: Color(0xFF45171D),
-                                    fontSize: 8,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 30,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 3,
-                                vertical: 2,
-                              ),
-                              decoration: ShapeDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.centerRight,
-                                  end: Alignment.centerLeft,
-                                  colors: [
-                                    AppColors.secondaryLight,
-                                    AppColors.primaryLight,
-                                  ],
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(3),
-                                    bottomLeft: Radius.circular(3),
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                    "assets/images/logo_primary.png",
                                   ),
+                                  fit: BoxFit.contain,
                                 ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: widget.lotteryNumber
-                                    .split('')
-                                    .map((digit) => _buildNumberColumn(digit))
-                                    .toList(),
                               ),
                             ),
-                            SizedBox(height: 2),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 1),
-                                    Text(
-                                      'เงินล้านใกล้ฉัน',
-                                      style: TextStyle(
-                                        color: Color(0xFFFD5553),
-                                        fontSize: 12,
-                                        fontFamily: 'Kanit',
-                                        fontWeight: FontWeight.w400,
-                                      ),
+                            SizedBox(height: 1),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '80',
+                                    style: TextStyle(
+                                      color: Color(0xFF45171D),
+                                      fontSize: 8,
+                                      fontFamily: 'Kanit',
+                                      fontWeight: FontWeight.w400,
                                     ),
-                                  ],
-                                ),
-                                QrWidget(data: widget.qrData, size: 24),
-                              ],
+                                  ),
+                                  WidgetSpan(child: SizedBox(width: 4)),
+                                  TextSpan(
+                                    text: 'บาท',
+                                    style: TextStyle(
+                                      color: Color(0xFF45171D),
+                                      fontSize: 8,
+                                      fontFamily: 'Kanit',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 4,
+                          ), // Increased padding for better number display
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, // Increased horizontal padding
+                                  vertical: 4, // Increased vertical padding
+                                ),
+                                decoration: ShapeDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerRight,
+                                    end: Alignment.centerLeft,
+                                    colors: [
+                                      AppColors.secondaryLight,
+                                      AppColors.primaryLight,
+                                    ],
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(3),
+                                      bottomLeft: Radius.circular(3),
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: widget.lotteryNumber
+                                      .split('')
+                                      .map((digit) => _buildNumberColumn(digit))
+                                      .toList(),
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'เงินล้านใกล้ฉัน',
+                                        style: TextStyle(
+                                          color: Color(0xFFFD5553),
+                                          fontSize: 12,
+                                          fontFamily: 'Kanit',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  QrWidget(data: widget.qrData, size: 36),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -238,30 +248,36 @@ class _LotteryState extends State<Lottery> {
 
   Widget _buildNumberColumn(String number) {
     final int num = int.tryParse(number) ?? 0;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          number,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Color(0xFF45171D),
-            fontSize: 12,
-            fontFamily: 'Kanit',
-            fontWeight: FontWeight.w500,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 2,
+        vertical: 1,
+      ), // Added padding around each number column
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            number,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFF45171D),
+              fontSize: 12,
+              fontFamily: 'Kanit',
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        Text(
-          numberTexts[num] ?? '',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Color(0xFF45171D),
-            fontSize: 6,
-            fontFamily: 'Kanit',
-            fontWeight: FontWeight.w300,
+          Text(
+            numberTexts[num] ?? '',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFF45171D),
+              fontSize: 6,
+              fontFamily: 'Kanit',
+              fontWeight: FontWeight.w300,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
