@@ -1,0 +1,27 @@
+services:
+  dev-lottocat-api:
+    build:
+      context: .
+      dockerfile: dockerFile
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRE_IN=${JWT_EXPIRE_IN}
+      - IS_SIGN=${IS_SIGN}
+      - UPLOAD_TO_GCS=false
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - lotcatto
+
+networks:
+  lotcatto:
+    driver: bridge

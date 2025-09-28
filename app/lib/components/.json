@@ -1,0 +1,12 @@
+[
+  {rid: 14, tier: T1L3, revenue: 5000.00, winner: 339, created: 2025-09-21T11: 56: 32.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 15, tier: R2, revenue: 2000.00, winner: 31, created: 2025-09-21T11: 56: 32.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 11, tier: T1, revenue: 50000.00, winner: 305339, created: 2025-09-21T11: 56: 31.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 12, tier: T2, revenue: 30000.00, winner: 830599, created: 2025-09-21T11: 56: 31.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  },
+  {rid: 13, tier: T3, revenue: 10000.00, winner: 866094, created: 2025-09-21T11: 56: 31.000Z, updated: 2025-09-24T09: 18: 45.000Z
+  }
+]

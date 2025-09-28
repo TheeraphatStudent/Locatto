@@ -1,0 +1,52 @@
+services:
+  prod-lottocat-api:
+    build:
+      context: .
+      dockerfile: dockerFile
+    restart: always
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRE_IN=${JWT_EXPIRE_IN}
+      - IS_SIGN=${IS_SIGN}
+      - UPLOAD_TO_GCS=false
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcs-key.json
+    # volumes:
+    #   - ./gcs-key.json:/app/gcs-key.json:ro
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "3000:3000"
+    networks:
+      - lotcatto
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-container
+    restart: always
+    environment:
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=root_u4_1irZU^yFl
+    # env_file:
+    #   - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql:Z
+    networks:
+      - lotcatto
+
+volumes:
+  uploads:
+  mysql_data:
+
+networks:
+  lotcatto:
+    driver: bridge

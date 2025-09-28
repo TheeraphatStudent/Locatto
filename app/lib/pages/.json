@@ -1,0 +1,19 @@
+{
+  purchases: [
+    {created: 2025-09-24T00: 59: 51.000Z, status: fail, rewardId: null, prize: -, lot_info: {created: 2025-09-24T00: 59: 51.000Z, lot_amount: 1, lid: 1999, lottery_number: 448071, updated: 2025-09-24T00: 59: 51.000Z
+      }
+    },
+    {created: 2025-09-24T00: 59: 51.000Z, status: fail, rewardId: null, prize: -, lot_info: {created: 2025-09-24T00: 59: 51.000Z, lot_amount: 1, lid: 2007, lottery_number: 830599, updated: 2025-09-24T00: 59: 51.000Z
+      }
+    },
+    {created: 2025-09-24T00: 59: 51.000Z, status: fail, rewardId: null, prize: -, lot_info: {created: 2025-09-24T00: 59: 51.000Z, lot_amount: 5, lid: 2000, lottery_number: 866094, updated: 2025-09-24T00: 59: 51.000Z
+      }
+    },
+    {created: 2025-09-24T00: 59: 51.000Z, status: fail, rewardId: null, prize: -, lot_info: {created: 2025-09-24T00: 59: 51.000Z, lot_amount: 10, lid: 1997, lottery_number: 281051, updated: 2025-09-24T00: 59: 51.000Z
+      }
+    },
+    {created: 2025-09-24T00: 59: 51.000Z, status: win, rewardId: 14, prize: 5000.00, lot_info: {created: 2025-09-24T00: 59: 51.000Z, lot_amount: 1, lid: 2090, lottery_number: 305339, updated: 2025-09-24T00: 59: 51.000Z
+      }
+    }
+  ], total: 5
+}

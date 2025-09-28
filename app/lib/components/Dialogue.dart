@@ -1,0 +1,881 @@
+import 'dart:ui';
+
+import 'package:app/components/Button.dart';
+import 'package:app/components/Input.dart';
+import 'package:app/components/StatusTags.dart' show PurchaseLotteryCard;
+import 'package:app/style/theme.dart';
+import 'package:flutter/material.dart';
+
+enum DialogType { success, error, warning, info, custom }
+
+class DynamicDialog extends StatelessWidget {
+  final String title;
+  final Widget content;
+  final List<DialogButton>? actions;
+  final DialogType type;
+  final bool barrierDismissible;
+  final double? maxWidth;
+  final EdgeInsets? padding;
+  final BoxDecoration? decoration;
+
+  const DynamicDialog({
+    super.key,
+    required this.title,
+    required this.content,
+    this.actions,
+    this.type = DialogType.custom,
+    this.barrierDismissible = true,
+    this.maxWidth = 320,
+    this.padding = const EdgeInsets.all(24),
+    this.decoration,
+  });
+
+  Color _getTitleColor() {
+    switch (type) {
+      case DialogType.success:
+        return const Color(0xFF28A745);
+      case DialogType.error:
+        return const Color(0xFFDC3545);
+      case DialogType.warning:
+        return const Color(0xFFFFC107);
+      case DialogType.info:
+        return const Color(0xFF17A2B8);
+      case DialogType.custom:
+        return const Color(0xFF45171D);
+    }
+  }
+
+  BoxDecoration _getDefaultDecoration() {
+    if (decoration != null) return decoration!;
+
+    switch (type) {
+      case DialogType.success:
+        return BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        );
+      case DialogType.error:
+        return BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFCE4E4), Color(0xFFFFF5F5)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        );
+      case DialogType.warning:
+        return BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFF8E1), Color(0xFFFFF3CD)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        );
+      case DialogType.info:
+        return BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFE3F2FD), Color(0xFFE1F5FE)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        );
+      case DialogType.custom:
+        return BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFE2E2), Color(0xFFFFFADD)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        constraints: BoxConstraints(maxWidth: maxWidth ?? 400.0),
+        padding: padding,
+        decoration: _getDefaultDecoration(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: _getTitleColor(),
+                fontFamily: 'Kanit',
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            content,
+            if (actions != null && actions!.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              ...actions!.map(
+                (action) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: action.onPressed,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            action.backgroundColor ?? const Color(0xFFFF4745),
+                        foregroundColor: action.foregroundColor ?? Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        action.text,
+                        style: TextStyle(
+                          fontFamily: 'Kanit',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  static void show(
+    BuildContext context, {
+    required String title,
+    required Widget content,
+    List<DialogButton>? actions,
+    DialogType type = DialogType.custom,
+    bool barrierDismissible = true,
+    double? maxWidth,
+    EdgeInsets? padding,
+    BoxDecoration? decoration,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      useSafeArea: true,
+      builder: (BuildContext context) => DynamicDialog(
+        title: title,
+        content: content,
+        actions: actions,
+        type: type,
+        barrierDismissible: barrierDismissible,
+        maxWidth: maxWidth,
+        padding: padding,
+        decoration: decoration,
+      ),
+    );
+  }
+}
+
+class DialogButton {
+  final String text;
+  final VoidCallback onPressed;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+
+  const DialogButton({
+    required this.text,
+    required this.onPressed,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+}
+
+// Convenience functions for common dialog types
+class DialogHelper {
+  static void showSuccess(
+    BuildContext context, {
+    required String title,
+    required String message,
+    List<DialogButton>? actions,
+  }) {
+    DynamicDialog.show(
+      context,
+      title: title,
+      content: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 16,
+          color: Color(0xFF45171D),
+          fontFamily: 'Kanit',
+          height: 1.5,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      type: DialogType.success,
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+    );
+  }
+
+  static void showError(
+    BuildContext context, {
+    required String title,
+    required String message,
+    List<DialogButton>? actions,
+  }) {
+    DynamicDialog.show(
+      context,
+      title: title,
+      content: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 16,
+          color: Color(0xFF45171D),
+          fontFamily: 'Kanit',
+          height: 1.5,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      type: DialogType.error,
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+    );
+  }
+
+  static void showWarning(
+    BuildContext context, {
+    required String title,
+    required String message,
+    List<DialogButton>? actions,
+  }) {
+    DynamicDialog.show(
+      context,
+      title: title,
+      content: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 16,
+          color: Color(0xFF45171D),
+          fontFamily: 'Kanit',
+          height: 1.5,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      type: DialogType.warning,
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+    );
+  }
+
+  static void showInfo(
+    BuildContext context, {
+    required String title,
+    required String message,
+    List<DialogButton>? actions,
+  }) {
+    DynamicDialog.show(
+      context,
+      title: title,
+      content: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 16,
+          color: Color(0xFF45171D),
+          fontFamily: 'Kanit',
+          height: 1.5,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      type: DialogType.info,
+      actions:
+          actions ??
+          [
+            DialogButton(
+              text: 'ตกลง',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+    );
+  }
+
+  static void showConfirmation(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required String confirmText,
+    required String cancelText,
+    required VoidCallback onConfirm,
+    VoidCallback? onCancel,
+  }) {
+    DynamicDialog.show(
+      context,
+      title: title,
+      content: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 16,
+          color: Color(0xFF45171D),
+          fontFamily: 'Kanit',
+          height: 1.5,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      type: DialogType.warning,
+      actions: [
+        DialogButton(
+          text: cancelText,
+          onPressed: onCancel ?? () => Navigator.of(context).pop(),
+          backgroundColor: const Color(0xFF6C757D),
+        ),
+        DialogButton(
+          text: confirmText,
+          onPressed: () {
+            Navigator.of(context).pop();
+            onConfirm();
+          },
+          backgroundColor: const Color(0xFFDC3545),
+        ),
+      ],
+    );
+  }
+}
+
+//โชว์ Dialog ระบุจำนวนเหรียญ
+void showCreateMoneyDialog(
+  BuildContext context,
+  Function(String) onConfirm, {
+  String? initialValue,
+}) {
+  final TextEditingController moneyController = TextEditingController(
+    text: (initialValue == null || initialValue.isEmpty) ? '100' : initialValue,
+  );
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'ระบุจำนวนเครดิตสำหรับสมัครสมาชิก',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '1 เครดิต = เริ่มต้น',
+                style: TextStyle(fontSize: 14, color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: moneyController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: '100',
+                  suffixText: 'เครดิต',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // ปิด dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'ย้อนกลับ',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final value = moneyController.text.trim().isEmpty
+                          ? ((initialValue == null || initialValue.isEmpty)
+                                ? '100'
+                                : initialValue)
+                          : moneyController.text.trim();
+                      onConfirm(value);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      side: const BorderSide(color: Colors.red),
+                    ),
+                    child: const Text(
+                      'ยืนยัน',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void showPurchaseDialogue(
+  BuildContext context,
+  Function(String) onConfirm, {
+  String? initialValue,
+  VoidCallback? onSuccess,
+}) {
+  final TextEditingController lotteryAmountController = TextEditingController(
+    text: (initialValue == null || initialValue.isEmpty) ? '1' : initialValue,
+  );
+
+  bool isLoading = false;
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'จำนวน Lottocat ที่ต้องการซื้อ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '1 ใบ = ราคา 80 บาท',
+                    style: TextStyle(fontSize: 14, color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  Input(
+                    controller: lotteryAmountController,
+                    hintText: '1',
+                    suffixText: 'ใบ',
+                  ),
+                  const SizedBox(height: 16),
+                  // const Text(
+                  //   'ยอดสุทธิ: $totalPrice',
+                  //   style: TextStyle(fontSize: 14, color: Colors.red),
+                  // ),
+                  // const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: ButtonActions(
+                          text: 'ยกเลิก',
+                          variant: ButtonVariant.light,
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  Navigator.pop(context);
+                                },
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Flexible(
+                        child: ButtonActions(
+                          text: isLoading ? 'กำลังโหลด...' : 'ยืนยัน',
+                          variant: ButtonVariant.primary,
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  final value =
+                                      lotteryAmountController.text
+                                          .trim()
+                                          .isEmpty
+                                      ? ((initialValue == null ||
+                                                initialValue.isEmpty)
+                                            ? '1'
+                                            : initialValue)
+                                      : lotteryAmountController.text.trim();
+
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+
+                                  try {
+                                    await onConfirm(value);
+                                  } catch (e) {
+                                    rethrow;
+                                  } finally {
+                                    if (context.mounted) {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                      Navigator.pop(context);
+                                      if (onSuccess != null) {
+                                        onSuccess();
+                                      } else {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/success',
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void showCustomStatusTagsDialog(
+  BuildContext context,
+  PurchaseLotteryCard purchaseLotteryCard, {
+  VoidCallback? onWin,
+}) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Dialog(
+          insetPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.85,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _formatDate(purchaseLotteryCard.period),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(purchaseLotteryCard.status),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6.0,
+                            vertical: 2.0,
+                          ),
+                          child: Text(
+                            _getStatusText(purchaseLotteryCard.status),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Table Header
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            'เลขรางวัล',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'จำนวน',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'รางวัล',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Table Content
+                  Column(
+                    children: purchaseLotteryCard.rewards.map((reward) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.grey[200]!,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                reward['number']?.toString() ?? '-',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'x${reward['amount']?.toString() ?? '1'}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                _getPrizeText(reward['prize']),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      reward['prize'] != null &&
+                                          reward['prize'].toString() != '-'
+                                      ? Colors.green[700]
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Footer Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: ButtonActions(
+                          text: 'นำส่งรางวัล',
+                          variant: ButtonVariant.outline,
+                          theme: purchaseLotteryCard.status == "win"
+                              ? Colors.green
+                              : Colors.grey,
+                          onPressed:
+                              purchaseLotteryCard.status == "win" &&
+                                  purchaseLotteryCard.onClaim != null
+                              ? () {
+                                  purchaseLotteryCard.onClaim!();
+                                }
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ButtonActions(
+                          text: 'ปิด',
+                          variant: ButtonVariant.outline,
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// Helper functions
+String _formatDate(String dateString) {
+  try {
+    final date = DateTime.parse(dateString);
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = date.year.toString();
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$day/$month/$year $hour:$minute';
+  } catch (e) {
+    return dateString;
+  }
+}
+
+Color _getStatusColor(String status) {
+  switch (status.toLowerCase()) {
+    case "win":
+      return Colors.green;
+    case "pending":
+      return Colors.orange;
+    case "fail":
+    case "lose":
+      return Colors.red;
+    default:
+      return Colors.grey;
+  }
+}
+
+String _getStatusText(String status) {
+  switch (status.toLowerCase()) {
+    case "win":
+      return "ถูกรางวัล";
+    case "pending":
+      return "รอประกาศ";
+    case "fail":
+    case "lose":
+      return "ไม่ถูกรางวัล";
+    case "claimed":
+      return "ได้รับรางวัลแล้ว";
+    default:
+      return "ไม่ทราบสถานะ";
+  }
+}
+
+String _getPrizeText(dynamic prize) {
+  if (prize == null || prize.toString() == '-' || prize.toString().isEmpty) {
+    return '-';
+  }
+
+  final prizeValue = prize.toString();
+  if (prizeValue.contains('฿') || prizeValue.contains('บาท')) {
+    return prizeValue;
+  }
+
+  // ถ้าเป็นตัวเลข ให้เพิ่ม ฿
+  try {
+    final number = double.parse(prizeValue);
+    if (number > 0) {
+      return '฿${number.toStringAsFixed(0)}';
+    }
+  } catch (e) {
+    // ไม่ใช่ตัวเลข
+  }
+
+  return prizeValue;
+}
