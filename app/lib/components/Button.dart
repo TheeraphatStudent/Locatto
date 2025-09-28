@@ -157,17 +157,15 @@ class _ButtonActionsState extends State<ButtonActions>
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeInOut,
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
+                  height: 48,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   decoration: ShapeDecoration(
                     color: backgroundColor,
                     shape: shape,
                     shadows: boxShadows,
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -267,7 +265,7 @@ class ButtonTab extends StatelessWidget {
         onTap: onTap,
         child: Container(
           height: 48,
-          // margin: const EdgeInsets.symmetric(horizontal: 2),
+          margin: const EdgeInsets.symmetric(horizontal: 2),
           decoration: ShapeDecoration(
             color: const Color(0xFFFFF7F7),
             shape: RoundedRectangleBorder(

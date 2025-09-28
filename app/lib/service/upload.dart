@@ -1,11 +1,12 @@
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
+import 'dart:convert';
 import '../config.dart';
 
 class UploadService {
   final AppConfig config = AppConfig();
 
-  Future<String> uploadFile(String? filePath, Uint8List? bytes, String fileName) async {
+  Future<Map<String, dynamic>> uploadFile(String? filePath, Uint8List? bytes, String fileName) async {
     var uri = Uri.http(config.getBaseUrl(), '/upload');
     var request = http.MultipartRequest('POST', uri);
 
@@ -19,11 +20,17 @@ class UploadService {
 
     var response = await request.send();
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var responseData = await response.stream.bytesToString();
-      return responseData;
+      try {
+        var jsonData = json.decode(responseData);
+        return jsonData;
+      } catch (e) {
+        return {'message': 'Upload successful', 'data': responseData};
+      }
     } else {
-      throw Exception('Upload failed with status ${response.statusCode}');
+      var errorData = await response.stream.bytesToString();
+      throw Exception('Upload failed with status ${response.statusCode}: $errorData');
     }
   }
 }

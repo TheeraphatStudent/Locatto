@@ -79,7 +79,7 @@ export class UploadService {
         },
       });
 
-      await file.makePublic();
+      // await file.makePublic();
 
       return `https://storage.googleapis.com/${this.bucketName}/uploads/${filename}`;
     } catch (error) {

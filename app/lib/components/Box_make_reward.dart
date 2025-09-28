@@ -55,6 +55,8 @@ class _Box_make_rewardState extends State<Box_make_reward> {
   }
 
   void _loadInitialData() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
       _currentPage = 0;
@@ -72,29 +74,36 @@ class _Box_make_rewardState extends State<Box_make_reward> {
 
       final List<dynamic> lotteries = response['data'] ?? [];
 
-      setState(() {
-        _lotteryData = lotteries
-            .map(
-              (lottery) =>
-                  LotteryData(lottery: lottery['lottery_number'] ?? '-'),
-            )
-            .toList();
-        _isLoading = false;
-        _currentPage = 1;
-      });
+      if (mounted) {
+        setState(() {
+          _lotteryData = lotteries
+              .map(
+                (lottery) =>
+                    LotteryData(lottery: lottery['lottery_number'] ?? '-'),
+              )
+              .toList();
+          _isLoading = false;
+          _currentPage = 1;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        // Check if widget is still mounted before setState
+        setState(() {
+          _isLoading = false;
+        });
+      }
       log('Failed to load initial data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล: $e')),
+        );
+      }
     }
   }
 
   void _loadMoreData() async {
-    if (_isLoading) return;
+    if (_isLoading || !mounted) return;
 
     setState(() {
       _isLoading = true;
@@ -107,26 +116,32 @@ class _Box_make_rewardState extends State<Box_make_reward> {
       );
       final List<dynamic> lotteries = response['data'] ?? [];
 
-      setState(() {
-        _lotteryData.addAll(
-          lotteries
-              .map(
-                (lottery) =>
-                    LotteryData(lottery: lottery['lottery_number'] ?? '-'),
-              )
-              .toList(),
-        );
-        _isLoading = false;
-        _currentPage++;
-      });
+      if (mounted) {
+        setState(() {
+          _lotteryData.addAll(
+            lotteries
+                .map(
+                  (lottery) =>
+                      LotteryData(lottery: lottery['lottery_number'] ?? '-'),
+                )
+                .toList(),
+          );
+          _isLoading = false;
+          _currentPage++;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       log('Failed to load more data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูลเพิ่มเติม: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูลเพิ่มเติม: $e')),
+        );
+      }
     }
   }
 
@@ -200,9 +215,11 @@ class _Box_make_rewardState extends State<Box_make_reward> {
                       onPressed: () async {
                         try {
                           if (numberController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('กรุณากรอกจำนวน')),
-                            );
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('กรุณากรอกจำนวน')),
+                              );
+                            }
                             return;
                           }
                           final int count = int.parse(
@@ -223,12 +240,16 @@ class _Box_make_rewardState extends State<Box_make_reward> {
                             ),
                           );
                           // Reload data after generating new lotteries
-                          _loadInitialData();
+                          if (mounted) {
+                            _loadInitialData();
+                          }
                         } catch (e) {
                           log('Failed to generate lotteries: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
-                          );
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+                            );
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

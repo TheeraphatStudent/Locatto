@@ -30,6 +30,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _creditController = TextEditingController(text: '100');
   // final _role = TextEditingController();
+  
+  String? _uploadedImageUrl; // Store uploaded image URL
 
   final responseHelper = ResponseHelper();
   AlertMessage alert = AlertMessage();
@@ -181,7 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
         telno: _telnoController.text,
         cardId: _cardIdController.text,
         email: _emailController.text.trim(),
-        img: '',
+        img: _uploadedImageUrl ?? '', // Use uploaded image URL
         username: _usernameController.text.trim(),
         password: _passwordController.text,
         credit: int.parse(_creditController.text),
@@ -278,7 +280,15 @@ class _RegisterPageState extends State<RegisterPage> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Center(child: Avatar()),
+                                Center(
+                                  child: Avatar(
+                                    onImageUploaded: (imageUrl) {
+                                      setState(() {
+                                        _uploadedImageUrl = imageUrl;
+                                      });
+                                    },
+                                  ),
+                                ),
 
                                 const SizedBox(height: 20),
                                 // Full Name Field
