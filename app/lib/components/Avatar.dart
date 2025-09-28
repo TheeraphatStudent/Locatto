@@ -9,6 +9,7 @@ enum AvatarState { view, edit }
 class Avatar extends StatefulWidget {
   final String? initialImagePath;
   final Function(String?)? onImageChanged;
+  final Function(String?)? onImageUploaded; // New callback for uploaded URL
 
   final AvatarState state;
   final double size;
@@ -22,6 +23,7 @@ class Avatar extends StatefulWidget {
     super.key,
     this.initialImagePath,
     this.onImageChanged,
+    this.onImageUploaded, // New parameter
     this.state = AvatarState.edit,
     this.size = 120,
     this.backgroundColor = const Color(0xFFAE9DA0),
@@ -37,6 +39,7 @@ class Avatar extends StatefulWidget {
 
 class _AvatarState extends State<Avatar> {
   String? _imagePath;
+  String? _uploadedImageUrl; // Store the uploaded image URL
   Uint8List? _webImageBytes;
   bool _isLoading = false;
   UploadService uploadService = UploadService();
@@ -92,7 +95,23 @@ class _AvatarState extends State<Avatar> {
         widget.onImageChanged?.call(file.path);
 
         try {
-          await uploadService.uploadFile(file.path, file.bytes, file.name);
+          final uploadResponse = await uploadService.uploadFile(file.path, file.bytes, file.name);
+          
+          // Extract the uploaded image URL from the response
+          String? imageUrl;
+          if (uploadResponse['result'] != null) {
+            imageUrl = uploadResponse['result']['url'] ?? uploadResponse['result']['localPath'];
+          } else if (uploadResponse['data'] != null) {
+            imageUrl = uploadResponse['data']['url'] ?? uploadResponse['data']['localPath'];
+          }
+          
+          setState(() {
+            _uploadedImageUrl = imageUrl;
+          });
+          
+          // Notify parent component about the uploaded image URL
+          widget.onImageUploaded?.call(imageUrl);
+          
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -151,6 +170,22 @@ class _AvatarState extends State<Avatar> {
           widget.loadingIcon,
           size: _iconSize,
           color: widget.iconColor,
+        ),
+      );
+    }
+
+    // Priority: uploaded URL > web bytes > local file path
+    if (_uploadedImageUrl != null && _uploadedImageUrl!.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(_radius),
+        child: Image.network(
+          _uploadedImageUrl!,
+          width: widget.size,
+          height: widget.size,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildDefaultAvatar();
+          },
         ),
       );
     }

@@ -55,6 +55,8 @@ class _Box_make_rewardState extends State<Box_make_reward> {
   }
 
   void _loadInitialData() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
       _currentPage = 0;
@@ -72,29 +74,36 @@ class _Box_make_rewardState extends State<Box_make_reward> {
 
       final List<dynamic> lotteries = response['data'] ?? [];
 
-      setState(() {
-        _lotteryData = lotteries
-            .map(
-              (lottery) =>
-                  LotteryData(lottery: lottery['lottery_number'] ?? '-'),
-            )
-            .toList();
-        _isLoading = false;
-        _currentPage = 1;
-      });
+      if (mounted) {
+        setState(() {
+          _lotteryData = lotteries
+              .map(
+                (lottery) =>
+                    LotteryData(lottery: lottery['lottery_number'] ?? '-'),
+              )
+              .toList();
+          _isLoading = false;
+          _currentPage = 1;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        // Check if widget is still mounted before setState
+        setState(() {
+          _isLoading = false;
+        });
+      }
       log('Failed to load initial data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล: $e')),
+        );
+      }
     }
   }
 
   void _loadMoreData() async {
-    if (_isLoading) return;
+    if (_isLoading || !mounted) return;
 
     setState(() {
       _isLoading = true;
@@ -107,26 +116,32 @@ class _Box_make_rewardState extends State<Box_make_reward> {
       );
       final List<dynamic> lotteries = response['data'] ?? [];
 
-      setState(() {
-        _lotteryData.addAll(
-          lotteries
-              .map(
-                (lottery) =>
-                    LotteryData(lottery: lottery['lottery_number'] ?? '-'),
-              )
-              .toList(),
-        );
-        _isLoading = false;
-        _currentPage++;
-      });
+      if (mounted) {
+        setState(() {
+          _lotteryData.addAll(
+            lotteries
+                .map(
+                  (lottery) =>
+                      LotteryData(lottery: lottery['lottery_number'] ?? '-'),
+                )
+                .toList(),
+          );
+          _isLoading = false;
+          _currentPage++;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       log('Failed to load more data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูลเพิ่มเติม: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูลเพิ่มเติม: $e')),
+        );
+      }
     }
   }
 
@@ -136,7 +151,7 @@ class _Box_make_rewardState extends State<Box_make_reward> {
       children: [
         Container(
           // width: MediaQuery.of(context).size.width * 0.9,
-          padding: const EdgeInsets.all(16),
+          // padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -148,106 +163,116 @@ class _Box_make_rewardState extends State<Box_make_reward> {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "สร้างรางวัล (สุ่มตามจำนวน)",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+          child: Padding(
+            key: Key("COntianer padding"),
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "สร้างรางวัล (สุ่มตามจำนวน)",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-              // TextField สำหรับกรอกจำนวน
-              Input(
-                controller: numberController,
-                labelText: "จำนวน",
-                suffixText: "ใบ",
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
+                // TextField สำหรับกรอกจำนวน
+                Input(
+                  controller: numberController,
+                  labelText: "จำนวน",
+                  suffixText: "ใบ",
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
 
-              // ปุ่มดำเนินการและยกเลิก
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        numberController.clear();
-                        // Navigator.pop(context); // ยกเลิกและกลับไปหน้าก่อนหน้า
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                // ปุ่มดำเนินการและยกเลิก
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          numberController.clear();
+                          // Navigator.pop(context); // ยกเลิกและกลับไปหน้าก่อนหน้า
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text(
-                        "ยกเลิก",
-                        style: TextStyle(fontSize: 20),
+                        child: const Text(
+                          "ยกเลิก",
+                          style: TextStyle(fontSize: 20),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          if (numberController.text.isEmpty) {
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            if (numberController.text.isEmpty) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('กรุณากรอกจำนวน')),
+                                );
+                              }
+                              return;
+                            }
+                            final int count = int.parse(
+                              numberController.text,
+                            ); // ดึงค่าจาก TextField
+                            final lotteryService =
+                                LotteryService(); // สร้าง instance ของ LotteryService
+                            final response = await lotteryService
+                                .generateLotteries(count); // เรียก API
+
+                            // log('Lotteries generated: $response');
+
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('กรุณากรอกจำนวน')),
-                            );
-                            return;
-                          }
-                          final int count = int.parse(
-                            numberController.text,
-                          ); // ดึงค่าจาก TextField
-                          final lotteryService =
-                              LotteryService(); // สร้าง instance ของ LotteryService
-                          final response = await lotteryService
-                              .generateLotteries(count); // เรียก API
-
-                          // log('Lotteries generated: $response');
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'สร้างรางวัลสำเร็จ: ${response['message']}',
+                              SnackBar(
+                                content: Text(
+                                  'สร้างรางวัลสำเร็จ: ${response['message']}',
+                                ),
                               ),
-                            ),
-                          );
-                          // Reload data after generating new lotteries
-                          _loadInitialData();
-                        } catch (e) {
-                          log('Failed to generate lotteries: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                            );
+                            // Reload data after generating new lotteries
+                            if (mounted) {
+                              _loadInitialData();
+                            }
+                          } catch (e) {
+                            log('Failed to generate lotteries: $e');
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+                              );
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          side: const BorderSide(color: Colors.redAccent),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        side: const BorderSide(color: Colors.redAccent),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text(
-                        "ดำเนินการ",
-                        style: TextStyle(fontSize: 20, color: Colors.red),
+                        child: const Text(
+                          "ดำเนินการ",
+                          style: TextStyle(fontSize: 20, color: Colors.red),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
 

@@ -256,72 +256,78 @@ class _PrizesetupPageState extends State<PrizesetupPage> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 14.0),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    "ประเภทของรางวัล",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Match RandomLotto styling
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(bottom: 14.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "ประเภทของรางวัล",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    "จำนวนเงิน",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      "จำนวนเงิน",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: CircularProgressIndicator(),
+              )
+            else
+              // Render each field individually
+              ...List.generate(
+                TierHelper.prizeTypes.length,
+                (index) =>
+                    _buildPrizeField(index, TierHelper.prizeTypes[index]),
+              ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: ButtonActions(
+                    text: "ยกเลิก",
+                    variant: ButtonVariant.primary,
+                    theme: Colors.red,
+                    onPressed: _isLoading ? null : resetFields,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ButtonActions(
+                    text: "บันทึก",
+                    variant: ButtonVariant.light,
+                    onPressed: _isLoading ? null : () => sendDataToAPI(context),
                   ),
                 ),
               ],
             ),
-          ),
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: CircularProgressIndicator(),
-            )
-          else
-            // Render each field individually
-            ...List.generate(
-              TierHelper.prizeTypes.length,
-              (index) => _buildPrizeField(index, TierHelper.prizeTypes[index]),
-            ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: ButtonActions(
-                  text: "ยกเลิก",
-                  variant: ButtonVariant.primary,
-                  theme: Colors.red,
-                  onPressed: _isLoading ? null : resetFields,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ButtonActions(
-                  text: "บันทึก",
-                  variant: ButtonVariant.light,
-                  onPressed: _isLoading ? null : () => sendDataToAPI(context),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

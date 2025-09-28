@@ -157,25 +157,28 @@ class _FooterState extends State<Footer> {
           ),
         ],
       ),
-      child: Image.asset(
-        'assets/images/footer/active/$iconName.png',
-        width: 28,
-        height: 28,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFD5553),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: const Icon(
-              Icons.error_outline,
-              size: 20,
-              color: Colors.white,
-            ),
-          );
-        },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.asset(
+          'assets/images/footer/active/$iconName.png',
+          width: 28,
+          height: 28,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFD5553),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Icon(
+                Icons.error_outline,
+                size: 20,
+                color: Colors.white,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

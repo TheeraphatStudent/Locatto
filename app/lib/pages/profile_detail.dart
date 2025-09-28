@@ -26,6 +26,9 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
   final Auth _auth = Auth();
   AlertMessage alert = AlertMessage();
   bool _isLoading = false;
+  
+  String? _currentImageUrl;
+  String? _uploadedImageUrl;
 
   @override
   void initState() {
@@ -55,6 +58,7 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
           _idController.text = user['card_id'] ?? '';
           _phoneController.text = user['telno'] ?? '';
           _emailController.text = user['email'] ?? '';
+          _currentImageUrl = user['img'];
         });
       }
     } catch (e) {
@@ -73,6 +77,7 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
         'telno': _phoneController.text,
         'cardId': _idController.text,
         'email': _emailController.text,
+        'img': _uploadedImageUrl ?? _currentImageUrl ?? '',
       };
 
       final response = await _auth.updateMe(data);
@@ -114,7 +119,14 @@ class _Profile_DetailPageState extends State<Profile_Detail> {
               padding: const EdgeInsets.all(16),
               children: [
                 const SizedBox(height: 10),
-                const Avatar(),
+                Avatar(
+                  initialImagePath: _currentImageUrl,
+                  onImageUploaded: (imageUrl) {
+                    setState(() {
+                      _uploadedImageUrl = imageUrl;
+                    });
+                  },
+                ),
                 const SizedBox(height: 30),
                 _buildTextField("ชื่อ - นามสกุล", _nameController),
                 _buildTextField("เลขบัตรประชาชน", _idController),

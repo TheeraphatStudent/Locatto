@@ -2,6 +2,7 @@ import 'package:app/components/MainLayout.dart';
 import 'package:app/components/Button.dart';
 import 'package:app/service/auth.dart';
 import 'package:app/service/user.dart';
+import 'package:app/style/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:app/components/Avatar.dart';
 import 'dart:developer';
@@ -67,17 +68,36 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
                 MaterialPageRoute(builder: (_) => const AdminProfileDetail()),
               );
             },
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 50, 0, 50),
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 250, 206, 197),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              alignment: Alignment.center,
-              child: const Text(
-                "ข้อมูลส่วนตัว",
-                style: TextStyle(fontSize: 18, color: Colors.black87),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 100, minHeight: 100),
+              child: Container(
+                width: double.infinity,
+                height: 100,
+                padding: const EdgeInsets.all(6),
+                decoration: ShapeDecoration(
+                  color: const Color(0x33FD5553),
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(width: 1, color: const Color(0xFFFFE2E2)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 27,
+                  children: [
+                    Text(
+                      'ข้อมูลส่วนตัว',
+                      style: TextStyle(
+                        color: AppColors.onBackground /* Lottocat-Black */,
+                        fontSize: 16,
+                        fontFamily: 'Kanit',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

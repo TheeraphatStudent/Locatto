@@ -40,14 +40,17 @@ class Tag extends StatelessWidget {
                 ]
               : null,
         ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 14,
-              fontFamily: 'Kanit',
-              fontWeight: FontWeight.w600,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 14,
+                fontFamily: 'Kanit',
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),

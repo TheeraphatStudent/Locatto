@@ -139,74 +139,77 @@ class _RandomLottoState extends State<RandomLotto> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // หัวตาราง
-          Row(
-            children: const [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  'ประเภทรางวัล',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // หัวตาราง
+            Row(
+              children: const [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'ประเภทรางวัล',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  'เลขรางวัล',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'เลขรางวัล',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
+              ],
+            ),
+            const SizedBox(height: 8),
 
-          // รายการรางวัล
-          Column(
-            children: rewards.entries
-                .map((entry) => _buildRewardRow(entry.key, entry.value))
-                .toList(),
-          ),
-          const SizedBox(height: 16),
+            // รายการรางวัล
+            Column(
+              children: rewards.entries
+                  .map((entry) => _buildRewardRow(entry.key, entry.value))
+                  .toList(),
+            ),
+            const SizedBox(height: 16),
 
-          // ปุ่ม
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: ButtonActions(
-                  text: "สุ่มรางวัลทันที",
-                  variant: ButtonVariant.primary,
-                  onPressed: _isLoading
-                      ? null
-                      : () => fetchRandomReward(followed: false),
+            // ปุ่ม
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ButtonActions(
+                    text: "สุ่มรางวัลทันที",
+                    variant: ButtonVariant.primary,
+                    onPressed: _isLoading
+                        ? null
+                        : () => fetchRandomReward(followed: false),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ButtonActions(
-                  text: "ตามเลขที่ถูกขาย",
-                  variant: ButtonVariant.primary,
-                  theme: AppColors.secondary,
-                  onPressed: _isLoading
-                      ? null
-                      : () => fetchRandomReward(followed: true),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ButtonActions(
+                    text: "ตามเลขที่ถูกขาย",
+                    variant: ButtonVariant.primary,
+                    theme: AppColors.secondary,
+                    onPressed: _isLoading
+                        ? null
+                        : () => fetchRandomReward(followed: true),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
